@@ -1,0 +1,1 @@
+{"settings": {"LAST_DATE_IN_TRAIN_SET": "2020-11-30", "LAST_DATE_IN_VAL_SET": "2020-12-31", "FILTER_SIZE_UNEMPLOYMENT": 600, "SIMILARITY_REGULARIZATION_UNEMPLOYMENT": 0.5, "SIMILARITY_REGULARIZATION_SIR": 1.0, "env": {"economic_reward_crra_eta": 2, "start_date": "2020-03-22", "infection_too_sick_to_work_rate": 0.1, "pop_between_age_18_65": 0.6, 
