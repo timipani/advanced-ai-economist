@@ -1,0 +1,1 @@
+{"DATE_FORMAT": "%Y-%m-%d", "STRINGENCY_POLICY_KEY": "StringencyIndex", "NUM_STRINGENCY_LEVELS": 10, "SIR_SMOOTHING_STD": 10, "SIR_MORTALITY": 0.02, "SIR_GAMMA": 0.07142857142857142, "US_STATE_IDX_TO_STATE_NAME": {"0": "Alabama", "1": "Alaska", "2": "Arizona", "3": "Arkansas", "4": "C
