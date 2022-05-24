@@ -35,4 +35,6 @@ class BasicPlanner(BaseAgent):
     @property
     def loc(self):
         """
-        Planner agents do not occupy any 
+        Planner agents do not occupy any location.
+        """
+        raise AttributeError("BasicPlanner agents do not occupy a location.")
