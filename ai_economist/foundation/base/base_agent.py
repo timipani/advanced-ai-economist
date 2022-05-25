@@ -55,4 +55,34 @@ class BaseAgent:
         self.action = dict()
         self.action_dim = dict()
         self._action_names = []
-        self
+        self._multi_action_dict = {}
+        self._unique_actions = 0
+        self._total_actions = 0
+
+        self.state = dict(loc=[0, 0], inventory={}, escrow={}, endogenous={})
+
+        self._registered_inventory = False
+        self._registered_endogenous = False
+        self._registered_components = False
+        self._noop_action_dict = dict()
+
+        # Special flag to allow logic for multi-action-mode agents
+        # that are not given any actions.
+        self._passive_multi_action_agent = False
+
+        # If this gets set to true, we can make masks faster
+        self._one_component_single_action = False
+        self._premask = None
+
+    @property
+    def idx(self):
+        """Index used to identify this agent. Must be unique within the environment."""
+        return self._idx
+
+    def register_inventory(self, resources):
+        """Used during environment construction to populate inventory/escrow fields."""
+        assert not self._registered_inventory
+        for entity_name in resources:
+            self.inventory[entity_name] = 0
+            self.escrow[entity_name] = 0
+        self._registere
