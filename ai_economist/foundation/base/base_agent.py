@@ -111,4 +111,30 @@ class BaseAgent:
                 self.single_action_map[int(self._total_actions)] = [
                     action_name,
                     action_n,
-      
+                ]
+
+    def register_components(self, components):
+        """Used during environment construction to set up state/action spaces."""
+        assert not self._registered_components
+        for component in components:
+            n = component.get_n_actions(self.name)
+            if n is None:
+                continue
+
+            # Most components will have a single action-per-agent, so n is an int
+            if isinstance(n, int):
+                if n == 0:
+                    continue
+                self._incorporate_component(component.name, n)
+
+            # They can also internally handle multiple actions-per-agent,
+            # so n is an tuple or list
+            elif isinstance(n, (tuple, list)):
+                for action_sub_name, n_ in n:
+                    if n_ == 0:
+                        continue
+                    if "." in action_sub_name:
+                        raise NameError(
+                            "Sub-action {} of component {} "
+                            "is illegally named.".format(
+                                action_sub_name, c
