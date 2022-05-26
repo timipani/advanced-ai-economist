@@ -85,4 +85,30 @@ class BaseAgent:
         for entity_name in resources:
             self.inventory[entity_name] = 0
             self.escrow[entity_name] = 0
-        self._registere
+        self._registered_inventory = True
+
+    def register_endogenous(self, endogenous):
+        """Used during environment construction to populate endogenous state fields."""
+        assert not self._registered_endogenous
+        for entity_name in endogenous:
+            self.endogenous[entity_name] = 0
+        self._registered_endogenous = True
+
+    def _incorporate_component(self, action_name, n):
+        extra_n = (
+            1 if self.multi_action_mode else 0
+        )  # Each sub-action has a NO-OP in multi action mode)
+        self.action[action_name] = 0
+        self.action_dim[action_name] = n + extra_n
+        self._action_names.append(action_name)
+        self._multi_action_dict[action_name] = False
+        self._unique_actions += 1
+        if self.multi_action_mode:
+            self._total_actions += n + extra_n
+        else:
+            for action_n in range(1, n + 1):
+                self._total_actions += 1
+                self.single_action_map[int(self._total_actions)] = [
+                    action_name,
+                    action_n,
+      
