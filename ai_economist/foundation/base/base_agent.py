@@ -137,4 +137,31 @@ class BaseAgent:
                         raise NameError(
                             "Sub-action {} of component {} "
                             "is illegally named.".format(
-                                action_sub_name, c
+                                action_sub_name, component.name
+                            )
+                        )
+                    self._incorporate_component(
+                        "{}.{}".format(component.name, action_sub_name), n_
+                    )
+
+            # If that's not what we got something is funky.
+            else:
+                raise TypeError(
+                    "Received unexpected type ({}) from {}.get_n_actions('{}')".format(
+                        type(n), component.name, self.name
+                    )
+                )
+
+            for k, v in component.get_additional_state_fields(self.name).items():
+                self.state[k] = v
+
+        # Currently no actions are available to this agent. Give it a placeholder.
+        if len(self.action) == 0 and self.multi_action_mode:
+            self._incorporate_component("PassiveAgentPlaceholder", 0)
+            self._passive_multi_action_agent = True
+
+        elif len(self.action) == 1 and not self.multi_action_mode:
+            self._one_component_single_action = True
+            self._premask = np.ones(1 + self._total_actions, dtype=np.float32)
+
+        self._registered_componen
