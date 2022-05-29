@@ -191,4 +191,36 @@ class BaseAgent:
 
             Example:
                 >> self.multi_action_mode
-       
+                True
+                >> self.action_spaces
+                [2, 5]
+                >> self._action_names
+                ["Build", "Gather"]
+                # [1 Build action + Build NO-OP, 4 Gather actions + Gather NO-OP]
+
+        if self.multi_action_mode == False:
+            Returns a single integer equal to the total number of actions that the
+            agent can take.
+
+            Example:
+                >> self.multi_action_mode
+                False
+                >> self.action_spaces
+                6
+                >> self._action_names
+                ["Build", "Gather"]
+                # 1 NO-OP + 1 Build action + 4 Gather actions.
+        """
+        if self.multi_action_mode:
+            action_dims = []
+            for m in self._action_names:
+                action_dims.append(np.array(self.action_dim[m]).reshape(-1))
+            return np.concatenate(action_dims).astype(np.int32)
+        n_actions = 1  # (NO-OP)
+        for m in self._action_names:
+            n_actions += self.action_dim[m]
+        return n_actions
+
+    @property
+    def loc(self):
+        """2
