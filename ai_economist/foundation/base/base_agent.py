@@ -164,4 +164,31 @@ class BaseAgent:
             self._one_component_single_action = True
             self._premask = np.ones(1 + self._total_actions, dtype=np.float32)
 
-        self._registered_componen
+        self._registered_components = True
+
+        self._noop_action_dict = {k: v * 0 for k, v in self.action.items()}
+
+        verbose = False
+        if verbose:
+            print(self.name, self.idx, "constructed action map:")
+            for k, v in self.single_action_map.items():
+                print("single action map:", k, v)
+            for k, v in self.action.items():
+                print("action:", k, v)
+            for k, v in self.action_dim.items():
+                print("action_dim:", k, v)
+
+    @property
+    def action_spaces(self):
+        """
+        if self.multi_action_mode == True:
+            Returns an integer array with length equal to the number of action
+            subspaces that the agent registered. The i'th element of the array
+            indicates the number of actions associated with the i'th action subspace.
+            In multi_action_mode, each subspace includes a NO-OP.
+            Note: self._action_names describes which action subspace each element of
+            the array refers to.
+
+            Example:
+                >> self.multi_action_mode
+       
