@@ -223,4 +223,36 @@ class BaseAgent:
 
     @property
     def loc(self):
-        """2
+        """2D list of [row, col] representing agent's location in the environment."""
+        return self.state["loc"]
+
+    @property
+    def endogenous(self):
+        """Dictionary representing endogenous quantities (i.e. "Labor").
+
+        Example:
+            >> self.endogenous
+            {"Labor": 30.25}
+        """
+        return self.state["endogenous"]
+
+    @property
+    def inventory(self):
+        """Dictionary representing quantities of resources in agent's inventory.
+
+        Example:
+            >> self.inventory
+            {"Wood": 3, "Stone": 20, "Coin": 1002.83}
+        """
+        return self.state["inventory"]
+
+    @property
+    def escrow(self):
+        """Dictionary representing quantities of resources in agent's escrow.
+
+        https://en.wikipedia.org/wiki/Escrow
+        Escrow is used to manage any portion of the agent's inventory that is
+        reserved for a particular purpose. Typically, something enters escrow as part
+        of a contractual arrangement to disburse that something when another
+        condition is met. An example is found in the ContinuousDoubleAuction
+        Component class (see ..
