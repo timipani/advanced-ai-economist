@@ -255,4 +255,28 @@ class BaseAgent:
         reserved for a particular purpose. Typically, something enters escrow as part
         of a contractual arrangement to disburse that something when another
         condition is met. An example is found in the ContinuousDoubleAuction
-        Component class (see ..
+        Component class (see ../components/continuous_double_auction.py). When an
+        agent creates an order to sell a unit of Wood, for example, the component
+        moves one unit of Wood from the agent's inventory to its escrow. If another
+        agent buys the Wood, it is moved from escrow to the other agent's inventory. By
+        placing the Wood in escrow, it prevents the first agent from using it for
+        something else (i.e. building a house).
+
+        Notes:
+            The inventory and escrow share the same keys. An agent's endowment refers
+            to the total quantity it has in its inventory and escrow.
+
+            Escrow is provided to simplify inventory management but its intended
+            semantics are not enforced directly. It is up to Component classes to
+            enforce these semantics.
+
+        Example:
+            >> self.inventory
+            {"Wood": 0, "Stone": 1, "Coin": 3}
+        """
+        return self.state["escrow"]
+
+    def inventory_to_escrow(self, resource, amount):
+        """Move some amount of a resource from agent inventory to agent escrow.
+
+        Amount transferred is capped to the amount of resource in agent 
