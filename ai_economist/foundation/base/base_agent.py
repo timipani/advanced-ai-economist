@@ -304,4 +304,33 @@ class BaseAgent:
         Amount transferred is capped to the amount of resource in agent escrow.
 
         Args:
-            resource (str): The name of the
+            resource (str): The name of the resource to move (i.e. "Wood", "Coin").
+            amount (float): The amount to be moved from escrow to inventory. Must be
+                positive.
+
+        Returns:
+            Amount of resource actually transferred. Will be less than amount argument
+                if amount argument exceeded the amount of resource in escrow.
+                Calculated as:
+                    transferred = np.minimum(self.state["escrow"][resource], amount)
+        """
+        assert amount >= 0
+        transferred = float(np.minimum(self.state["escrow"][resource], amount))
+        self.state["escrow"][resource] -= transferred
+        self.state["inventory"][resource] += transferred
+        return float(transferred)
+
+    def total_endowment(self, resource):
+        """Get the combined inventory+escrow endowment of resource.
+
+        Args:
+            resource (str): Name of the resource
+
+        Returns:
+            The amount of resource in the agents inventory and escrow.
+
+        """
+        return self.inventory[resource] + self.escrow[resource]
+
+    def reset_actions(self, component=None):
+        """Reset all actions
