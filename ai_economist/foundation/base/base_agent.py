@@ -333,4 +333,31 @@ class BaseAgent:
         return self.inventory[resource] + self.escrow[resource]
 
     def reset_actions(self, component=None):
-        """Reset all actions
+        """Reset all actions to the NO-OP action (the 0'th action index).
+
+        If component is specified, only reset action(s) for that component.
+        """
+        if not component:
+            self.action.update(self._noop_action_dict)
+        else:
+            for k, v in self.action.items():
+                if "." in component:
+                    if k.lower() == component.lower():
+                        self.action[k] = v * 0
+                else:
+                    base_component = k.split(".")[0]
+                    if base_component.lower() == component.lower():
+                        self.action[k] = v * 0
+
+    def has_component(self, component_name):
+        """Returns True if the agent has component_name as a registered subaction."""
+        return bool(component_name in self.action)
+
+    def get_random_action(self):
+        """
+        Select a component at random and randomly choose one of its actions (other
+        than NO-OP).
+        """
+        random_component = random.choice(self._action_names)
+        component_action = random.choice(
+            list(range(1, self.action_dim[random_component]))
