@@ -361,3 +361,30 @@ class BaseAgent:
         random_component = random.choice(self._action_names)
         component_action = random.choice(
             list(range(1, self.action_dim[random_component]))
+        )
+        return {random_component: component_action}
+
+    def get_component_action(self, component_name, sub_action_name=None):
+        """
+        Return the action(s) taken for component_name component, or None if the
+        agent does not use that component.
+        """
+        if sub_action_name is not None:
+            return self.action.get(component_name + "." + sub_action_name, None)
+        matching_names = [
+            m for m in self._action_names if m.split(".")[0] == component_name
+        ]
+        if len(matching_names) == 0:
+            return None
+        if len(matching_names) == 1:
+            return self.action.get(matching_names[0], None)
+        return [self.action.get(m, None) for m in matching_names]
+
+    def set_component_action(self, component_name, action):
+        """Set the action(s) taken for component_name component."""
+        if component_name not in self.action:
+            raise KeyError(
+                "Agent {} of type {} does not have {} registered as a subaction".format(
+                    self.idx, self.name, component_name
+                )
+       
