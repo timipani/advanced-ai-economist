@@ -387,4 +387,29 @@ class BaseAgent:
                 "Agent {} of type {} does not have {} registered as a subaction".format(
                     self.idx, self.name, component_name
                 )
-       
+            )
+        if self._multi_action_dict[component_name]:
+            self.action[component_name] = np.array(action, dtype=np.int32)
+        else:
+            self.action[component_name] = int(action)
+
+    def populate_random_actions(self):
+        """Fill the action buffer with random actions. This is for testing."""
+        for component, d in self.action_dim.items():
+            if isinstance(d, int):
+                self.set_component_action(component, np.random.randint(0, d))
+            else:
+                d_array = np.array(d)
+                self.set_component_action(
+                    component, np.floor(np.random.rand(*d_array.shape) * d_array)
+                )
+
+    def parse_actions(self, actions):
+        """Parse the actions array to fill each component's action buffers."""
+        if self.multi_action_mode:
+            assert len(actions) == self._unique_actions
+            if len(actions) == 1:
+                self.set_component_action(self._action_names[0], actions[0])
+            else:
+                for action_name, action in zip(self._action_names, actions):
+                    self.set_component_action(action_name, int(acti
