@@ -412,4 +412,32 @@ class BaseAgent:
                 self.set_component_action(self._action_names[0], actions[0])
             else:
                 for action_name, action in zip(self._action_names, actions):
-                    self.set_component_action(action_name, int(acti
+                    self.set_component_action(action_name, int(action))
+
+        # Single action mode
+        else:
+            # Action was supplied as an index of a specific subaction.
+            # No need to do any lookup.
+            if isinstance(actions, dict):
+                if len(actions) == 0:
+                    return
+                assert len(actions) == 1
+                action_name = list(actions.keys())[0]
+                action = list(actions.values())[0]
+                if action == 0:
+                    return
+                self.set_component_action(action_name, action)
+
+            # Action was supplied as an index into the full set of combined actions
+            else:
+                action = int(actions)
+                # Universal NO-OP
+                if action == 0:
+                    return
+                action_name, action = self.single_action_map.get(action)
+                self.set_component_action(action_name, action)
+
+    def flatten_masks(self, mask_dict):
+        """Convert a dictionary of component action masks into a single mask vector."""
+        if self._one_component_single_action:
+            self._premask[1:] = mask_d
