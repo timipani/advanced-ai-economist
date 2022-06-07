@@ -440,4 +440,35 @@ class BaseAgent:
     def flatten_masks(self, mask_dict):
         """Convert a dictionary of component action masks into a single mask vector."""
         if self._one_component_single_action:
-            self._premask[1:] = mask_d
+            self._premask[1:] = mask_dict[self._action_names[0]]
+            return self._premask
+
+        no_op_mask = [1]
+
+        if self._passive_multi_action_agent:
+            return np.array(no_op_mask).astype(np.float32)
+
+        list_of_masks = []
+        if not self.multi_action_mode:
+            list_of_masks.append(no_op_mask)
+        for m in self._action_names:
+            if m not in mask_dict:
+                raise KeyError("No mask provided for {} (agent {})".format(m, self.idx))
+            if self.multi_action_mode:
+                list_of_masks.append(no_op_mask)
+            list_of_masks.append(mask_dict[m])
+        return np.concatenate(list_of_masks).astype(np.float32)
+
+
+agent_registry = Registry(BaseAgent)
+"""The registry for Agent classes.
+
+This creates a registry object for Agent classes. This registry requires that all
+added classes are subclasses of BaseAgent. To make an Agent class available through
+the registry, decorate the class definition with @agent_registry.add.
+
+Example:
+    from ai_economist.foundation.base.base_agent import BaseAgent, agent_registry
+
+    @agent_registry.add
+    class ExampleAge
