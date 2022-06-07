@@ -471,4 +471,20 @@ Example:
     from ai_economist.foundation.base.base_agent import BaseAgent, agent_registry
 
     @agent_registry.add
-    class ExampleAge
+    class ExampleAgent(BaseAgent):
+        name = "Example"
+        pass
+
+    assert agent_registry.has("Example")
+
+    AgentClass = agent_registry.get("Example")
+    agent = AgentClass(...)
+    assert isinstance(agent, ExampleAgent)
+
+Notes:
+    The foundation package exposes the agent registry as: foundation.agents
+
+    An Agent class that is defined and registered following the above example will
+    only be visible in foundation.agents if defined/registered in a file that is
+    imported in ../agents/__init__.py.
+"""
