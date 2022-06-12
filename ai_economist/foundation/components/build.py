@@ -83,4 +83,39 @@ class Build(BaseComponent):
         return True
 
     # Required methods for implementing components
-    # ------------------------------------
+    # --------------------------------------------
+
+    def get_n_actions(self, agent_cls_name):
+        """
+        See base_component.py for detailed description.
+
+        Add a single action (build) for mobile agents.
+        """
+        # This component adds 1 action that mobile agents can take: build a house
+        if agent_cls_name == "BasicMobileAgent":
+            return 1
+
+        return None
+
+    def get_additional_state_fields(self, agent_cls_name):
+        """
+        See base_component.py for detailed description.
+
+        For mobile agents, add state fields for building skill.
+        """
+        if agent_cls_name not in self.agent_subclasses:
+            return {}
+        if agent_cls_name == "BasicMobileAgent":
+            return {"build_payment": float(self.payment), "build_skill": 1}
+        raise NotImplementedError
+
+    def component_step(self):
+        """
+        See base_component.py for detailed description.
+
+        Convert stone+wood to house+coin for agents that choose to build and can.
+        """
+        world = self.world
+        build = []
+        # Apply any building actions taken by the mobile agents
+        for agent in w
