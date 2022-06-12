@@ -52,4 +52,35 @@ class Build(BaseComponent):
         self.payment = int(payment)
         assert self.payment >= 0
 
-        self.payment_max_skill_multiplier = int(payment_max_skill_multipl
+        self.payment_max_skill_multiplier = int(payment_max_skill_multiplier)
+        assert self.payment_max_skill_multiplier >= 1
+
+        self.resource_cost = {"Wood": 1, "Stone": 1}
+
+        self.build_labor = float(build_labor)
+        assert self.build_labor >= 0
+
+        self.skill_dist = skill_dist.lower()
+        assert self.skill_dist in ["none", "pareto", "lognormal"]
+
+        self.sampled_skills = {}
+
+        self.builds = []
+
+    def agent_can_build(self, agent):
+        """Return True if agent can actually build in its current location."""
+        # See if the agent has the resources necessary to complete the action
+        for resource, cost in self.resource_cost.items():
+            if agent.state["inventory"][resource] < cost:
+                return False
+
+        # Do nothing if this spot is already occupied by a landmark or resource
+        if self.world.location_resources(*agent.loc):
+            return False
+        if self.world.location_landmarks(*agent.loc):
+            return False
+        # If we made it here, the agent can build.
+        return True
+
+    # Required methods for implementing components
+    # ------------------------------------
