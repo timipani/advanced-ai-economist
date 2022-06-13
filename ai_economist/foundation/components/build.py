@@ -118,4 +118,35 @@ class Build(BaseComponent):
         world = self.world
         build = []
         # Apply any building actions taken by the mobile agents
-        for agent in w
+        for agent in world.get_random_order_agents():
+
+            action = agent.get_component_action(self.name)
+
+            # This component doesn't apply to this agent!
+            if action is None:
+                continue
+
+            # NO-OP!
+            if action == 0:
+                pass
+
+            # Build! (If you can.)
+            elif action == 1:
+                if self.agent_can_build(agent):
+                    # Remove the resources
+                    for resource, cost in self.resource_cost.items():
+                        agent.state["inventory"][resource] -= cost
+
+                    # Place a house where the agent is standing
+                    loc_r, loc_c = agent.loc
+                    world.create_landmark("House", loc_r, loc_c, agent.idx)
+
+                    # Receive payment for the house
+                    agent.state["inventory"]["Coin"] += agent.state["build_payment"]
+
+                    # Incur the labor cost for building
+                    agent.state["endogenous"]["Labor"] += self.build_labor
+
+                    build.append(
+                        {
+  
