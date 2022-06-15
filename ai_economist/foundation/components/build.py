@@ -149,4 +149,40 @@ class Build(BaseComponent):
 
                     build.append(
                         {
-  
+                            "builder": agent.idx,
+                            "loc": np.array(agent.loc),
+                            "income": float(agent.state["build_payment"]),
+                        }
+                    )
+
+            else:
+                raise ValueError
+
+        self.builds.append(build)
+
+    def generate_observations(self):
+        """
+        See base_component.py for detailed description.
+
+        Here, agents observe their build skill. The planner does not observe anything
+        from this component.
+        """
+
+        obs_dict = dict()
+        for agent in self.world.agents:
+            obs_dict[agent.idx] = {
+                "build_payment": agent.state["build_payment"] / self.payment,
+                "build_skill": self.sampled_skills[agent.idx],
+            }
+
+        return obs_dict
+
+    def generate_masks(self, completions=0):
+        """
+        See base_component.py for detailed description.
+
+        Prevent building only if a landmark already occupies the agent's location.
+        """
+
+        masks = {}
+        # Mobile agents' build action is 
