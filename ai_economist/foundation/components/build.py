@@ -185,4 +185,40 @@ class Build(BaseComponent):
         """
 
         masks = {}
-        # Mobile agents' build action is 
+        # Mobile agents' build action is masked if they cannot build with their
+        # current location and/or endowment
+        for agent in self.world.agents:
+            masks[agent.idx] = np.array([self.agent_can_build(agent)])
+
+        return masks
+
+    # For non-required customization
+    # ------------------------------
+
+    def get_metrics(self):
+        """
+        Metrics that capture what happened through this component.
+
+        Returns:
+            metrics (dict): A dictionary of {"metric_name": metric_value},
+                where metric_value is a scalar.
+        """
+        world = self.world
+
+        build_stats = {a.idx: {"n_builds": 0} for a in world.agents}
+        for builds in self.builds:
+            for build in builds:
+                idx = build["builder"]
+                build_stats[idx]["n_builds"] += 1
+
+        out_dict = {}
+        for a in world.agents:
+            for k, v in build_stats[a.idx].items():
+                out_dict["{}/{}".format(a.idx, k)] = v
+
+        num_houses = np.sum(world.maps.get("House") > 0)
+        out_dict["total_builds"] = num_houses
+
+        return out_dict
+
+    def additio
