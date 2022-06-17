@@ -253,4 +253,14 @@ class Build(BaseComponent):
 
         self.builds = []
 
-    def get_dense_
+    def get_dense_log(self):
+        """
+        Log builds.
+
+        Returns:
+            builds (list): A list of build events. Each entry corresponds to a single
+                timestep and contains a description of any builds that occurred on
+                that timestep.
+
+        """
+        return self.builds
