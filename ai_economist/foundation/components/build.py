@@ -221,4 +221,36 @@ class Build(BaseComponent):
 
         return out_dict
 
-    def additio
+    def additional_reset_steps(self):
+        """
+        See base_component.py for detailed description.
+
+        Re-sample agents' building skills.
+        """
+        world = self.world
+
+        self.sampled_skills = {agent.idx: 1 for agent in world.agents}
+
+        PMSM = self.payment_max_skill_multiplier
+
+        for agent in world.agents:
+            if self.skill_dist == "none":
+                sampled_skill = 1
+                pay_rate = 1
+            elif self.skill_dist == "pareto":
+                sampled_skill = np.random.pareto(4)
+                pay_rate = np.minimum(PMSM, (PMSM - 1) * sampled_skill + 1)
+            elif self.skill_dist == "lognormal":
+                sampled_skill = np.random.lognormal(-1, 0.5)
+                pay_rate = np.minimum(PMSM, (PMSM - 1) * sampled_skill + 1)
+            else:
+                raise NotImplementedError
+
+            agent.state["build_payment"] = float(pay_rate * self.payment)
+            agent.state["build_skill"] = float(sampled_skill)
+
+            self.sampled_skills[agent.idx] = sampled_skill
+
+        self.builds = []
+
+    def get_dense_
