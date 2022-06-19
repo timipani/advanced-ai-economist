@@ -43,4 +43,25 @@ extern "C" {
             // Time dependent arrays have shapes
             // (num_envs, kEpisodeLength + 1, kNumAgents - 1)
             // Time independent arrays have shapes (num_envs, kNumAgents - 1)
-            const int
+            const int kArrayIdxOffset = kEnvId * (kEpisodeLength + 1) *
+                (kNumAgents - 1);
+            int time_dependent_array_index_curr_t = kArrayIdxOffset +
+                env_timestep_arr[kEnvId] * (kNumAgents - 1) + kAgentId;
+            int time_dependent_array_index_prev_t = kArrayIdxOffset +
+                (env_timestep_arr[kEnvId] - 1) * (kNumAgents - 1) + kAgentId;
+            const int time_independent_array_index = kEnvId * (kNumAgents - 1) +
+                kAgentId;
+
+            // action is not a NO-OP
+            if (actions[time_independent_array_index] != 0) {
+                stringency_level[time_dependent_array_index_curr_t] =
+                    actions[time_independent_array_index];
+            } else {
+                stringency_level[time_dependent_array_index_curr_t] =
+                    stringency_level[time_dependent_array_index_prev_t];
+            }
+
+            if (env_timestep_arr[kEnvId] == action_in_cooldown_until[
+                time_independent_array_index] + 1) {
+                if (actions[time_independent_array_index] != 0) {
+                    assert(0 <= actions[time_independent_array_index]
