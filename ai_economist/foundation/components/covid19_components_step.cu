@@ -64,4 +64,27 @@ extern "C" {
             if (env_timestep_arr[kEnvId] == action_in_cooldown_until[
                 time_independent_array_index] + 1) {
                 if (actions[time_independent_array_index] != 0) {
-                    assert(0 <= actions[time_independent_array_index]
+                    assert(0 <= actions[time_independent_array_index] <=
+                        kNumStringencyLevels);
+                    action_in_cooldown_until[time_independent_array_index] +=
+                        kActionCooldownPeriod;
+                } else {
+                    action_in_cooldown_until[time_independent_array_index] += 1;
+                }
+            }
+
+            obs_a_stringency_policy_indicators[
+                time_independent_array_index
+            ] = stringency_level[time_dependent_array_index_curr_t] /
+                static_cast<float>(kNumStringencyLevels);
+
+            // CUDA version of generate_masks()
+            for (int action_id = 0; action_id < (kNumStringencyLevels + 1);
+                action_id++) {
+                int action_mask_array_index =
+                    kEnvId * (kNumStringencyLevels + 1) *
+                    (kNumAgents - 1) + action_id * (kNumAgents - 1) + kAgentId;
+                if (env_timestep_arr[kEnvId] < action_in_cooldown_until[
+                    time_independent_array_index]
+                ) {
+                    obs_a_action_mask[acti
