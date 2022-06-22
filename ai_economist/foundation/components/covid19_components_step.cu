@@ -121,4 +121,31 @@ extern "C" {
         const int * kDefaultPlannerActionMask,
         const int * kNoOpPlannerActionMask,
         int * actions,
-        float * obs_a_
+        float * obs_a_time_until_next_subsidy,
+        float * obs_a_current_subsidy_level,
+        float * obs_p_time_until_next_subsidy,
+        float * obs_p_current_subsidy_level,
+        float * obs_p_action_mask,
+        int * env_timestep_arr,
+        const int kNumAgents,
+        const int kEpisodeLength
+    ) {
+        const int kEnvId = blockIdx.x;
+        const int kAgentId = threadIdx.x;
+
+        assert(env_timestep_arr[kEnvId] > 0 &&
+            env_timestep_arr[kEnvId] <= kEpisodeLength);
+        assert (kAgentId <= kNumAgents - 1);
+
+        int t_since_last_subsidy = env_timestep_arr[kEnvId] %
+            kSubsidyInterval;
+
+        // Setting the (federal government) planner's subsidy level
+        // to be the subsidy level for all the US states
+        if (kAgentId < kNumAgents - 1) {
+            // Indices for time-dependent and time-independent arrays
+            // Time dependent arrays have shapes (num_envs,
+            // kEpisodeLength + 1, kNumAgents - 1)
+            // Time independent arrays have shapes (num_envs, kNumAgents - 1)
+            const int kArrayIdxOffset = kEnvId * (kEpisodeLength + 1) *
+                (k
