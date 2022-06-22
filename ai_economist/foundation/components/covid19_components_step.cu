@@ -87,4 +87,38 @@ extern "C" {
                 if (env_timestep_arr[kEnvId] < action_in_cooldown_until[
                     time_independent_array_index]
                 ) {
-                    obs_a_action_mask[acti
+                    obs_a_action_mask[action_mask_array_index] =
+                    kNoOpAgentActionMask[action_id];
+                } else {
+                    obs_a_action_mask[action_mask_array_index] =
+                    kDefaultAgentActionMask[action_id];
+                }
+            }
+        }
+
+        // Update planner obs after all the agents' obs are updated
+        __syncthreads();
+
+        if (kAgentId == kNumAgents - 1) {
+            for (int ag_id = 0; ag_id < (kNumAgents - 1); ag_id++) {
+                const int kIndex = kEnvId * (kNumAgents - 1) + ag_id;
+                obs_p_stringency_policy_indicators[
+                    kIndex
+                ] = 
+                    obs_a_stringency_policy_indicators[
+                        kIndex
+                    ];
+            }
+        }
+    }
+
+    __global__ void CudaFederalGovernmentSubsidyStep(
+        int * subsidy_level,
+        float * subsidy,
+        const int kSubsidyInterval,
+        const int kNumSubsidyLevels,
+        const float * KMaxDailySubsidyPerState,
+        const int * kDefaultPlannerActionMask,
+        const int * kNoOpPlannerActionMask,
+        int * actions,
+        float * obs_a_
