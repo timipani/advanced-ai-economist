@@ -148,4 +148,26 @@ extern "C" {
             // kEpisodeLength + 1, kNumAgents - 1)
             // Time independent arrays have shapes (num_envs, kNumAgents - 1)
             const int kArrayIdxOffset = kEnvId * (kEpisodeLength + 1) *
-                (k
+                (kNumAgents - 1);
+            int time_dependent_array_index_curr_t = kArrayIdxOffset +
+                env_timestep_arr[kEnvId] * (kNumAgents - 1) + kAgentId;
+            int time_dependent_array_index_prev_t = kArrayIdxOffset +
+                (env_timestep_arr[kEnvId] - 1) * (kNumAgents - 1) + kAgentId;
+            const int time_independent_array_index = kEnvId *
+                (kNumAgents - 1) + kAgentId;
+
+            if ((env_timestep_arr[kEnvId] - 1) % kSubsidyInterval == 0) {
+                assert(0 <= actions[kEnvId] <= kNumSubsidyLevels);
+                subsidy_level[time_dependent_array_index_curr_t] =
+                    actions[kEnvId];
+            } else {
+                subsidy_level[time_dependent_array_index_curr_t] =
+                    subsidy_level[time_dependent_array_index_prev_t];
+            }
+            // Setting the subsidies for the US states
+            // based on the federal government's subsidy level
+            subsidy[time_dependent_array_index_curr_t] =
+                subsidy_level[time_dependent_array_index_curr_t] *
+                KMaxDailySubsidyPerState[kAgentId] / kNumSubsidyLevels;
+
+            obs_a_time_until_next_subsidy
