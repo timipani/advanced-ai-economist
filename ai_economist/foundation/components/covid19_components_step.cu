@@ -170,4 +170,29 @@ extern "C" {
                 subsidy_level[time_dependent_array_index_curr_t] *
                 KMaxDailySubsidyPerState[kAgentId] / kNumSubsidyLevels;
 
-            obs_a_time_until_next_subsidy
+            obs_a_time_until_next_subsidy[
+                time_independent_array_index] =
+                    1 - (t_since_last_subsidy /
+                    static_cast<float>(kSubsidyInterval));
+            obs_a_current_subsidy_level[
+                time_independent_array_index] =
+                    subsidy_level[time_dependent_array_index_curr_t] /
+                    static_cast<float>(kNumSubsidyLevels);
+        } else if (kAgentId == (kNumAgents - 1)) {
+            for (int action_id = 0; action_id < kNumSubsidyLevels + 1;
+                action_id++) {
+                int action_mask_array_index = kEnvId *
+                    (kNumSubsidyLevels + 1) + action_id;
+                if (env_timestep_arr[kEnvId] % kSubsidyInterval == 0) {
+                    obs_p_action_mask[action_mask_array_index] =
+                        kDefaultPlannerActionMask[action_id];
+                } else {
+                    obs_p_action_mask[action_mask_array_index] =
+                        kNoOpPlannerActionMask[action_id];
+                }
+            }
+            // Update planner obs after the agent's obs are updated
+            __syncthreads();
+
+            if (kAgentId == (kNumAgents - 1)) {
+                // Just use the values
