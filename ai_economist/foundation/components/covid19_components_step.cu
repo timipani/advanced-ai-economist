@@ -227,3 +227,29 @@ extern "C" {
             kEpisodeLength);
         assert(kTimeWhenVaccineDeliveryBegins > 0);
         assert (kAgentId <= kNumAgents - 1);
+
+        // CUDA version of generate observations()
+        int t_first_delivery = kTimeWhenVaccineDeliveryBegins +
+            kTimeWhenVaccineDeliveryBegins % kDeliveryInterval;
+        int next_t = env_timestep_arr[kEnvId] + 1;
+        float t_until_next_vac;
+        if (next_t <= t_first_delivery) {
+            t_until_next_vac = min(
+                1,
+                (t_first_delivery - next_t) / kDeliveryInterval);
+        } else {
+            float t_since_last_vac = next_t % kDeliveryInterval;
+            t_until_next_vac = 1 - (t_since_last_vac / kDeliveryInterval);
+        }
+
+        // Update the vaccinated numbers for just the US states
+        if (kAgentId < (kNumAgents - 1)) {
+            const int time_independent_array_index = kEnvId *
+                (kNumAgents - 1) + kAgentId;
+            if ((env_timestep_arr[kEnvId] >= kTimeWhenVaccineDeliveryBegins) &&
+                (env_timestep_arr[kEnvId] % kDeliveryInterval == 0)) {
+                num_vaccines_available_t[time_independent_array_index] =
+                    kNumVaccinesPerDelivery[kAgentId];
+            } else {
+                num_vaccines_available_t[time_independent_array_index] = 0;
+          
