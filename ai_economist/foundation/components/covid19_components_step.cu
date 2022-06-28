@@ -195,4 +195,35 @@ extern "C" {
             __syncthreads();
 
             if (kAgentId == (kNumAgents - 1)) {
-                // Just use the values
+                // Just use the values for agent id 0
+                obs_p_time_until_next_subsidy[kEnvId] =
+                    obs_a_time_until_next_subsidy[
+                        kEnvId * (kNumAgents - 1)
+                    ];
+                obs_p_current_subsidy_level[kEnvId] = 
+                    obs_a_current_subsidy_level[
+                        kEnvId * (kNumAgents - 1)
+                    ];
+            }
+        }
+    }
+
+    __global__ void CudaVaccinationCampaignStep(
+        int * vaccinated,
+        const int * kNumVaccinesPerDelivery,
+        int * num_vaccines_available_t,
+        const int kDeliveryInterval,
+        const int kTimeWhenVaccineDeliveryBegins,
+        float * obs_a_vaccination_campaign_t_until_next_vaccines,
+        float * obs_p_vaccination_campaign_t_until_next_vaccines,
+        int * env_timestep_arr,
+        int kNumAgents,
+        int kEpisodeLength
+    ) {
+        const int kEnvId = blockIdx.x;
+        const int kAgentId = threadIdx.x;
+
+        assert(env_timestep_arr[kEnvId] > 0 && env_timestep_arr[kEnvId] <=
+            kEpisodeLength);
+        assert(kTimeWhenVaccineDeliveryBegins > 0);
+        assert (kAgentId <= kNumAgents - 1);
