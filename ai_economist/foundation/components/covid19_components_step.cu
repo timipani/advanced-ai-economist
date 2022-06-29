@@ -252,4 +252,12 @@ extern "C" {
                     kNumVaccinesPerDelivery[kAgentId];
             } else {
                 num_vaccines_available_t[time_independent_array_index] = 0;
-          
+            }
+            obs_a_vaccination_campaign_t_until_next_vaccines[
+                time_independent_array_index] = t_until_next_vac;
+        } else if (kAgentId == kNumAgents - 1) {
+            obs_p_vaccination_campaign_t_until_next_vaccines[kEnvId] =
+            t_until_next_vac;
+        }
+    }
+}
