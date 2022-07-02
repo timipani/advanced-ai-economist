@@ -25,4 +25,34 @@ class Gather(BaseComponent):
     Args:
         move_labor (float): Labor cost associated with movement. Must be >= 0.
             Default is 1.0.
-        collect_labor (float): Labo
+        collect_labor (float): Labor cost associated with collecting resources. This
+            cost is added (in addition to any movement cost) when the agent lands on
+            a tile that is populated with resources (triggering collection).
+            Must be >= 0. Default is 1.0.
+        skill_dist (str): Distribution type for sampling skills. Default ("none")
+            gives all agents identical skill equal to a bonus prob of 0. "pareto" and
+            "lognormal" sample skills from the associated distributions.
+    """
+
+    name = "Gather"
+    required_entities = ["Coin", "House", "Labor"]
+    agent_subclasses = ["BasicMobileAgent"]
+
+    def __init__(
+        self,
+        *base_component_args,
+        move_labor=1.0,
+        collect_labor=1.0,
+        skill_dist="none",
+        **base_component_kwargs
+    ):
+        super().__init__(*base_component_args, **base_component_kwargs)
+
+        self.move_labor = float(move_labor)
+        assert self.move_labor >= 0
+
+        self.collect_labor = float(collect_labor)
+        assert self.collect_labor >= 0
+
+        self.skill_dist = skill_dist.lower()
+        assert self.skill_dist in ["none", "pa
