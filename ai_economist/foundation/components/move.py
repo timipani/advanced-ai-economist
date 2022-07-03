@@ -55,4 +55,39 @@ class Gather(BaseComponent):
         assert self.collect_labor >= 0
 
         self.skill_dist = skill_dist.lower()
-        assert self.skill_dist in ["none", "pa
+        assert self.skill_dist in ["none", "pareto", "lognormal"]
+
+        self.gathers = []
+
+        self._aidx = np.arange(self.n_agents)[:, None].repeat(4, axis=1)
+        self._roff = np.array([[0, 0, -1, 1]])
+        self._coff = np.array([[-1, 1, 0, 0]])
+
+    # Required methods for implementing components
+    # --------------------------------------------
+
+    def get_n_actions(self, agent_cls_name):
+        """
+        See base_component.py for detailed description.
+
+        Adds 4 actions (move up, down, left, or right) for mobile agents.
+        """
+        # This component adds 4 action that agents can take:
+        # move up, down, left, or right
+        if agent_cls_name == "BasicMobileAgent":
+            return 4
+        return None
+
+    def get_additional_state_fields(self, agent_cls_name):
+        """
+        See base_component.py for detailed description.
+
+        For mobile agents, add state field for collection skill.
+        """
+        if agent_cls_name not in self.agent_subclasses:
+            return {}
+        if agent_cls_name == "BasicMobileAgent":
+            return {"bonus_gather_prob": 0.0}
+        raise NotImplementedError
+
+    def comp
