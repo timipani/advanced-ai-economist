@@ -90,4 +90,38 @@ class Gather(BaseComponent):
             return {"bonus_gather_prob": 0.0}
         raise NotImplementedError
 
-    def comp
+    def component_step(self):
+        """
+        See base_component.py for detailed description.
+
+        Move to adjacent, unoccupied locations. Collect resources when moving to
+        populated resource tiles, adding the resource to the agent's inventory and
+        de-populating it from the tile.
+        """
+        world = self.world
+
+        gathers = []
+        for agent in world.get_random_order_agents():
+
+            if self.name not in agent.action:
+                return
+            action = agent.get_component_action(self.name)
+
+            r, c = [int(x) for x in agent.loc]
+
+            if action == 0:  # NO-OP!
+                new_r, new_c = r, c
+
+            elif action <= 4:
+                if action == 1:  # Left
+                    new_r, new_c = r, c - 1
+                elif action == 2:  # Right
+                    new_r, new_c = r, c + 1
+                elif action == 3:  # Up
+                    new_r, new_c = r - 1, c
+                else:  # action == 4, # Down
+                    new_r, new_c = r + 1, c
+
+                # Attempt to move the agent (if the new coordinates aren't accessible,
+                # nothing will happen)
+            
