@@ -150,4 +150,37 @@ class Gather(BaseComponent):
                         )
                     )
 
-        self.gathers.ap
+        self.gathers.append(gathers)
+
+    def generate_observations(self):
+        """
+        See base_component.py for detailed description.
+
+        Here, agents observe their collection skill. The planner does not observe
+        anything from this component.
+        """
+        return {
+            str(agent.idx): {"bonus_gather_prob": agent.state["bonus_gather_prob"]}
+            for agent in self.world.agents
+        }
+
+    def generate_masks(self, completions=0):
+        """
+        See base_component.py for detailed description.
+
+        Prevent moving to adjacent tiles that are already occupied (or outside the
+        boundaries of the world)
+        """
+        world = self.world
+
+        coords = np.array([agent.loc for agent in world.agents])[:, :, None]
+        ris = coords[:, 0] + self._roff + 1
+        cis = coords[:, 1] + self._coff + 1
+
+        occ = np.pad(world.maps.unoccupied, ((1, 1), (1, 1)))
+        acc = np.pad(world.maps.accessibility, ((0, 0), (1, 1), (1, 1)))
+        mask_array = np.logical_and(occ[ris, cis], acc[self._aidx, ris, cis]).astype(
+            np.float32
+        )
+
+        masks = {agent.idx: mask_array[i] fo
