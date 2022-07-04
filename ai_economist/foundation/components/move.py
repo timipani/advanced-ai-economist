@@ -124,4 +124,30 @@ class Gather(BaseComponent):
 
                 # Attempt to move the agent (if the new coordinates aren't accessible,
                 # nothing will happen)
-            
+                new_r, new_c = world.set_agent_loc(agent, new_r, new_c)
+
+                # If the agent did move, incur the labor cost of moving
+                if (new_r != r) or (new_c != c):
+                    agent.state["endogenous"]["Labor"] += self.move_labor
+
+            else:
+                raise ValueError
+
+            for resource, health in world.location_resources(new_r, new_c).items():
+                if health >= 1:
+                    n_gathered = 1 + (rand() < agent.state["bonus_gather_prob"])
+                    agent.state["inventory"][resource] += n_gathered
+                    world.consume_resource(resource, new_r, new_c)
+                    # Incur the labor cost of collecting a resource
+                    agent.state["endogenous"]["Labor"] += self.collect_labor
+                    # Log the gather
+                    gathers.append(
+                        dict(
+                            agent=agent.idx,
+                            resource=resource,
+                            n=n_gathered,
+                            loc=[new_r, new_c],
+                        )
+                    )
+
+        self.gathers.ap
