@@ -183,4 +183,37 @@ class Gather(BaseComponent):
             np.float32
         )
 
-        masks = {agent.idx: mask_array[i] fo
+        masks = {agent.idx: mask_array[i] for i, agent in enumerate(world.agents)}
+
+        return masks
+
+    # For non-required customization
+    # ------------------------------
+
+    def additional_reset_steps(self):
+        """
+        See base_component.py for detailed description.
+
+        Re-sample agents' collection skills.
+        """
+        for agent in self.world.agents:
+            if self.skill_dist == "none":
+                bonus_rate = 0.0
+            elif self.skill_dist == "pareto":
+                bonus_rate = np.minimum(2, np.random.pareto(3)) / 2
+            elif self.skill_dist == "lognormal":
+                bonus_rate = np.minimum(2, np.random.lognormal(-2.022, 0.938)) / 2
+            else:
+                raise NotImplementedError
+            agent.state["bonus_gather_prob"] = float(bonus_rate)
+
+        self.gathers = []
+
+    def get_dense_log(self):
+        """
+        Log resource collections.
+
+        Returns:
+            gathers (list): A list of gather events. Each entry corresponds to a single
+                timestep and contains a description of any resource gathers that
+                occurred on that 
