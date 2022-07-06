@@ -216,4 +216,7 @@ class Gather(BaseComponent):
         Returns:
             gathers (list): A list of gather events. Each entry corresponds to a single
                 timestep and contains a description of any resource gathers that
-                occurred on that 
+                occurred on that timestep.
+
+        """
+        return self.gathers
