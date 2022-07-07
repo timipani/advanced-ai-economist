@@ -1120,3 +1120,84 @@ class PeriodicBracketTax(BaseComponent):
             float(agent.total_endowment("Coin")) for agent in self.world.agents
         ]
         self.last_income = [0 for _ in range(self.n_agents)]
+        self.last_marginal_rate = [0 for _ in range(self.n_agents)]
+        self.last_effective_tax_rate = [0 for _ in range(self.n_agents)]
+
+        self._curr_rates_obs = np.array(self.curr_marginal_rates)
+        self._last_income_obs = np.array(self.last_income) / self.period
+        self._last_income_obs_sorted = self._last_income_obs[
+            np.argsort(self._last_income_obs)
+        ]
+
+        self.taxes = []
+        self.total_collected_taxes = 0
+        self.all_effective_tax_rates = []
+        self._schedules = {"{:03d}".format(int(r)): [] for r in self.bracket_cutoffs}
+        self._occupancy = {"{:03d}".format(int(r)): 0 for r in self.bracket_cutoffs}
+        self._planner_masks = None
+
+        if self.tax_model == "saez":
+            self.curr_bracket_tax_rates = np.array(self.running_avg_tax_rates)
+
+    def get_metrics(self):
+        """
+        See base_component.py for detailed description.
+
+        Return metrics related to bracket rates, bracket occupancy, and tax collection.
+        """
+        out = dict()
+
+        n_observed_incomes = np.maximum(1, np.sum(list(self._occupancy.values())))
+        for c in self.bracket_cutoffs:
+            k = "{:03d}".format(int(c))
+            out["avg_bracket_rate/{}".format(k)] = np.mean(self._schedules[k])
+            out["bracket_occupancy/{}".format(k)] = (
+                self._occupancy[k] / n_observed_incomes
+            )
+
+        if not self.disable_taxes:
+            out["avg_effective_tax_rate"] = np.mean(self.all_effective_tax_rates)
+            out["total_collected_taxes"] = float(self.total_collected_taxes)
+
+            # Indices of richest and poorest agents.
+            agent_coin_endows = np.array(
+                [agent.total_endowment("Coin") for agent in self.world.agents]
+            )
+            idx_poor = np.argmin(agent_coin_endows)
+            idx_rich = np.argmax(agent_coin_endows)
+
+            tax_days = self.taxes[(self.period - 1) :: self.period]
+            for i, tag in zip([idx_poor, idx_rich], ["poorest", "richest"]):
+                total_income = np.maximum(
+                    0, [tax_day[str(i)]["income"] for tax_day in tax_days]
+                ).sum()
+                total_tax_paid = np.sum(
+                    [tax_day[str(i)]["tax_paid"] for tax_day in tax_days]
+                )
+                # Report the overall tax rate over the episode
+                # for the richest and poorest agents.
+                out["avg_tax_rate/{}".format(tag)] = total_tax_paid / np.maximum(
+                    0.001, total_income
+                )
+
+            if self.tax_model == "saez":
+                # Include the running estimate of elasticity.
+                out["saez/estimated_elasticity"] = self.elas_tm1
+
+        return out
+
+    def get_dense_log(self):
+        """
+        Log taxes.
+
+        Returns:
+            taxes (list): A list of tax collections. Each entry corresponds to a single
+                timestep. Entries are empty except for timesteps where a tax period
+                ended and taxes were collected. For those timesteps, each entry
+                contains the tax schedule, each agent's reported income, tax paid,
+                and redistribution received.
+                Returns None if taxes are disabled.
+        """
+        if self.disable_taxes:
+            return None
+        return self.taxes
