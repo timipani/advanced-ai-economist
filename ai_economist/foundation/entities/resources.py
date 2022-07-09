@@ -41,4 +41,24 @@ resource_registry = Registry(Resource)
 class Wood(Resource):
     """Wood resource. collectible."""
 
-    n
+    name = "Wood"
+    color = np.array([107, 143, 113]) / 255.0
+    collectible = True
+
+
+@resource_registry.add
+class Stone(Resource):
+    """Stone resource. collectible."""
+
+    name = "Stone"
+    color = np.array([241, 233, 219]) / 255.0
+    collectible = True
+
+
+@resource_registry.add
+class Coin(Resource):
+    """Coin resource. Included in all environments by default. Not collectible."""
+
+    name = "Coin"
+    color = np.array([229, 211, 82]) / 255.0
+    collectible = False
