@@ -67,4 +67,20 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         pop_between_age_18_65 (float): Fraction of the population between ages 18-65.
             This is the subset of the population whose employment/unemployment affects
             economic productivity.
-    
+            Range: 0 <= pop_between_age_18_65 <= 1.
+        infection_too_sick_to_work_rate (float): Fraction of people infected with
+            COVID-19. Infected people don't work.
+            Range: 0 <= infection_too_sick_to_work_rate <= 1
+        risk_free_interest_rate (float): Percentage of interest paid by the federal
+            government to borrow money from the federal reserve for COVID-19 relief
+            (direct payments). Higher interest rates mean that direct payments
+            have a larger cost on the federal government's economic index.
+            Range: 0 <= risk_free_interest_rate
+        economic_reward_crra_eta (float): CRRA eta parameter for modeling the economic
+            reward non-linearity.
+            A useful reference: https://en.wikipedia.org/wiki/Isoelastic_utility
+            Range: 0 <= economic_reward_crra_eta
+        health_priority_scaling_agents (float): A factor indicating how much more the
+            states prioritize health (roughly speaking, loss of lives due to
+            opening up more) over the economy (roughly speaking, a loss in GDP
+            due to shutting down re
