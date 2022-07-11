@@ -50,4 +50,21 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
 
     Args:
         use_real_world_data (bool): Replay what happened in the real world.
-            Real-world data comprises SIR (susceptible/
+            Real-world data comprises SIR (susceptible/infected/recovered),
+            unemployment, government policy, and vaccination numbers.
+            This setting also sets use_real_world_policies=True.
+        use_real_world_policies (bool): Run the environment with real-world policies
+            (stringency levels and subsidies). With this setting and
+            use_real_world_data=False, SIR and economy dynamics are still
+            driven by fitted models.
+        path_to_data_and_fitted_params (dirpath): Full path to the directory containing
+            the data, fitted parameters and model constants. This defaults to
+            "ai_economist/datasets/covid19_datasets/data_and_fitted_params".
+            For details on obtaining these parameters, please see the notebook
+            "ai-economist-foundation/ai_economist/datasets/covid19_datasets/
+            gather_real_world_data_and_fit_parameters.ipynb".
+        start_date (string): Date (YYYY-MM-DD) to start the simulation.
+        pop_between_age_18_65 (float): Fraction of the population between ages 18-65.
+            This is the subset of the population whose employment/unemployment affects
+            economic productivity.
+    
