@@ -83,4 +83,31 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         health_priority_scaling_agents (float): A factor indicating how much more the
             states prioritize health (roughly speaking, loss of lives due to
             opening up more) over the economy (roughly speaking, a loss in GDP
-            due to shutting down re
+            due to shutting down resulting in more unemployment) compared to the
+            real-world.
+            For example, a value of 1 corresponds to the real-world, while
+            a value of 2 means that states cared twice as much about public health
+            (preventing deaths), while a value of 0.5 means that states cared twice
+            as much about the economy (preventing GDP drops).
+            Range: 0 <= health_priority_scaling_agents
+        health_priority_scaling_planner (float): same as above,
+            but for the federal government.
+            Range: 0 <= health_priority_scaling_planner
+    """
+
+    def __init__(
+        self,
+        *base_env_args,
+        use_real_world_data=False,
+        use_real_world_policies=False,
+        path_to_data_and_fitted_params="",
+        start_date="2020-03-22",
+        pop_between_age_18_65=0.6,
+        infection_too_sick_to_work_rate=0.1,
+        risk_free_interest_rate=0.03,
+        economic_reward_crra_eta=2,
+        health_priority_scaling_agents=1,
+        health_priority_scaling_planner=1,
+        reward_normalization_factor=1,
+        **base_env_kwargs,
+  
