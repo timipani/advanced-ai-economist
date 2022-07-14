@@ -110,4 +110,30 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         health_priority_scaling_planner=1,
         reward_normalization_factor=1,
         **base_env_kwargs,
-  
+    ):
+        verify_activation_code()
+
+        # Used for datatype checks
+        self.np_float_dtype = np.float32
+        self.np_int_dtype = np.int32
+
+        # Flag to use real-world data or the fitted models instead
+        self.use_real_world_data = use_real_world_data
+        # Flag to use real-world policies (actions) or the supplied actions instead
+        self.use_real_world_policies = use_real_world_policies
+
+        # If we use real-world data, we also want to use the real-world policies
+        if self.use_real_world_data:
+            print(
+                "Using real-world data to initialize as well as to "
+                "step through the env."
+            )
+            # Note: under this setting, the real_world policies are also used.
+            assert self.use_real_world_policies, (
+                "Since the env. config. 'use_real_world_data' is True, please also "
+                "set 'use_real_world_policies' to True."
+            )
+        else:
+            print(
+                "Using the real-world data to only initialize the env, "
+                "and using
