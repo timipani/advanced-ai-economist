@@ -136,4 +136,33 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         else:
             print(
                 "Using the real-world data to only initialize the env, "
-                "and using
+                "and using the fitted models to step through the env."
+            )
+
+        # Load real-world date
+        if path_to_data_and_fitted_params == "":
+            current_dir = os.path.dirname(__file__)
+            self.path_to_data_and_fitted_params = os.path.join(
+                current_dir, "../../../datasets/covid19_datasets/data_and_fitted_params"
+            )
+        else:
+            self.path_to_data_and_fitted_params = path_to_data_and_fitted_params
+
+        print(
+            "Loading real-world data from {}".format(
+                self.path_to_data_and_fitted_params
+            )
+        )
+        real_world_data_npz = np.load(
+            os.path.join(self.path_to_data_and_fitted_params, "real_world_data.npz")
+        )
+        self._real_world_data = {}
+        for key in list(real_world_data_npz):
+            self._real_world_data[key] = real_world_data_npz[key]
+
+        # Load fitted parameters
+        print(
+            "Loading fit parameters from {}".format(self.path_to_data_and_fitted_params)
+        )
+        self.load_model_constants(self.path_to_data_and_fitted_params)
+        
