@@ -165,4 +165,29 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             "Loading fit parameters from {}".format(self.path_to_data_and_fitted_params)
         )
         self.load_model_constants(self.path_to_data_and_fitted_params)
-        
+        self.load_fitted_params(self.path_to_data_and_fitted_params)
+
+        try:
+            self.start_date = datetime.strptime(start_date, self.date_format)
+        except ValueError:
+            print(f"Incorrect data format, should be {self.date_format}")
+
+        # Start date should be beyond the date for which data is available
+        assert self.start_date >= self.policy_start_date
+
+        # Compute a start date index based on policy start date
+        self.start_date_index = (self.start_date - self.policy_start_date).days
+        assert 0 <= self.start_date_index < len(self._real_world_data["policy"])
+
+        # For date logging (This will be overwritten in additional_reset_steps;
+        # see below)
+        self.current_date = None
+
+        # When using real-world policy, limit the episode length
+        # to the length of the available policy.
+        if self.use_real_world_policies:
+            real_world_policy_length = (
+                len(self._real_world_data["policy"]) - self.start_date_index
+            )
+            print("Using real-world policies, ignoring external action inputs.")
+    
