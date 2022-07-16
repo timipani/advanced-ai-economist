@@ -190,4 +190,26 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                 len(self._real_world_data["policy"]) - self.start_date_index
             )
             print("Using real-world policies, ignoring external action inputs.")
-    
+            assert base_env_kwargs["episode_length"] <= real_world_policy_length, (
+                f"The real-world policies are only available for "
+                f"{real_world_policy_length} timesteps; so the 'episode_length' "
+                f"in the environment configuration can only be at most "
+                f"{real_world_policy_length}"
+            )
+        else:
+            print("Using external action inputs.")
+
+        # US states and populations
+        self.num_us_states = len(self.us_state_population)
+
+        assert (
+            base_env_kwargs["n_agents"] == self.num_us_states
+        ), "n_agents should be set to the number of US states, i.e., {}.".format(
+            self.num_us_states
+        )
+        # Note: For a faster environment step time, we collate all the individual agents
+        # into a single agent index "a" and we flatten the component action masks too.
+        assert base_env_kwargs[
+            "collate_agent_step_and_reset_data"
+        ], "The env. config 'collate_agent_step_and_reset_data' should be set to True."
+        super().__init__(*base_env_args, **bas
