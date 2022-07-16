@@ -212,4 +212,27 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         assert base_env_kwargs[
             "collate_agent_step_and_reset_data"
         ], "The env. config 'collate_agent_step_and_reset_data' should be set to True."
-        super().__init__(*base_env_args, **bas
+        super().__init__(*base_env_args, **base_env_kwargs)
+
+        # Add attributes to self.world for use in components
+        self.world.us_state_population = self.us_state_population
+        self.world.us_population = self.us_population
+        self.world.start_date = self.start_date
+        self.world.n_stringency_levels = self.num_stringency_levels
+        self.world.use_real_world_policies = self.use_real_world_policies
+        if self.use_real_world_policies:
+            # Agent open/close stringency levels
+            self.world.real_world_stringency_policy = self._real_world_data["policy"][
+                self.start_date_index :
+            ]
+            # Planner subsidy levels
+            self.world.real_world_subsidy = self._real_world_data["subsidy"][
+                self.start_date_index :
+            ]
+
+        # Policy --> Unemployment
+        #   For accurately modeling the state-wise unemployment, we convolve
+        #   the current stringency policy with a family of exponential filters
+        #   with separate means (lambdas).
+        # This code sets up things we will use in `unemployment_step()`,
+        #   which includes a det
