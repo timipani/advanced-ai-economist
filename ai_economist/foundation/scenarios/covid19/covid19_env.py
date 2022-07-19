@@ -235,4 +235,29 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         #   the current stringency policy with a family of exponential filters
         #   with separate means (lambdas).
         # This code sets up things we will use in `unemployment_step()`,
-        #   which includes a det
+        #   which includes a detailed breakdown of how the unemployment model is
+        #   implemented.
+        self.stringency_level_history = None
+        # Each filter captures a temporally extended response to a stringency change.
+        self.num_filters = len(self.conv_lambdas)
+        self.f_ts = np.tile(
+            np.flip(np.arange(self.filter_len), (0,))[None, None],
+            (1, self.num_filters, 1),
+        ).astype(self.np_float_dtype)
+        self.unemp_conv_filters = np.exp(-self.f_ts / self.conv_lambdas[None, :, None])
+        # Each state weights these filters differently.
+        self.repeated_conv_weights = np.repeat(
+            self.grouped_convolutional_filter_weights.reshape(
+                self.num_us_states, self.num_filters
+            )[:, :, np.newaxis],
+            self.filter_len,
+            axis=-1,
+        )
+
+        # For manually modulating SIR/Unemployment parameters
+        self._beta_intercepts_modulation = 1
+        self._beta_slopes_modulation = 1
+        self._unemployment_modulation = 1
+
+        # Economy-related
+        # Interest rate for borrowing money from the fed
