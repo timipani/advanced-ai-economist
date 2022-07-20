@@ -260,4 +260,28 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         self._unemployment_modulation = 1
 
         # Economy-related
-        # Interest rate for borrowing money from the fed
+        # Interest rate for borrowing money from the federal reserve
+        self.risk_free_interest_rate = self.np_float_dtype(risk_free_interest_rate)
+
+        # Compute each worker's daily productivity when at work (to match 2019 GDP)
+        # We assume the open/close stringency policy level was always at it's lowest
+        # value (i.e., 1) before the pandemic started.
+        num_unemployed_at_stringency_level_1 = self.unemployment_step(
+            np.ones(self.num_us_states)
+        )
+        workforce = (
+            self.us_population * pop_between_age_18_65
+            - np.sum(num_unemployed_at_stringency_level_1)
+        ).astype(self.np_int_dtype)
+        workers_per_capita = (workforce / self.us_population).astype(
+            self.np_float_dtype
+        )
+        gdp_per_worker = (self.gdp_per_capita / workers_per_capita).astype(
+            self.np_float_dtype
+        )
+        self.num_days_in_an_year = 365
+        self.daily_production_per_worker = (
+            gdp_per_worker / self.num_days_in_an_year
+        ).astype(self.np_float_dtype)
+
+        self.infection_too_sick_to_work_rate = self.np_float_d
