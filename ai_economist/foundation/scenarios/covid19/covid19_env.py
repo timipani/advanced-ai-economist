@@ -284,4 +284,28 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             gdp_per_worker / self.num_days_in_an_year
         ).astype(self.np_float_dtype)
 
-        self.infection_too_sick_to_work_rate = self.np_float_d
+        self.infection_too_sick_to_work_rate = self.np_float_dtype(
+            infection_too_sick_to_work_rate
+        )
+        assert 0 <= self.infection_too_sick_to_work_rate <= 1
+
+        self.pop_between_age_18_65 = self.np_float_dtype(pop_between_age_18_65)
+        assert 0 <= self.pop_between_age_18_65 <= 1
+
+        # Compute max possible productivity values (used for agent reward normalization)
+        max_productivity_t = self.economy_step(
+            self.us_state_population,
+            np.zeros((self.num_us_states), dtype=self.np_int_dtype),
+            np.zeros((self.num_us_states), dtype=self.np_int_dtype),
+            num_unemployed_at_stringency_level_1,
+            infection_too_sick_to_work_rate=self.infection_too_sick_to_work_rate,
+            population_between_age_18_65=self.pop_between_age_18_65,
+        )
+        self.maximum_productivity_t = max_productivity_t
+
+        # Economic reward non-linearity
+        self.economic_reward_crra_eta = self.np_float_dtype(economic_reward_crra_eta)
+        assert 0.0 <= self.economic_reward_crra_eta < 20.0
+
+        # Health indices are normalized by maximum annual GDP
+        self.agents_health_norm = self.max
