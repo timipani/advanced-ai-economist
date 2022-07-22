@@ -308,4 +308,30 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         assert 0.0 <= self.economic_reward_crra_eta < 20.0
 
         # Health indices are normalized by maximum annual GDP
-        self.agents_health_norm = self.max
+        self.agents_health_norm = self.maximum_productivity_t * self.num_days_in_an_year
+        self.planner_health_norm = np.sum(self.agents_health_norm)
+
+        # Economic indices are normalized by maximum annual GDP
+        self.agents_economic_norm = (
+            self.maximum_productivity_t * self.num_days_in_an_year
+        )
+        self.planner_economic_norm = np.sum(self.agents_economic_norm)
+
+        def scale_health_over_economic_index(health_priority_scaling, alphas):
+            """
+            Given starting alpha(s), compute new alphas so that the
+            resulting alpha:1-alpha ratio is scaled by health_weightage
+            """
+            z = alphas / (1 - alphas)  # alphas = z / (1 + z)
+            scaled_z = health_priority_scaling * z
+            new_alphas = scaled_z / (1 + scaled_z)
+            return new_alphas
+
+        # Agents' health and economic index weightages
+        # fmt: off
+        self.weightage_on_marginal_agent_health_index = \
+            scale_health_over_economic_index(
+                health_priority_scaling_agents,
+                self.inferred_weightage_on_agent_health_index,
+            )
+        # fmt: on
