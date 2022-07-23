@@ -335,3 +335,30 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                 self.inferred_weightage_on_agent_health_index,
             )
         # fmt: on
+        assert (
+            (self.weightage_on_marginal_agent_health_index >= 0)
+            & (self.weightage_on_marginal_agent_health_index <= 1)
+        ).all()
+        self.weightage_on_marginal_agent_economic_index = (
+            1 - self.weightage_on_marginal_agent_health_index
+        )
+
+        # Planner's health and economic index weightages
+        # fmt: off
+        self.weightage_on_marginal_planner_health_index = \
+            scale_health_over_economic_index(
+                health_priority_scaling_planner,
+                self.inferred_weightage_on_planner_health_index,
+            )
+        # fmt: on
+        assert 0 <= self.weightage_on_marginal_planner_health_index <= 1
+        self.weightage_on_marginal_planner_economic_index = (
+            1 - self.weightage_on_marginal_planner_health_index
+        )
+
+        # Normalization factor for the reward (often useful for RL training)
+        self.reward_normalization_factor = reward_normalization_factor
+
+        # CUDA-related attributes (for GPU simulations)
+        # Note: these will be set / overwritten via the env_wrapper
+      
