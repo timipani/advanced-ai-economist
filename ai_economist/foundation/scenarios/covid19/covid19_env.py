@@ -361,4 +361,38 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
 
         # CUDA-related attributes (for GPU simulations)
         # Note: these will be set / overwritten via the env_wrapper
-      
+        # use_cuda will be set to True (by the env_wrapper), if needed
+        # to be simulated on the GPU
+        self.use_cuda = False
+        self.cuda_data_manager = None
+        self.cuda_function_manager = None
+        self.cuda_step = lambda *args, **kwargs: None
+        self.cuda_compute_reward = lambda *args, **kwargs: None
+
+        # Adding use_cuda to self.world for use in components
+        self.world.use_cuda = self.use_cuda
+        self.world.cuda_data_manager = self.cuda_data_manager
+        self.world.cuda_function_manager = self.cuda_function_manager
+
+    name = "CovidAndEconomySimulation"
+    agent_subclasses = ["BasicMobileAgent", "BasicPlanner"]
+
+    required_entities = []
+
+    def reset_starting_layout(self):
+        pass
+
+    def reset_agent_states(self):
+        self.world.clear_agent_locs()
+
+    def get_data_dictionary(self):
+        """
+        Create a dictionary of data to push to the GPU (device).
+        """
+        data_dict = DataFeed()
+        # Global States
+        data_dict.add_data(
+            name="susceptible",
+            data=self.world.global_state["Susceptible"],
+            save_copy_and_apply_at_reset=True,
+    
