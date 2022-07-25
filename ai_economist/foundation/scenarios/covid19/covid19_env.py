@@ -395,4 +395,38 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             name="susceptible",
             data=self.world.global_state["Susceptible"],
             save_copy_and_apply_at_reset=True,
-    
+        )
+        data_dict.add_data(
+            name="infected",
+            data=self.world.global_state["Infected"],
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="recovered",
+            data=self.world.global_state["Recovered"],
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="deaths",
+            data=self.world.global_state["Deaths"],
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="unemployed",
+            data=self.world.global_state["Unemployed"],
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="vaccinated",
+            data=self.world.global_state["Vaccinated"],
+            save_copy_and_apply_at_reset=True,
+        )
+        # Actions
+        data_dict.add_data(
+            name="stringency_level",
+            data=self.world.global_state["Stringency Level"].astype(self.np_int_dtype),
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="subsidy_level",
+            data=self.worl
