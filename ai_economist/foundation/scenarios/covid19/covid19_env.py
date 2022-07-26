@@ -429,4 +429,35 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         )
         data_dict.add_data(
             name="subsidy_level",
-            data=self.worl
+            data=self.world.global_state["Subsidy Level"].astype(self.np_int_dtype),
+            save_copy_and_apply_at_reset=True,
+        )
+        # Economy-related
+        data_dict.add_data(
+            name="subsidy",
+            data=self.world.global_state["Subsidy"],
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="postsubsidy_productivity",
+            data=self.world.global_state["Postsubsidy Productivity"],
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="productivity",
+            data=np.zeros_like(
+                self.world.global_state["Susceptible"], dtype=self.np_float_dtype
+            ),
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="incapacitated",
+            data=np.zeros((self.num_us_states), dtype=self.np_float_dtype),
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="cant_work",
+            data=np.zeros((self.num_us_states), dtype=self.np_float_dtype),
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict
