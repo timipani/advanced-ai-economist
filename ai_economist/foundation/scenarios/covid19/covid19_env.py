@@ -460,4 +460,36 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             data=np.zeros((self.num_us_states), dtype=self.np_float_dtype),
             save_copy_and_apply_at_reset=True,
         )
-        data_dict
+        data_dict.add_data(
+            name="num_people_that_can_work",
+            data=np.zeros((self.num_us_states), dtype=self.np_float_dtype),
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="us_state_population",
+            data=self.us_state_population,
+        )
+        data_dict.add_data(
+            name="infection_too_sick_to_work_rate",
+            data=self.infection_too_sick_to_work_rate,
+        )
+        data_dict.add_data(
+            name="population_between_age_18_65",
+            data=self.pop_between_age_18_65,
+        )
+        data_dict.add_data(
+            name="daily_production_per_worker",
+            data=self.daily_production_per_worker,
+        )
+        data_dict.add_data(
+            name="maximum_productivity",
+            data=self.maximum_productivity_t,
+        )
+        # SIR-related
+        data_dict.add_data(
+            name="real_world_stringency_policy_history",
+            data=(
+                self._real_world_data["policy"][
+                    self.start_date_index - self.beta_delay + 1 : self.start_date_index,
+                    :,
+         
