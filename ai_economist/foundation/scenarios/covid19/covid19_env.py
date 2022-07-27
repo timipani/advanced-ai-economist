@@ -492,4 +492,44 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                 self._real_world_data["policy"][
                     self.start_date_index - self.beta_delay + 1 : self.start_date_index,
                     :,
-         
+                ]
+            ).astype(self.np_int_dtype),
+        )
+        data_dict.add_data(
+            name="beta_delay",
+            data=self.beta_delay,
+        )
+        data_dict.add_data(
+            name="beta_slopes",
+            data=self.beta_slopes,
+        )
+        data_dict.add_data(
+            name="beta_intercepts",
+            data=self.beta_intercepts,
+        )
+        data_dict.add_data(
+            name="beta",
+            data=np.zeros((self.num_us_states), dtype=self.np_float_dtype),
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="gamma",
+            data=self.gamma,
+        )
+        data_dict.add_data(
+            name="death_rate",
+            data=self.death_rate,
+        )
+        # Unemployment fit parameters
+        data_dict.add_data(
+            name="filter_len",
+            data=self.filter_len,
+        )
+        data_dict.add_data(
+            name="num_filters",
+            data=self.num_filters,
+        )
+        data_dict.add_data(
+            name="delta_stringency_level",
+            data=(
+                self.stringenc
