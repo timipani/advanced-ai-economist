@@ -563,4 +563,33 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         )
         data_dict.add_data(
             name="max_marginal_agent_health_index",
-            data=self.max_marginal_ag
+            data=self.max_marginal_agent_health_index,
+        )
+        data_dict.add_data(
+            name="min_marginal_agent_economic_index",
+            data=self.min_marginal_agent_economic_index,
+        )
+        data_dict.add_data(
+            name="max_marginal_agent_economic_index",
+            data=self.max_marginal_agent_economic_index,
+        )
+        data_dict.add_data(
+            name="min_marginal_planner_health_index",
+            data=self.min_marginal_planner_health_index,
+        )
+        data_dict.add_data(
+            name="max_marginal_planner_health_index",
+            data=self.max_marginal_planner_health_index,
+        )
+        data_dict.add_data(
+            name="min_marginal_planner_economic_index",
+            data=self.min_marginal_planner_economic_index,
+        )
+        data_dict.add_data(
+            name="max_marginal_planner_economic_index",
+            data=self.max_marginal_planner_economic_index,
+        )
+        data_dict.add_data(
+            name="weightage_on_marginal_agent_health_index",
+            data=self.weightage_on_marginal_agent_health_index,
+       
