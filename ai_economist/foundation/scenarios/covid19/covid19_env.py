@@ -532,4 +532,35 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         data_dict.add_data(
             name="delta_stringency_level",
             data=(
-                self.stringenc
+                self.stringency_level_history[1:] - self.stringency_level_history[:-1]
+            ).astype(self.np_int_dtype),
+            save_copy_and_apply_at_reset=True,
+        )
+        data_dict.add_data(
+            name="grouped_convolutional_filter_weights",
+            data=self.grouped_convolutional_filter_weights,
+        )
+        data_dict.add_data(
+            name="unemp_conv_filters",
+            data=self.unemp_conv_filters,
+        )
+        data_dict.add_data(
+            name="unemployment_bias",
+            data=self.unemployment_bias,
+        )
+        data_dict.add_data(
+            name="signal",
+            data=np.zeros(
+                (self.n_agents, self.num_filters, self.filter_len),
+                dtype=self.np_float_dtype,
+            ),
+            save_copy_and_apply_at_reset=True,
+        )
+        # Reward-related
+        data_dict.add_data(
+            name="min_marginal_agent_health_index",
+            data=self.min_marginal_agent_health_index,
+        )
+        data_dict.add_data(
+            name="max_marginal_agent_health_index",
+            data=self.max_marginal_ag
