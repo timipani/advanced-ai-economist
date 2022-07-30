@@ -625,4 +625,36 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             name="agents_health_norm",
             data=self.agents_health_norm,
         )
-        data_dict.
+        data_dict.add_data(
+            name="agents_economic_norm",
+            data=self.agents_economic_norm,
+        )
+        data_dict.add_data(
+            name="planner_health_norm",
+            data=self.planner_health_norm,
+        )
+        data_dict.add_data(
+            name="planner_economic_norm",
+            data=self.planner_economic_norm,
+        )
+
+        return data_dict
+
+    def get_tensor_dictionary(self):
+        """
+        Create a dictionary of (Pytorch-accessible) data to push to the GPU (device).
+        """
+        tensor_dict = DataFeed()
+        return tensor_dict
+
+    def scenario_step(self):
+        """
+        Update the state of the USA based on the Covid-19 and Economy dynamics.
+        This internally implements three steps
+        - sir_step() - updates the susceptible, infected, recovered, deaths
+        and vaccination numbers based on the SIR equations
+        - unemployment_step() - uses the unemployment model to updates the unemployment
+         based on the stringency levels
+        - economy_step - computes the current producitivity numbers for the agents
+        """
+        if
