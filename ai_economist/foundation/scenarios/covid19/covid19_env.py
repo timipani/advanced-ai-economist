@@ -592,4 +592,37 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         data_dict.add_data(
             name="weightage_on_marginal_agent_health_index",
             data=self.weightage_on_marginal_agent_health_index,
-       
+        )
+        data_dict.add_data(
+            name="weightage_on_marginal_agent_economic_index",
+            data=self.weightage_on_marginal_agent_economic_index,
+        )
+        data_dict.add_data(
+            name="weightage_on_marginal_planner_health_index",
+            data=self.weightage_on_marginal_planner_health_index,
+        )
+        data_dict.add_data(
+            name="weightage_on_marginal_planner_economic_index",
+            data=self.weightage_on_marginal_planner_economic_index,
+        )
+        data_dict.add_data(
+            name="value_of_life",
+            data=self.value_of_life,
+        )
+        data_dict.add_data(
+            name="economic_reward_crra_eta",
+            data=self.economic_reward_crra_eta,
+        )
+        data_dict.add_data(
+            name="num_days_in_an_year",
+            data=self.num_days_in_an_year,
+        )
+        data_dict.add_data(
+            name="risk_free_interest_rate",
+            data=self.risk_free_interest_rate,
+        )
+        data_dict.add_data(
+            name="agents_health_norm",
+            data=self.agents_health_norm,
+        )
+        data_dict.
