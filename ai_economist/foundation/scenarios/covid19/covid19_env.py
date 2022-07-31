@@ -657,4 +657,22 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
          based on the stringency levels
         - economy_step - computes the current producitivity numbers for the agents
         """
-        if
+        if self.use_cuda:
+            self.cuda_step(
+                self.cuda_data_manager.device_data("susceptible"),
+                self.cuda_data_manager.device_data("infected"),
+                self.cuda_data_manager.device_data("recovered"),
+                self.cuda_data_manager.device_data("deaths"),
+                self.cuda_data_manager.device_data("vaccinated"),
+                self.cuda_data_manager.device_data("unemployed"),
+                self.cuda_data_manager.device_data("subsidy"),
+                self.cuda_data_manager.device_data("productivity"),
+                self.cuda_data_manager.device_data("stringency_level"),
+                self.cuda_data_manager.device_data("num_stringency_levels"),
+                self.cuda_data_manager.device_data("postsubsidy_productivity"),
+                self.cuda_data_manager.device_data("num_vaccines_available_t"),
+                self.cuda_data_manager.device_data(
+                    "real_world_stringency_policy_history"
+                ),
+                self.cuda_data_manager.device_data("beta_delay"),
+                self.cu
