@@ -693,4 +693,25 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                     "grouped_convolutional_filter_weights"
                 ),
                 self.cuda_data_manager.device_data("unemp_conv_filters"),
-   
+                self.cuda_data_manager.device_data("unemployment_bias"),
+                self.cuda_data_manager.device_data("signal"),
+                self.cuda_data_manager.device_data("daily_production_per_worker"),
+                self.cuda_data_manager.device_data("maximum_productivity"),
+                self.cuda_data_manager.device_data(
+                    f"{_OBSERVATIONS}_a_world-agent_state"
+                ),
+                self.cuda_data_manager.device_data(
+                    f"{_OBSERVATIONS}_a_world-agent_postsubsidy_productivity"
+                ),
+                self.cuda_data_manager.device_data(
+                    f"{_OBSERVATIONS}_a_world-lagged_stringency_level"
+                ),
+                self.cuda_data_manager.device_data(f"{_OBSERVATIONS}_a_time"),
+                self.cuda_data_manager.device_data(
+                    f"{_OBSERVATIONS}_p_world-agent_state"
+                ),
+                self.cuda_data_manager.device_data(
+                    f"{_OBSERVATIONS}_p_world-agent_postsubsidy_productivity"
+                ),
+                self.cuda_data_manager.device_data(
+                    f"{_OBSERVATIONS}_p_world-lagged_stringency_
