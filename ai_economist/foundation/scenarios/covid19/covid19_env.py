@@ -675,4 +675,22 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                     "real_world_stringency_policy_history"
                 ),
                 self.cuda_data_manager.device_data("beta_delay"),
-                self.cu
+                self.cuda_data_manager.device_data("beta_slopes"),
+                self.cuda_data_manager.device_data("beta_intercepts"),
+                self.cuda_data_manager.device_data("beta"),
+                self.cuda_data_manager.device_data("gamma"),
+                self.cuda_data_manager.device_data("death_rate"),
+                self.cuda_data_manager.device_data("incapacitated"),
+                self.cuda_data_manager.device_data("cant_work"),
+                self.cuda_data_manager.device_data("num_people_that_can_work"),
+                self.cuda_data_manager.device_data("us_state_population"),
+                self.cuda_data_manager.device_data("infection_too_sick_to_work_rate"),
+                self.cuda_data_manager.device_data("population_between_age_18_65"),
+                self.cuda_data_manager.device_data("filter_len"),
+                self.cuda_data_manager.device_data("num_filters"),
+                self.cuda_data_manager.device_data("delta_stringency_level"),
+                self.cuda_data_manager.device_data(
+                    "grouped_convolutional_filter_weights"
+                ),
+                self.cuda_data_manager.device_data("unemp_conv_filters"),
+   
