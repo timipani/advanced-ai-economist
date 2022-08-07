@@ -714,4 +714,33 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                     f"{_OBSERVATIONS}_p_world-agent_postsubsidy_productivity"
                 ),
                 self.cuda_data_manager.device_data(
-                    f"{_OBSERVATIONS}_p_world-lagged_stringency_
+                    f"{_OBSERVATIONS}_p_world-lagged_stringency_level"
+                ),
+                self.cuda_data_manager.device_data(f"{_OBSERVATIONS}_p_time"),
+                self.cuda_data_manager.device_data("_timestep_"),
+                self.cuda_data_manager.meta_info("n_agents"),
+                self.cuda_data_manager.meta_info("episode_length"),
+                block=self.world.cuda_function_manager.block,
+                grid=self.world.cuda_function_manager.grid,
+            )
+        else:
+            prev_t = self.world.timestep - 1
+            curr_t = self.world.timestep
+
+            self.current_date += timedelta(days=1)
+
+            # SIR
+            # ---
+            if self.use_real_world_data:
+                _S_t = np.maximum(
+                    self._real_world_data["susceptible"][
+                        curr_t + self.start_date_index
+                    ],
+                    0,
+                )
+                _I_t = np.maximum(
+                    self._real_world_data["infected"][curr_t + self.start_date_index],
+                    0,
+                )
+                _R_t = np.maximum(
+                    self._real_world_data["recovered"][curr_t + self.sta
