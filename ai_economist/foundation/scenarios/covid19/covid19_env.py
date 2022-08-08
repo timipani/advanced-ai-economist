@@ -743,4 +743,30 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                     0,
                 )
                 _R_t = np.maximum(
-                    self._real_world_data["recovered"][curr_t + self.sta
+                    self._real_world_data["recovered"][curr_t + self.start_date_index],
+                    0,
+                )
+                _V_t = np.maximum(
+                    self._real_world_data["vaccinated"][curr_t + self.start_date_index],
+                    0,
+                )
+                _D_t = np.maximum(
+                    self._real_world_data["deaths"][curr_t + self.start_date_index],
+                    0,
+                )
+
+            else:  # Use simulation logic
+                if curr_t - self.beta_delay < 0:
+                    if self.start_date_index + curr_t - self.beta_delay < 0:
+                        stringency_level_tmk = np.ones(self.num_us_states)
+                    else:
+                        stringency_level_tmk = self._real_world_data["policy"][
+                            self.start_date_index + curr_t - self.beta_delay, :
+                        ]
+                else:
+                    stringency_level_tmk = self.world.global_state["Stringency Level"][
+                        curr_t - self.beta_delay
+                    ]
+                stringency_level_tmk = stringency_level_tmk.astype(self.np_int_dtype)
+
+                _S_tm1 = self.world.global_stat
