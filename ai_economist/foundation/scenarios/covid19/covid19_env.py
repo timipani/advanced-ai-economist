@@ -769,4 +769,26 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                     ]
                 stringency_level_tmk = stringency_level_tmk.astype(self.np_int_dtype)
 
-                _S_tm1 = self.world.global_stat
+                _S_tm1 = self.world.global_state["Susceptible"][prev_t]
+                _I_tm1 = self.world.global_state["Infected"][prev_t]
+                _R_tm1 = self.world.global_state["Recovered"][prev_t]
+                _V_tm1 = self.world.global_state["Vaccinated"][prev_t]
+
+                # Vaccination
+                # -----------
+                num_vaccines_available_t = np.zeros(
+                    self.n_agents, dtype=self.np_int_dtype
+                )
+                for aidx, agent in enumerate(self.world.agents):
+                    # "Load" the vaccines in the inventory into this vector.
+                    num_vaccines_available_t[aidx] = agent.state["Vaccines Available"]
+                    # Agents always use whatever vaccines they can, so this becomes 0:
+                    agent.state["Total Vaccinated"] += agent.state["Vaccines Available"]
+                    agent.state["Vaccines Available"] = 0
+
+                # SIR step
+                # --------
+                _dS, _dI, _dR, _dV = self.sir_step(
+                    _S_tm1,
+                    _I_tm1,
+                    stringency_leve
