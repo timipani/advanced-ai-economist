@@ -791,4 +791,30 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                 _dS, _dI, _dR, _dV = self.sir_step(
                     _S_tm1,
                     _I_tm1,
-                    stringency_leve
+                    stringency_level_tmk,
+                    num_vaccines_available_t,
+                )
+                _S_t = np.maximum(_S_tm1 + _dS, 0)
+                _I_t = np.maximum(_I_tm1 + _dI, 0)
+                _R_t = np.maximum(_R_tm1 + _dR, 0)
+                _V_t = np.maximum(_V_tm1 + _dV, 0)
+
+                num_recovered_but_not_vaccinated_t = _R_t - _V_t
+                _D_t = self.death_rate * num_recovered_but_not_vaccinated_t
+
+            # Update global state
+            # -------------------
+            self.world.global_state["Susceptible"][curr_t] = _S_t
+            self.world.global_state["Infected"][curr_t] = _I_t
+            self.world.global_state["Recovered"][curr_t] = _R_t
+            self.world.global_state["Deaths"][curr_t] = _D_t
+            self.world.global_state["Vaccinated"][curr_t] = _V_t
+
+            # Unemployment
+            # ------------
+            if self.use_real_world_data:
+                num_unemployed_t = self._real_world_data["unemployed"][
+                    self.start_date_index + curr_t
+                ]
+            else:
+                num_unemployed_t =
