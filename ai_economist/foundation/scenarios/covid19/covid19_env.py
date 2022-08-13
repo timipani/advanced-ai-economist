@@ -817,4 +817,32 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                     self.start_date_index + curr_t
                 ]
             else:
-                num_unemployed_t =
+                num_unemployed_t = self.unemployment_step(
+                    current_stringency_level=self.world.global_state[
+                        "Stringency Level"
+                    ][curr_t]
+                )
+
+            self.world.global_state["Unemployed"][curr_t] = num_unemployed_t
+
+            # Productivity
+            # ------------
+            productivity_t = self.economy_step(
+                self.us_state_population,
+                infected=_I_t,
+                deaths=_D_t,
+                unemployed=num_unemployed_t,
+                infection_too_sick_to_work_rate=self.infection_too_sick_to_work_rate,
+                population_between_age_18_65=self.pop_between_age_18_65,
+            )
+
+            # Subsidies
+            # ---------
+            # Add federal government subsidy to productivity
+            daily_statewise_subsidy_t = self.world.global_state["Subsidy"][curr_t]
+            postsubsidy_productivity_t = productivity_t + daily_statewise_subsidy_t
+            self.world.global_state["Postsubsidy Productivity"][
+                curr_t
+            ] = postsubsidy_productivity_t
+
+          
