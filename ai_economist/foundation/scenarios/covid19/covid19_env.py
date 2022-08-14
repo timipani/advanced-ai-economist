@@ -871,4 +871,29 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                     self.np_int_dtype
                 )
 
-  
+                agent.state["Total Unemployed"] = num_unemployed_t[agent.idx].astype(
+                    self.np_int_dtype
+                )
+                agent.state["New Subsidy Received"] = daily_statewise_subsidy_t[
+                    agent.idx
+                ]
+                agent.state["Postsubsidy Productivity"] = postsubsidy_productivity_t[
+                    agent.idx
+                ]
+                agent.state["Date"] = current_date_string
+
+            # Update planner state
+            # --------------------
+            self.world.planner.state["Total Susceptible"] = np.sum(_S_t).astype(
+                self.np_int_dtype
+            )
+            self.world.planner.state["New Infections"] = (
+                np.sum(_I_t) - self.world.planner.state["Total Infected"]
+            ).astype(self.np_int_dtype)
+            self.world.planner.state["Total Infected"] = np.sum(_I_t).astype(
+                self.np_int_dtype
+            )
+            self.world.planner.state["Total Recovered"] = np.sum(_R_t).astype(
+                self.np_int_dtype
+            )
+            self.world.plan
