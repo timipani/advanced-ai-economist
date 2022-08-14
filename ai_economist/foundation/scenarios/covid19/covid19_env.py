@@ -845,4 +845,30 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                 curr_t
             ] = postsubsidy_productivity_t
 
-          
+            # Update agent state
+            # ------------------
+            current_date_string = datetime.strftime(
+                self.current_date, format=self.date_format
+            )
+            for agent in self.world.agents:
+                agent.state["Total Susceptible"] = _S_t[agent.idx].astype(
+                    self.np_int_dtype
+                )
+                agent.state["New Infections"] = (
+                    _I_t[agent.idx] - agent.state["Total Infected"]
+                ).astype(self.np_int_dtype)
+                agent.state["Total Infected"] = _I_t[agent.idx].astype(
+                    self.np_int_dtype
+                )
+                agent.state["Total Recovered"] = _R_t[agent.idx].astype(
+                    self.np_int_dtype
+                )
+                agent.state["New Deaths"] = _D_t[agent.idx] - agent.state[
+                    "Total Deaths"
+                ].astype(self.np_int_dtype)
+                agent.state["Total Deaths"] = _D_t[agent.idx].astype(self.np_int_dtype)
+                agent.state["Total Vaccinated"] = _V_t[agent.idx].astype(
+                    self.np_int_dtype
+                )
+
+  
