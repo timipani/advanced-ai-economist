@@ -896,4 +896,28 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             self.world.planner.state["Total Recovered"] = np.sum(_R_t).astype(
                 self.np_int_dtype
             )
-            self.world.plan
+            self.world.planner.state["New Deaths"] = (
+                np.sum(_D_t) - self.world.planner.state["Total Deaths"]
+            ).astype(self.np_int_dtype)
+            self.world.planner.state["Total Deaths"] = np.sum(_D_t).astype(
+                self.np_int_dtype
+            )
+            self.world.planner.state["Total Vaccinated"] = np.sum(_V_t).astype(
+                self.np_int_dtype
+            )
+            self.world.planner.state["Total Unemployed"] = np.sum(
+                num_unemployed_t
+            ).astype(self.np_int_dtype)
+            self.world.planner.state["New Subsidy Provided"] = np.sum(
+                daily_statewise_subsidy_t
+            )
+            self.world.planner.state["Postsubsidy Productivity"] = np.sum(
+                postsubsidy_productivity_t
+            )
+            self.world.planner.state["Date"] = current_date_string
+
+    def generate_observations(self):
+        """
+        - Process agent-specific and planner-specific data into an observation.
+        - Observations contain only the relevant features for that actor.
+        :return: a dictionary of observations for each agent 
