@@ -920,4 +920,38 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         """
         - Process agent-specific and planner-specific data into an observation.
         - Observations contain only the relevant features for that actor.
-        :return: a dictionary of observations for each agent 
+        :return: a dictionary of observations for each agent and planner
+        """
+        redux_agent_global_state = None
+        for feature in [
+            "Susceptible",
+            "Infected",
+            "Recovered",
+            "Deaths",
+            "Vaccinated",
+            "Unemployed",
+        ]:
+            if redux_agent_global_state is None:
+                redux_agent_global_state = self.world.global_state[feature][
+                    self.world.timestep
+                ]
+            else:
+                redux_agent_global_state = np.vstack(
+                    (
+                        redux_agent_global_state,
+                        self.world.global_state[feature][self.world.timestep],
+                    )
+                )
+        normalized_redux_agent_state = (
+            redux_agent_global_state / self.us_state_population[None]
+        )
+
+        # Productivity
+        postsubsidy_productivity_t = self.world.global_state[
+            "Postsubsidy Productivity"
+        ][self.world.timestep]
+        normalized_postsubsidy_productivity_t = (
+            postsubsidy_productivity_t / self.maximum_productivity_t
+        )
+
+    
