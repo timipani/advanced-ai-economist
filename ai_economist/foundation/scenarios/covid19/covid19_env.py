@@ -954,4 +954,33 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             postsubsidy_productivity_t / self.maximum_productivity_t
         )
 
-    
+        # Let agents know about the policy about to affect SIR infection-rate beta
+        t_beta = self.world.timestep - self.beta_delay + 1
+        if t_beta < 0:
+            lagged_stringency_level = self._real_world_data["policy"][
+                self.start_date_index + t_beta
+            ]
+        else:
+            lagged_stringency_level = self.world.global_state["Stringency Level"][
+                t_beta
+            ]
+
+        normalized_lagged_stringency_level = (
+            lagged_stringency_level / self.num_stringency_levels
+        )
+
+        # To condition policy on agent id
+        agent_index = np.eye(self.n_agents, dtype=self.np_int_dtype)
+
+        # Observation dict - Agents
+        # -------------------------
+        obs_dict = dict()
+        obs_dict["a"] = {
+            "agent_index": agent_index,
+            "agent_state": normalized_redux_agent_state,
+            "agent_postsubsidy_productivity": normalized_postsubsidy_productivity_t,
+            "lagged_stringency_level": normalized_lagged_stringency_level,
+        }
+
+        # Observation dict - Planner
+        # -----------------
