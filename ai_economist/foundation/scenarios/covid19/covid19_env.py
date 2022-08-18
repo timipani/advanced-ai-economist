@@ -983,4 +983,26 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         }
 
         # Observation dict - Planner
-        # -----------------
+        # --------------------------
+        obs_dict[self.world.planner.idx] = {
+            "agent_state": normalized_redux_agent_state,
+            "agent_postsubsidy_productivity": normalized_postsubsidy_productivity_t,
+            "lagged_stringency_level": normalized_lagged_stringency_level,
+        }
+
+        return obs_dict
+
+    def compute_reward(self):
+        """
+        Compute the social welfare metrics for each agent and the planner.
+        :return: a dictionary of rewards for each agent in the simulation
+        """
+        if self.use_cuda:
+            self.cuda_compute_reward(
+                self.cuda_data_manager.device_data(f"{_REWARDS}_a"),
+                self.cuda_data_manager.device_data(f"{_REWARDS}_p"),
+                self.cuda_data_manager.device_data("num_days_in_an_year"),
+                self.cuda_data_manager.device_data("value_of_life"),
+                self.cuda_data_manager.device_data("risk_free_interest_rate"),
+                self.cuda_data_manager.device_data("economic_reward_crra_eta"),
+                self.cuda_data_manager.device_data("min_marginal_agent_hea
