@@ -1005,4 +1005,23 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                 self.cuda_data_manager.device_data("value_of_life"),
                 self.cuda_data_manager.device_data("risk_free_interest_rate"),
                 self.cuda_data_manager.device_data("economic_reward_crra_eta"),
-                self.cuda_data_manager.device_data("min_marginal_agent_hea
+                self.cuda_data_manager.device_data("min_marginal_agent_health_index"),
+                self.cuda_data_manager.device_data("max_marginal_agent_health_index"),
+                self.cuda_data_manager.device_data("min_marginal_agent_economic_index"),
+                self.cuda_data_manager.device_data("max_marginal_agent_economic_index"),
+                self.cuda_data_manager.device_data("min_marginal_planner_health_index"),
+                self.cuda_data_manager.device_data("max_marginal_planner_health_index"),
+                self.cuda_data_manager.device_data(
+                    "min_marginal_planner_economic_index"
+                ),
+                self.cuda_data_manager.device_data(
+                    "max_marginal_planner_economic_index"
+                ),
+                self.cuda_data_manager.device_data(
+                    "weightage_on_marginal_agent_health_index"
+                ),
+                self.cuda_data_manager.device_data(
+                    "weightage_on_marginal_agent_economic_index"
+                ),
+                self.cuda_data_manager.device_data(
+                    "weightage_on_marginal_planner_health_ind
