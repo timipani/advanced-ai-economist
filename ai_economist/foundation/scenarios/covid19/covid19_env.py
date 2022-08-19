@@ -1024,4 +1024,24 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                     "weightage_on_marginal_agent_economic_index"
                 ),
                 self.cuda_data_manager.device_data(
-                    "weightage_on_marginal_planner_health_ind
+                    "weightage_on_marginal_planner_health_index"
+                ),
+                self.cuda_data_manager.device_data(
+                    "weightage_on_marginal_planner_economic_index"
+                ),
+                self.cuda_data_manager.device_data("agents_health_norm"),
+                self.cuda_data_manager.device_data("agents_economic_norm"),
+                self.cuda_data_manager.device_data("planner_health_norm"),
+                self.cuda_data_manager.device_data("planner_economic_norm"),
+                self.cuda_data_manager.device_data("deaths"),
+                self.cuda_data_manager.device_data("subsidy"),
+                self.cuda_data_manager.device_data("postsubsidy_productivity"),
+                self.cuda_data_manager.device_data("_done_"),
+                self.cuda_data_manager.device_data("_timestep_"),
+                self.cuda_data_manager.meta_info("n_agents"),
+                self.cuda_data_manager.meta_info("episode_length"),
+                block=self.world.cuda_function_manager.block,
+                grid=self.world.cuda_function_manager.grid,
+            )
+            return {}  # Return empty dict. Reward arrays are updated in-place
+        rew = {"a": 0, 
