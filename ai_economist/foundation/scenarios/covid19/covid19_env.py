@@ -1044,4 +1044,33 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                 grid=self.world.cuda_function_manager.grid,
             )
             return {}  # Return empty dict. Reward arrays are updated in-place
-        rew = {"a": 0, 
+        rew = {"a": 0, "p": 0}
+
+        def crra_nonlinearity(x, eta):
+            # Reference: https://en.wikipedia.org/wiki/Isoelastic_utility
+            # To be applied to (marginal) economic indices
+            annual_x = self.num_days_in_an_year * x
+            annual_x_clipped = np.clip(annual_x, 0.1, 3)
+            annual_crra = 1 + (annual_x_clipped ** (1 - eta) - 1) / (1 - eta)
+            daily_crra = annual_crra / self.num_days_in_an_year
+            return daily_crra
+
+        def min_max_normalization(x, min_x, max_x):
+            eps = 1e-10
+            return (x - min_x) / (max_x - min_x + eps)
+
+        def get_weighted_average(
+            health_index_weightage,
+            health_index,
+            economic_index_weightage,
+            economic_index,
+        ):
+            return (
+                health_index_weightage * health_index
+                + economic_index_weightage * economic_index
+            ) / (health_index_weightage + economic_index_weightage)
+
+        # Changes this last timestep:
+        marginal_deaths = (
+            self.world.global_state["Deaths"][self.world.timestep]
+            - self.world.global_state["Deaths"][self.w
