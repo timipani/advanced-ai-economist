@@ -1073,4 +1073,32 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         # Changes this last timestep:
         marginal_deaths = (
             self.world.global_state["Deaths"][self.world.timestep]
-            - self.world.global_state["Deaths"][self.w
+            - self.world.global_state["Deaths"][self.world.timestep - 1]
+        )
+
+        subsidy_t = self.world.global_state["Subsidy"][self.world.timestep]
+        postsubsidy_productivity_t = self.world.global_state[
+            "Postsubsidy Productivity"
+        ][self.world.timestep]
+
+        # Health index -- the cost equivalent (annual GDP) of covid deaths
+        # Note: casting deaths to float to prevent overflow issues
+        marginal_agent_health_index = (
+            -marginal_deaths.astype(self.np_float_dtype)
+            * self.value_of_life
+            / self.agents_health_norm
+        ).astype(self.np_float_dtype)
+
+        # Economic index -- fraction of annual GDP achieved
+        # Use a "crra" nonlinearity on the agent economic reward
+        marginal_agent_economic_index = crra_nonlinearity(
+            postsubsidy_productivity_t / self.agents_economic_norm,
+            self.economic_reward_crra_eta,
+        ).astype(self.np_float_dtype)
+
+        # Min-max Normalization
+        marginal_agent_health_index = min_max_normalization(
+            marginal_agent_health_index,
+            self.min_marginal_agent_health_index,
+            self.max_marginal_agent_health_index,
+        ).astype(self.np_flo
