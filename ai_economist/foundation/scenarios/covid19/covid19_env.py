@@ -1101,4 +1101,31 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             marginal_agent_health_index,
             self.min_marginal_agent_health_index,
             self.max_marginal_agent_health_index,
-        ).astype(self.np_flo
+        ).astype(self.np_float_dtype)
+        marginal_agent_economic_index = min_max_normalization(
+            marginal_agent_economic_index,
+            self.min_marginal_agent_economic_index,
+            self.max_marginal_agent_economic_index,
+        ).astype(self.np_float_dtype)
+
+        # Agent Rewards
+        # -------------
+        agent_rewards = get_weighted_average(
+            self.weightage_on_marginal_agent_health_index,
+            marginal_agent_health_index,
+            self.weightage_on_marginal_agent_economic_index,
+            marginal_agent_economic_index,
+        )
+        rew["a"] = agent_rewards / self.reward_normalization_factor
+
+        # Update agent states
+        # -------------------
+        for agent in self.world.agents:
+            agent.state["Health Index"] += marginal_agent_health_index[agent.idx]
+            agent.state["Economic Index"] += marginal_agent_economic_index[agent.idx]
+
+        # National level
+        # --------------
+        # Health index -- the cost equivalent (annual GDP) of covid deaths
+        # Note: casting deaths to float to prevent overflow issues
+        marginal_planner_health
