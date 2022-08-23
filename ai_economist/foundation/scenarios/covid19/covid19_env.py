@@ -1128,4 +1128,32 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         # --------------
         # Health index -- the cost equivalent (annual GDP) of covid deaths
         # Note: casting deaths to float to prevent overflow issues
-        marginal_planner_health
+        marginal_planner_health_index = (
+            -np.sum(marginal_deaths).astype(self.np_float_dtype)
+            * self.value_of_life
+            / self.planner_health_norm
+        )
+
+        # Economic index -- fraction of annual GDP achieved (minus subsidy cost)
+        cost_of_subsidy_t = (1 + self.risk_free_interest_rate) * np.sum(subsidy_t)
+        # Use a "crra" nonlinearity on the planner economic reward
+        marginal_planner_economic_index = crra_nonlinearity(
+            (np.sum(postsubsidy_productivity_t) - cost_of_subsidy_t)
+            / self.planner_economic_norm,
+            self.economic_reward_crra_eta,
+        )
+
+        # Min-max Normalization
+        marginal_planner_health_index = min_max_normalization(
+            marginal_planner_health_index,
+            self.min_marginal_planner_health_index,
+            self.max_marginal_planner_health_index,
+        )
+        marginal_planner_economic_index = min_max_normalization(
+            marginal_planner_economic_index,
+            self.min_marginal_planner_economic_index,
+            self.max_marginal_planner_economic_index,
+        )
+
+        # Update planner states
+        # -----------
