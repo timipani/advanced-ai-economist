@@ -1156,4 +1156,33 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         )
 
         # Update planner states
-        # -----------
+        # -------------------
+        self.world.planner.state["Health Index"] += marginal_planner_health_index
+        self.world.planner.state["Economic Index"] += marginal_planner_economic_index
+
+        # Planner Reward
+        # --------------
+        planner_rewards = get_weighted_average(
+            self.weightage_on_marginal_planner_health_index,
+            marginal_planner_health_index,
+            self.weightage_on_marginal_planner_economic_index,
+            marginal_planner_economic_index,
+        )
+        rew[self.world.planner.idx] = planner_rewards / self.reward_normalization_factor
+
+        return rew
+
+    def additional_reset_steps(self):
+        assert self.world.timestep == 0
+
+        # Reset current date
+        self.current_date = self.start_date
+
+        # SIR numbers at timestep 0
+        susceptible_0 = self._real_world_data["susceptible"][self.start_date_index]
+        infected_0 = self._real_world_data["infected"][self.start_date_index]
+        newly_infected_0 = (
+            infected_0
+            - self._real_world_data["infected"][max(0, self.start_date_index - 1)]
+        )
+        recovered_0 = self._real
