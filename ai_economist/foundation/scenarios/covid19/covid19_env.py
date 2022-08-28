@@ -1185,4 +1185,26 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             infected_0
             - self._real_world_data["infected"][max(0, self.start_date_index - 1)]
         )
-        recovered_0 = self._real
+        recovered_0 = self._real_world_data["recovered"][self.start_date_index]
+        deaths_0 = recovered_0 * self.death_rate
+
+        # Unemployment and vaccinated numbers at timestep 0
+        unemployed_0 = self._real_world_data["unemployed"][self.start_date_index]
+        vaccinated_0 = self._real_world_data["vaccinated"][self.start_date_index]
+
+        # Create a global state dictionary to save episode data
+        self.world.global_state = {}
+        self.set_global_state("Susceptible", susceptible_0, t=self.world.timestep)
+        self.set_global_state("Infected", infected_0, t=self.world.timestep)
+        self.set_global_state("Recovered", recovered_0, t=self.world.timestep)
+        self.set_global_state("Deaths", deaths_0, t=self.world.timestep)
+
+        self.set_global_state("Unemployed", unemployed_0, t=self.world.timestep)
+        self.set_global_state("Vaccinated", vaccinated_0, t=self.world.timestep)
+
+        new_deaths_0 = (
+            deaths_0
+            - self._real_world_data["recovered"][max(0, self.start_date_index - 1)]
+            * self.death_rate
+        )
+
