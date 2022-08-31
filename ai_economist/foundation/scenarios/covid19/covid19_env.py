@@ -1208,3 +1208,28 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             * self.death_rate
         )
 
+        # Reset stringency level history.
+        # Pad with stringency levels of 1 corresponding to states being fully open
+        # (as was the case before the pandemic).
+        self.stringency_level_history = np.pad(
+            self._real_world_data["policy"][: self.start_date_index + 1],
+            [(self.filter_len, 0), (0, 0)],
+            constant_values=1,
+        )[-(self.filter_len + 1) :]
+
+        # Set the stringency level based to the real-world policy
+        self.set_global_state(
+            "Stringency Level",
+            self._real_world_data["policy"][self.start_date_index],
+            t=self.world.timestep,
+        )
+
+        # All US states start with zero subsidy and zero Postsubsidy Productivity
+        self.set_global_state("Subsidy Level", dtype=self.np_float_dtype)
+        self.set_global_state("Subsidy", dtype=self.np_float_dtype)
+        self.set_global_state("Postsubsidy Productivity", dtype=self.np_float_dtype)
+
+        # Set initial agent states
+        # ------------------------
+        current_date_string = datetime.strftime(
+            self.current_date, format=s
