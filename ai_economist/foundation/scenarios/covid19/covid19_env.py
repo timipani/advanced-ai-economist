@@ -1258,4 +1258,24 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
 
         # Planner state fields
         self.world.planner.state["Total Susceptible"] = np.sum(
-            [agent.state["Total
+            [agent.state["Total Susceptible"] for agent in self.world.agents]
+        ).astype(self.np_int_dtype)
+        self.world.planner.state["New Infections"] = np.sum(
+            [agent.state["New Infections"] for agent in self.world.agents]
+        ).astype(self.np_int_dtype)
+        self.world.planner.state["Total Infected"] = np.sum(
+            [agent.state["Total Infected"] for agent in self.world.agents]
+        ).astype(self.np_int_dtype)
+        self.world.planner.state["Total Recovered"] = np.sum(
+            [agent.state["Total Recovered"] for agent in self.world.agents]
+        ).astype(self.np_int_dtype)
+        self.world.planner.state["New Deaths"] = np.sum(
+            [agent.state["New Deaths"] for agent in self.world.agents]
+        ).astype(self.np_int_dtype)
+        self.world.planner.state["Total Deaths"] = np.sum(
+            [agent.state["Total Deaths"] for agent in self.world.agents]
+        ).astype(self.np_int_dtype)
+        self.world.planner.state["Total Vaccinated"] = np.sum(vaccinated_0).astype(
+            self.np_int_dtype
+        )
+        self.world.planner.state["Health Index"] = np
