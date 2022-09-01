@@ -1232,4 +1232,30 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         # Set initial agent states
         # ------------------------
         current_date_string = datetime.strftime(
-            self.current_date, format=s
+            self.current_date, format=self.date_format
+        )
+
+        for agent in self.world.agents:
+            agent.state["Total Susceptible"] = susceptible_0[agent.idx].astype(
+                self.np_int_dtype
+            )
+            agent.state["New Infections"] = newly_infected_0[agent.idx].astype(
+                self.np_int_dtype
+            )
+            agent.state["Total Infected"] = infected_0[agent.idx].astype(
+                self.np_int_dtype
+            )
+            agent.state["Total Recovered"] = recovered_0[agent.idx].astype(
+                self.np_int_dtype
+            )
+            agent.state["New Deaths"] = new_deaths_0[agent.idx].astype(
+                self.np_int_dtype
+            )
+            agent.state["Total Deaths"] = deaths_0[agent.idx].astype(self.np_int_dtype)
+            agent.state["Health Index"] = np.array([0]).astype(self.np_float_dtype)
+            agent.state["Economic Index"] = np.array([0]).astype(self.np_float_dtype)
+            agent.state["Date"] = current_date_string
+
+        # Planner state fields
+        self.world.planner.state["Total Susceptible"] = np.sum(
+            [agent.state["Total
