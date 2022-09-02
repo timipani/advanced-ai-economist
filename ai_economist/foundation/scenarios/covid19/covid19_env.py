@@ -1311,4 +1311,33 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         # If no values are passed, set everything to zeros.
         if key not in self.world.global_state:
             self.world.global_state[key] = np.zeros(
-                (self.episode_length + 1, self.num
+                (self.episode_length + 1, self.num_us_states), dtype=dtype
+            )
+
+        if t is not None and value is not None:
+            assert isinstance(value, np.ndarray)
+            assert value.shape[0] == self.world.global_state[key].shape[1]
+
+            self.world.global_state[key][t] = value
+        else:
+            pass
+
+    def set_parameter_modulations(
+        self, beta_intercept=None, beta_slope=None, unemployment=None
+    ):
+        """
+        Apply parameter modulation, which will be in effect until the next env reset.
+
+        Each modulation term scales the associated set of model parameters by the
+        input value. This method is useful for performing a sensitivity analysis.
+
+        In effect, the transmission rate (beta) will be calculated as:
+            beta = (m_s * beta_slope)*lagged_stringency + (m_i * beta_intercept)
+
+        The unemployment rate (u) will be calculated as:
+            u = SOFTPLUS( m_u * SUM(u_filter_weight * u_filter_response) ) + u_0
+
+        Args:
+             beta_intercept: (float, >= 0) Modulation applied to the intercept term
+             of the beta model, m_i in above equations
+             beta_slope: (float, >= 0) Modula
