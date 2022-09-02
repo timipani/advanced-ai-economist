@@ -1278,4 +1278,37 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         self.world.planner.state["Total Vaccinated"] = np.sum(vaccinated_0).astype(
             self.np_int_dtype
         )
-        self.world.planner.state["Health Index"] = np
+        self.world.planner.state["Health Index"] = np.array([0]).astype(
+            self.np_float_dtype
+        )
+        self.world.planner.state["Economic Index"] = np.array([0]).astype(
+            self.np_float_dtype
+        )
+
+        self.world.planner.state["Date"] = current_date_string
+
+        # Reset any manually set parameter modulations
+        self._beta_intercepts_modulation = 1
+        self._beta_slopes_modulation = 1
+        self._unemployment_modulation = 1
+
+    def set_global_state(self, key=None, value=None, t=None, dtype=None):
+        # Use floats by default for the SIR dynamics
+        if dtype is None:
+            dtype = self.np_float_dtype
+        assert key in [
+            "Susceptible",
+            "Infected",
+            "Recovered",
+            "Deaths",
+            "Unemployed",
+            "Vaccinated",
+            "Stringency Level",
+            "Subsidy Level",
+            "Subsidy",
+            "Postsubsidy Productivity",
+        ]
+        # If no values are passed, set everything to zeros.
+        if key not in self.world.global_state:
+            self.world.global_state[key] = np.zeros(
+                (self.episode_length + 1, self.num
