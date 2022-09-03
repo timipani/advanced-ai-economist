@@ -1340,4 +1340,31 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         Args:
              beta_intercept: (float, >= 0) Modulation applied to the intercept term
              of the beta model, m_i in above equations
-             beta_slope: (float, >= 0) Modula
+             beta_slope: (float, >= 0) Modulation applied to the slope term of the
+             beta model, m_s in above equations
+             unemployment: (float, >= 0) Modulation applied to the weighted sum of
+             unemployment filter responses, m_u in above equations.
+
+        Example:
+            # Reset the environment
+            env.reset()
+
+            # Increase the slope of the beta response by 15%
+            env.set_parameter_modulations(beta_slope=1.15)
+
+            # Run the environment (this example skips over action selection for brevity)
+            for t in range(env.episode_length):
+                env.step(actions[t])
+        """
+        if beta_intercept is not None:
+            beta_intercept = float(beta_intercept)
+            assert beta_intercept >= 0
+            self._beta_intercepts_modulation = beta_intercept
+
+        if beta_slope is not None:
+            beta_slope = float(beta_slope)
+            assert beta_slope >= 0
+            self._beta_slopes_modulation = beta_slope
+
+        if unemployment is not None:
+            unemployment = float(unemployment)
