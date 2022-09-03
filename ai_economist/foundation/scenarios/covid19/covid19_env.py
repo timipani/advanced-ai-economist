@@ -1368,3 +1368,23 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
 
         if unemployment is not None:
             unemployment = float(unemployment)
+            assert unemployment >= 0
+            self._unemployment_modulation = unemployment
+
+    def unemployment_step(self, current_stringency_level):
+        """
+        Computes unemployment given the current stringency level and past levels.
+
+        Unemployment is computed as follows:
+        1) For each of self.num_filters, an exponentially decaying filter is
+        convolved with the history of stringency changes. Responses move forward in
+        time, so a stringency change at time t-1 impacts the response at time t.
+        2) The filter responses at time t (the current timestep) are summed together
+        using state-specific weights.
+        3) The weighted sum is passed through a SOFTPLUS function to capture excess
+        unemployment due to stringency policy.
+        4) The excess unemployment is added to a state-specific baseline unemployment
+        level to get the total unemployment.
+
+        Note: Internally, unemployment is computed somewhat differently for speed.
+            In particular, no convolution is used. Instead the "fil
