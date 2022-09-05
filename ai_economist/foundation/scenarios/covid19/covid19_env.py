@@ -1414,4 +1414,27 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             )
             delta_stringency_level = (
                 self.stringency_level_history[1:] - self.stringency_level_history[:-1]
-   
+            )
+
+        # Rather than modulating the unemployment params,
+        # modulate the deltas (same effect)
+        delta_stringency_level = delta_stringency_level * self._unemployment_modulation
+
+        # Expand the [time, state] delta history to have a dimension for filter channel
+        x_data = delta_stringency_level[None].transpose(2, 0, 1)
+
+        # Apply the state-specific filter weights to each channel
+        weighted_x_data = x_data * self.repeated_conv_weights
+
+        # Compute the discounted sum of the weighted deltas, with each channel using
+        # a discounting rate reflecting the time constant of the filter channel. Also
+        # sum over channels and use a softplus to get excess unemployment.
+        excess_unemployment = softplus(
+            np.sum(weighted_x_data * self.unemp_conv_filters, axis=(1, 2)), beta=1
+        )
+
+        # Add excess unemployment to baseline unemployment
+        unemployment_rate = excess_unemployment + self.unemployment_bias
+
+        # Convert the rate (which is a percent) to raw numbers for output
+        num_unemployed_t = unemploymen
