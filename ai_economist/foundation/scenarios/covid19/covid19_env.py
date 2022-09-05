@@ -1387,4 +1387,31 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         level to get the total unemployment.
 
         Note: Internally, unemployment is computed somewhat differently for speed.
-            In particular, no convolution is used. Instead the "fil
+            In particular, no convolution is used. Instead the "filter response" at
+            time t is just a temporally discounted sum of past stringency changes,
+            with the discounting given by the filter decay rate.
+        """
+
+        def softplus(x, beta=1, threshold=20):
+            """
+            Numpy implementation of softplus. For reference, see
+            https://pytorch.org/docs/stable/generated/torch.nn.Softplus.html
+            """
+            return 1 / beta * np.log(1 + np.exp(beta * x)) * (
+                beta * x <= threshold
+            ) + x * (beta * x > threshold)
+
+        if (
+            self.world.timestep == 0
+        ):  # computing unemployment at closure policy "all ones"
+            delta_stringency_level = np.zeros((self.filter_len, self.num_us_states))
+        else:
+            self.stringency_level_history = np.concatenate(
+                (
+                    self.stringency_level_history[1:],
+                    current_stringency_level.reshape(1, -1),
+                )
+            )
+            delta_stringency_level = (
+                self.stringency_level_history[1:] - self.stringency_level_history[:-1]
+   
