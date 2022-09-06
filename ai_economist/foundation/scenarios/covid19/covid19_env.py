@@ -1437,4 +1437,39 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         unemployment_rate = excess_unemployment + self.unemployment_bias
 
         # Convert the rate (which is a percent) to raw numbers for output
-        num_unemployed_t = unemploymen
+        num_unemployed_t = unemployment_rate * self.us_state_population / 100
+        return num_unemployed_t
+
+    # --- Scenario-specific ---
+    def economy_step(
+        self,
+        population,
+        infected,
+        deaths,
+        unemployed,
+        infection_too_sick_to_work_rate=0.05,
+        population_between_age_18_65=0.67,
+    ):
+        """
+        Computes how much production occurs.
+
+        Assumptions:
+
+        - People that cannot work: "infected + aware" and "unemployed" and "deaths".
+        - No life/death cycles.
+
+        See __init__() for pre-computation of each worker's daily productivity.
+        """
+
+        incapacitated = (infection_too_sick_to_work_rate * infected) + deaths
+        cant_work = (incapacitated * population_between_age_18_65) + unemployed
+
+        num_workers = population * population_between_age_18_65
+
+        num_people_that_can_work = np.maximum(0, num_workers - cant_work)
+
+        productivity = (
+            num_people_that_can_work * self.daily_production_per_worker
+        ).astype(self.np_float_dtype)
+
+        return productivity
