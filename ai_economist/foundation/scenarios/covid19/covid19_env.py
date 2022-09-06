@@ -1473,3 +1473,30 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         ).astype(self.np_float_dtype)
 
         return productivity
+
+    def sir_step(self, S_tm1, I_tm1, stringency_level_tmk, num_vaccines_available_t):
+        """
+        Simulates SIR infection model in the US.
+        """
+        intercepts = self.beta_intercepts * self._beta_intercepts_modulation
+        slopes = self.beta_slopes * self._beta_slopes_modulation
+        beta_i = (intercepts + slopes * stringency_level_tmk).astype(
+            self.np_float_dtype
+        )
+
+        small_number = 1e-10  # used to prevent indeterminate cases
+        susceptible_fraction_vaccinated = np.minimum(
+            np.ones((self.num_us_states), dtype=self.np_int_dtype),
+            num_vaccines_available_t / (S_tm1 + small_number),
+        ).astype(self.np_float_dtype)
+        vaccinated_t = np.minimum(num_vaccines_available_t, S_tm1)
+
+        # Record R0
+        R0 = beta_i / self.gamma
+        for agent in self.world.agents:
+            agent.state["R0"] = R0[agent.idx]
+
+        # S -> I; dS
+        neighborhood_SI_over_N = (S_tm1 / self.us_state_population) * I_tm1
+        dS_t = (
+        
