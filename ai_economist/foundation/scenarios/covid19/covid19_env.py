@@ -1499,4 +1499,33 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
         # S -> I; dS
         neighborhood_SI_over_N = (S_tm1 / self.us_state_population) * I_tm1
         dS_t = (
-        
+            -beta_i * neighborhood_SI_over_N * (1 - susceptible_fraction_vaccinated)
+            - vaccinated_t
+        ).astype(self.np_float_dtype)
+
+        # I -> R; dR
+        dR_t = (self.gamma * I_tm1 + vaccinated_t).astype(self.np_float_dtype)
+
+        # dI from d(S + I + R) = 0
+        # ------------------------
+        dI_t = -dS_t - dR_t
+
+        dV_t = vaccinated_t.astype(self.np_float_dtype)
+
+        return dS_t, dI_t, dR_t, dV_t
+
+    def load_model_constants(self, path_to_model_constants):
+        filename = "model_constants.json"
+        assert filename in os.listdir(path_to_model_constants), (
+            "Unable to locate '{}' in '{}'.\nPlease run the "
+            "'gather_real_world_data.ipynb' notebook first".format(
+                filename, path_to_model_constants
+            )
+        )
+        with open(os.path.join(path_to_model_constants, filename), "r") as fp:
+            model_constants_dict = json.load(fp)
+        fp.close()
+
+        self.date_format = model_constants_dict["DATE_FORMAT"]
+        self.us_state_idx_to_state_name = model_constants_dict[
+  
