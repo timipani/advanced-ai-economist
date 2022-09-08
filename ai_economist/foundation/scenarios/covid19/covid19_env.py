@@ -1528,4 +1528,24 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
 
         self.date_format = model_constants_dict["DATE_FORMAT"]
         self.us_state_idx_to_state_name = model_constants_dict[
-  
+            "US_STATE_IDX_TO_STATE_NAME"
+        ]
+        self.us_state_population = self.np_int_dtype(
+            model_constants_dict["US_STATE_POPULATION"]
+        )
+        self.us_population = self.np_int_dtype(model_constants_dict["US_POPULATION"])
+        self.num_stringency_levels = model_constants_dict["NUM_STRINGENCY_LEVELS"]
+        self.death_rate = self.np_float_dtype(model_constants_dict["SIR_MORTALITY"])
+        self.gamma = self.np_float_dtype(model_constants_dict["SIR_GAMMA"])
+        self.gdp_per_capita = self.np_float_dtype(
+            model_constants_dict["GDP_PER_CAPITA"]
+        )
+
+    def load_fitted_params(self, path_to_fitted_params):
+        filename = "fitted_params.json"
+        assert filename in os.listdir(path_to_fitted_params), (
+            "Unable to locate '{}' in '{}'.\nIf you ran the "
+            "'gather_real_world_data.ipynb' notebook to download the latest "
+            "real-world data, please also run the "
+            "'fit_parameters.ipynb' notebook.".format(filename, path_to_fitted_params)
+   
