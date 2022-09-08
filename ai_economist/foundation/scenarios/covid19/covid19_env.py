@@ -1548,4 +1548,27 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             "'gather_real_world_data.ipynb' notebook to download the latest "
             "real-world data, please also run the "
             "'fit_parameters.ipynb' notebook.".format(filename, path_to_fitted_params)
-   
+        )
+        with open(os.path.join(path_to_fitted_params, filename), "r") as fp:
+            fitted_params_dict = json.load(fp)
+        fp.close()
+        self.policy_start_date = datetime.strptime(
+            fitted_params_dict["POLICY_START_DATE"], self.date_format
+        )
+        self.value_of_life = self.np_int_dtype(fitted_params_dict["VALUE_OF_LIFE"])
+        self.beta_delay = self.np_int_dtype(fitted_params_dict["BETA_DELAY"])
+        self.beta_slopes = np.array(
+            fitted_params_dict["BETA_SLOPES"], dtype=self.np_float_dtype
+        )
+        self.beta_intercepts = np.array(
+            fitted_params_dict["BETA_INTERCEPTS"], dtype=self.np_float_dtype
+        )
+        self.min_marginal_agent_health_index = np.array(
+            fitted_params_dict["MIN_MARGINAL_AGENT_HEALTH_INDEX"],
+            dtype=self.np_float_dtype,
+        )
+        self.max_marginal_agent_health_index = np.array(
+            fitted_params_dict["MAX_MARGINAL_AGENT_HEALTH_INDEX"],
+            dtype=self.np_float_dtype,
+        )
+        self.min_marginal_agent_econ
