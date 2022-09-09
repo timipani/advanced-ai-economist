@@ -1571,4 +1571,28 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             fitted_params_dict["MAX_MARGINAL_AGENT_HEALTH_INDEX"],
             dtype=self.np_float_dtype,
         )
-        self.min_marginal_agent_econ
+        self.min_marginal_agent_economic_index = np.array(
+            fitted_params_dict["MIN_MARGINAL_AGENT_ECONOMIC_INDEX"],
+            dtype=self.np_float_dtype,
+        )
+        self.max_marginal_agent_economic_index = np.array(
+            fitted_params_dict["MAX_MARGINAL_AGENT_ECONOMIC_INDEX"],
+            dtype=self.np_float_dtype,
+        )
+        self.min_marginal_planner_health_index = self.np_float_dtype(
+            fitted_params_dict["MIN_MARGINAL_PLANNER_HEALTH_INDEX"]
+        )
+        self.max_marginal_planner_health_index = self.np_float_dtype(
+            fitted_params_dict["MAX_MARGINAL_PLANNER_HEALTH_INDEX"]
+        )
+        self.min_marginal_planner_economic_index = self.np_float_dtype(
+            fitted_params_dict["MIN_MARGINAL_PLANNER_ECONOMIC_INDEX"]
+        )
+        self.max_marginal_planner_economic_index = self.np_float_dtype(
+            fitted_params_dict["MAX_MARGINAL_PLANNER_ECONOMIC_INDEX"]
+        )
+        self.inferred_weightage_on_agent_health_index = np.array(
+            fitted_params_dict["INFERRED_WEIGHTAGE_ON_AGENT_HEALTH_INDEX"],
+            dtype=self.np_float_dtype,
+        )
+        self.inferred_weightage_o
