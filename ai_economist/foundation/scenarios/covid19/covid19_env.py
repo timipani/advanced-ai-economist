@@ -1595,4 +1595,32 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             fitted_params_dict["INFERRED_WEIGHTAGE_ON_AGENT_HEALTH_INDEX"],
             dtype=self.np_float_dtype,
         )
-        self.inferred_weightage_o
+        self.inferred_weightage_on_planner_health_index = self.np_float_dtype(
+            fitted_params_dict["INFERRED_WEIGHTAGE_ON_PLANNER_HEALTH_INDEX"]
+        )
+        self.filter_len = self.np_int_dtype(fitted_params_dict["FILTER_LEN"])
+        self.conv_lambdas = np.array(
+            fitted_params_dict["CONV_LAMBDAS"], dtype=self.np_float_dtype
+        )
+        self.unemployment_bias = np.array(
+            fitted_params_dict["UNEMPLOYMENT_BIAS"], dtype=self.np_float_dtype
+        )
+        self.grouped_convolutional_filter_weights = np.array(
+            fitted_params_dict["GROUPED_CONVOLUTIONAL_FILTER_WEIGHTS"],
+            dtype=self.np_float_dtype,
+        )
+
+    def scenario_metrics(self):
+        # End of episode metrics
+        # ----------------------
+        metrics_dict = {}
+
+        # State-level metrics
+        for agent in self.world.agents:
+            state_name = self.us_state_idx_to_state_name[str(agent.idx)]
+
+            for field in ["infected", "recovered", "deaths"]:
+                metric_key = "{}/{} (millions)".format(state_name, field)
+                metrics_dict[metric_key] = (
+                    agent.state["Total " + field.capitalize()] / 1e6
+     
