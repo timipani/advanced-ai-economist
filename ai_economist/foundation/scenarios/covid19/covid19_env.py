@@ -1623,4 +1623,34 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
                 metric_key = "{}/{} (millions)".format(state_name, field)
                 metrics_dict[metric_key] = (
                     agent.state["Total " + field.capitalize()] / 1e6
-     
+                )
+
+            metrics_dict["{}/mean_unemployment_rate (%)".format(state_name)] = (
+                np.mean(self.world.global_state["Unemployed"][1:, agent.idx], axis=0)
+                / self.us_state_population[agent.idx]
+                * 100
+            )
+
+            metrics_dict[
+                "{}/mean_open_close_stringency_level".format(state_name)
+            ] = np.mean(
+                self.world.global_state["Stringency Level"][1:, agent.idx], axis=0
+            )
+
+            metrics_dict["{}/total_productivity (billion $)".format(state_name)] = (
+                np.sum(
+                    self.world.global_state["Postsubsidy Productivity"][1:, agent.idx]
+                )
+                / 1e9
+            )
+
+            metrics_dict[
+                "{}/health_index_at_end_of_episode".format(state_name)
+            ] = agent.state["Health Index"]
+            metrics_dict[
+                "{}/economic_index_at_end_of_episode".format(state_name)
+            ] = agent.state["Economic Index"]
+
+        # USA-level metrics
+        metrics_dict["usa/vaccinated (% of population)"] = (
+            np.sum(self.world.global_s
