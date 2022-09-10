@@ -1653,4 +1653,32 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
 
         # USA-level metrics
         metrics_dict["usa/vaccinated (% of population)"] = (
-            np.sum(self.world.global_s
+            np.sum(self.world.global_state["Vaccinated"][self.world.timestep], axis=0)
+            / self.us_population
+            * 100
+        )
+        metrics_dict["usa/deaths (thousands)"] = (
+            np.sum(self.world.global_state["Deaths"][self.world.timestep], axis=0) / 1e3
+        )
+
+        metrics_dict["usa/mean_unemployment_rate (%)"] = (
+            np.mean(
+                np.sum(self.world.global_state["Unemployed"][1:], axis=1)
+                / self.us_population,
+                axis=0,
+            )
+            * 100
+        )
+        metrics_dict["usa/total_amount_subsidized (trillion $)"] = (
+            np.sum(self.world.global_state["Subsidy"][1:], axis=(0, 1)) / 1e12
+        )
+        metrics_dict["usa/total_productivity (trillion $)"] = (
+            np.sum(self.world.global_state["Postsubsidy Productivity"][1:], axis=(0, 1))
+            / 1e12
+        )
+
+        metrics_dict["usa/health_index_at_end_of_episode"] = self.world.planner.state[
+            "Health Index"
+        ]
+        metrics_dict["usa/economic_index_at_end_of_episode"] = self.world.planner.state[
+            "Economic
