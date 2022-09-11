@@ -1681,4 +1681,7 @@ class CovidAndEconomyEnvironment(BaseEnvironment):
             "Health Index"
         ]
         metrics_dict["usa/economic_index_at_end_of_episode"] = self.world.planner.state[
-            "Economic
+            "Economic Index"
+        ]
+
+        return metrics_dict
