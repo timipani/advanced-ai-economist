@@ -56,4 +56,34 @@ extern "C" {
         } else {
             stringency_level_tmk = stringency_level[kEnvId * (
                 kEpisodeLength + 1) * (kNumAgents - 1) +
-                (timestep - kBetaDelay) * (kNumAgents - 1) + k
+                (timestep - kBetaDelay) * (kNumAgents - 1) + kAgentId];
+        }
+        beta[kTimeIndependentArrayIdx] = stringency_level_tmk *
+            kBetaSlope + kbetaIntercept;
+
+        float dS_t = -(neighborhood_SI_over_N * beta[
+            kTimeIndependentArrayIdx] *
+            (1 - susceptible_fraction_vaccinated) + vaccinated_t);
+        float dR_t = kGamma * infected[kArrayIdxPrevTime] + vaccinated_t;
+        float dI_t = - dS_t - dR_t;
+
+        susceptible[kArrayIdxCurrentTime] = max(
+            0.0,
+            susceptible[kArrayIdxPrevTime] + dS_t);
+        infected[kArrayIdxCurrentTime] = max(
+            0.0,
+            infected[kArrayIdxPrevTime] + dI_t);
+        recovered[kArrayIdxCurrentTime] = max(
+            0.0,
+            recovered[kArrayIdxPrevTime] + dR_t);
+
+        vaccinated[kArrayIdxCurrentTime] = vaccinated_t +
+            vaccinated[kArrayIdxPrevTime];
+        float recovered_but_not_vaccinated = recovered[kArrayIdxCurrentTime] -
+            vaccinated[kArrayIdxCurrentTime];
+        deaths[kArrayIdxCurrentTime] = recovered_but_not_vaccinated *
+            kDeathRate;
+    }
+
+    // CUDA version of the softplus() in
+    // "ai_economist.foundation.scenarios.covid19_
