@@ -32,3 +32,28 @@ extern "C" {
         const int kEnvId,
         const int kAgentId,
         int timestep,
+        const int kEpisodeLength,
+        const int kArrayIdxCurrentTime,
+        const int kArrayIdxPrevTime,
+        const int kTimeIndependentArrayIdx
+    ) {
+        float susceptible_fraction_vaccinated = min(
+            1.0,
+            num_vaccines_available_t[kTimeIndependentArrayIdx] /
+                (susceptible[kArrayIdxPrevTime] + kEpsilon));
+        float vaccinated_t = min(
+            static_cast<float>(num_vaccines_available_t[
+                kTimeIndependentArrayIdx]),
+            susceptible[kArrayIdxPrevTime]);
+
+        // (S/N) * I in place of (S*I) / N to prevent overflow
+        float neighborhood_SI_over_N = susceptible[kArrayIdxPrevTime] /
+            kStatePopulation * infected[kArrayIdxPrevTime];
+        int stringency_level_tmk;
+        if (timestep < kBetaDelay) {
+            stringency_level_tmk = kRealWorldStringencyPolicyHistory[
+                (timestep - 1) * (kNumAgents - 1) + kAgentId];
+        } else {
+            stringency_level_tmk = stringency_level[kEnvId * (
+                kEpisodeLength + 1) * (kNumAgents - 1) +
+                (timestep - kBetaDelay) * (kNumAgents - 1) + k
