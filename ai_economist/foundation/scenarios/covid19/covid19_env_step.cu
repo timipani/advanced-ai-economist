@@ -86,4 +86,36 @@ extern "C" {
     }
 
     // CUDA version of the softplus() in
-    // "ai_economist.foundation.scenarios.covid19_
+    // "ai_economist.foundation.scenarios.covid19_env.py"
+    __device__ float softplus(float x) {
+        const float kBeta = 1.0;
+        const float kThreshold = 20.0;
+        if (kBeta * x < kThreshold) {
+            return 1.0 / kBeta * log(1.0 + exp(kBeta * x));
+        } else {
+            return x;
+        }
+    }
+
+    __device__ float signal2unemployment(
+        const int kEnvId,
+        const int kAgentId,
+        float* signal,
+        const float* kUnemploymentConvolutionalFilters,
+        const float kUnemploymentBias,
+        const int kNumAgents,
+        const int kFilterLen,
+        const int kNumFilters
+    ) {
+        float unemployment = 0.0;
+        const int kArrayIndexOffset = kEnvId * (kNumAgents - 1) * kNumFilters *
+            kFilterLen + kAgentId * kNumFilters * kFilterLen;
+        for (int index = 0; index < (kFilterLen * kNumFilters); index ++) {
+            unemployment += signal[kArrayIndexOffset + index] *
+            kUnemploymentConvolutionalFilters[index];
+        }
+        return softplus(unemployment) + kUnemploymentBias;
+    }
+
+    // CUDA version of the unemployment_step() in
+  
