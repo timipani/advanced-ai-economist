@@ -118,4 +118,35 @@ extern "C" {
     }
 
     // CUDA version of the unemployment_step() in
-  
+    // "ai_economist.foundation.scenarios.covid19_env.py"
+    __device__ void cuda_unemployment_step(
+        float* unemployed,
+        int* stringency_level,
+        int* delta_stringency_level,
+        const float* kGroupedConvolutionalFilterWeights,
+        const float* kUnemploymentConvolutionalFilters,
+        const float* kUnemploymentBias,
+        float* convolved_signal,
+        const int kFilterLen,
+        const int kNumFilters,
+        const float kStatePopulation,
+        const int kNumAgents,
+        const int kEnvId,
+        const int kAgentId,
+        int timestep,
+        const int kArrayIdxCurrentTime,
+        const int kArrayIdxPrevTime
+    ) {
+        // Shift array by kNumAgents - 1
+        for (int idx = 0; idx < kFilterLen - 1; idx ++) {
+            delta_stringency_level[
+                kEnvId * kFilterLen * (kNumAgents - 1) + idx *
+                (kNumAgents - 1) + kAgentId
+            ] =
+            delta_stringency_level[
+                kEnvId * kFilterLen * (kNumAgents - 1) + (idx + 1) *
+                (kNumAgents - 1) + kAgentId
+            ];
+        }
+
+        delta_stringency_l
