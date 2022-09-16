@@ -149,4 +149,30 @@ extern "C" {
             ];
         }
 
-        delta_stringency_l
+        delta_stringency_level[
+            kEnvId * kFilterLen * (kNumAgents - 1) + (kFilterLen - 1) *
+            (kNumAgents - 1) + kAgentId
+        ] = stringency_level[kArrayIdxCurrentTime] -
+            stringency_level[kArrayIdxPrevTime];
+
+        // convolved_signal refers to the convolution between the filter weights
+        // and the delta stringency levels
+        for (int filter_idx = 0; filter_idx < kNumFilters; filter_idx ++) {
+            for (int idx = 0; idx < kFilterLen; idx ++) {
+                convolved_signal[
+                    kEnvId * (kNumAgents - 1) * kNumFilters * kFilterLen +
+                    kAgentId * kNumFilters * kFilterLen +
+                    filter_idx * kFilterLen +
+                    idx
+                ] =
+                delta_stringency_level[kEnvId * kFilterLen * (kNumAgents - 1) +
+                    idx * (kNumAgents - 1) + kAgentId] *
+                kGroupedConvolutionalFilterWeights[kAgentId * kNumFilters +
+                    filter_idx];
+            }
+        }
+
+        float unemployment_rate = signal2unemployment(
+            kEnvId,
+            kAgentId,
+            convolved_sign
