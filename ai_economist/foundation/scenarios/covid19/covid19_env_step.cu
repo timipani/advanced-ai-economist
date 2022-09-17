@@ -175,4 +175,38 @@ extern "C" {
         float unemployment_rate = signal2unemployment(
             kEnvId,
             kAgentId,
-            convolved_sign
+            convolved_signal,
+            kUnemploymentConvolutionalFilters,
+            kUnemploymentBias[kAgentId],
+            kNumAgents,
+            kFilterLen,
+            kNumFilters);
+
+        unemployed[kArrayIdxCurrentTime] =
+            unemployment_rate * kStatePopulation / 100.0;
+    }
+
+    // CUDA version of the economy_step() in
+    // "ai_economist.foundation.scenarios.covid19_env.py"
+    __device__ void cuda_economy_step(
+        float* infected,
+        float* deaths,
+        float* unemployed,
+        float* incapacitated,
+        float* cant_work,
+        float* num_people_that_can_work,
+        const float kStatePopulation,
+        const float kInfectionTooSickToWorkRate,
+        const float kPopulationBetweenAge18And65,
+        const float kDailyProductionPerWorker,
+        float* productivity,
+        float* subsidy,
+        float* postsubsidy_productivity,
+        int timestep,
+        const int kArrayIdxCurrentTime,
+        int kTimeIndependentArrayIdx
+    ) {
+        incapacitated[kTimeIndependentArrayIdx] =
+            kInfectionTooSickToWorkRate * infected[kArrayIdxCurrentTime] +
+            deaths[kArrayIdxCurrentTime];
+        
