@@ -209,4 +209,32 @@ extern "C" {
         incapacitated[kTimeIndependentArrayIdx] =
             kInfectionTooSickToWorkRate * infected[kArrayIdxCurrentTime] +
             deaths[kArrayIdxCurrentTime];
-        
+        cant_work[kTimeIndependentArrayIdx] =
+            incapacitated[kTimeIndependentArrayIdx] *
+            kPopulationBetweenAge18And65 + unemployed[kArrayIdxCurrentTime];
+        int num_workers = static_cast<int>(kStatePopulation) * kPopulationBetweenAge18And65;
+        num_people_that_can_work[kTimeIndependentArrayIdx] = max(
+            0.0,
+            num_workers - cant_work[kTimeIndependentArrayIdx]);
+        productivity[kArrayIdxCurrentTime] =
+            num_people_that_can_work[kTimeIndependentArrayIdx] *
+            kDailyProductionPerWorker;
+
+        postsubsidy_productivity[kArrayIdxCurrentTime] =
+            productivity[kArrayIdxCurrentTime] +
+            subsidy[kArrayIdxCurrentTime];
+    }
+
+    // CUDA version of crra_nonlinearity() in
+    // "ai_economist.foundation.scenarios.covid19_env.py"
+    __device__ float crra_nonlinearity(
+        float x,
+        const float kEta,
+        const int kNumDaysInAnYear
+    ) {
+        float annual_x = kNumDaysInAnYear * x;
+        float annual_x_clipped = annual_x;
+        if (annual_x < 0.1) {
+            annual_x_clipped = 0.1;
+        } else if (annual_x > 3.0) {
+     
