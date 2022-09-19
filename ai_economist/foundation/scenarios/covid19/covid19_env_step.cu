@@ -237,4 +237,37 @@ extern "C" {
         if (annual_x < 0.1) {
             annual_x_clipped = 0.1;
         } else if (annual_x > 3.0) {
-     
+            annual_x_clipped = 3.0;
+        }
+        float annual_crra = 1 + (pow(annual_x_clipped, (1 - kEta)) - 1) /
+            (1 - kEta);
+        float daily_crra = annual_crra / kNumDaysInAnYear;
+        return daily_crra;
+    }
+
+    // CUDA version of min_max_normalization() in
+    // "ai_economist.foundation.scenarios.covid19_env.py"
+    __device__ float min_max_normalization(
+        float x,
+        const float kMinX,
+        const float kMaxX
+    ) {
+        return (x - kMinX) / (kMaxX - kMinX + kEpsilon);
+    }
+
+    // CUDA version of get_rew() in
+    // "ai_economist.foundation.scenarios.covid19_env.py"
+    __device__ float get_rew(
+        const float kHealthIndexWeightage,
+        float health_index,
+        const float kEconomicIndexWeightage,
+        float economic_index
+    ) {
+        return (
+            kHealthIndexWeightage * health_index
+            + kEconomicIndexWeightage * economic_index) /
+            (kHealthIndexWeightage + kEconomicIndexWeightage);
+    }
+
+    // CUDA version of scenario_step() in
+    // "ai_economist.foundation.scenarios.covid19_env.py
