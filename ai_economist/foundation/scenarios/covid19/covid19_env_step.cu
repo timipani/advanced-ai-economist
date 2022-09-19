@@ -270,4 +270,36 @@ extern "C" {
     }
 
     // CUDA version of scenario_step() in
-    // "ai_economist.foundation.scenarios.covid19_env.py
+    // "ai_economist.foundation.scenarios.covid19_env.py"
+    __global__ void CudaCovidAndEconomySimulationStep(
+        float* susceptible,
+        float* infected,
+        float* recovered,
+        float* deaths,
+        float* vaccinated,
+        float* unemployed,
+        float* subsidy,
+        float* productivity,
+        int* stringency_level,
+        const int kNumStringencyLevels,
+        float* postsubsidy_productivity,
+        int* num_vaccines_available_t,
+        const int* kRealWorldStringencyPolicyHistory,
+        const int kBetaDelay,
+        const float* kBetaSlopes,
+        const float* kbetaIntercepts,
+        float* beta,
+        const float kGamma,
+        const float kDeathRate,
+        float* incapacitated,
+        float* cant_work,
+        float* num_people_that_can_work,
+        const int* us_kStatePopulation,
+        const float kInfectionTooSickToWorkRate,
+        const float kPopulationBetweenAge18And65,
+        const int kFilterLen,
+        const int kNumFilters,
+        int* delta_stringency_level,
+        const float* kGroupedConvolutionalFilterWeights,
+        const float* kUnemploymentConvolutionalFilters,
+        const float* kUnemploymentBias
