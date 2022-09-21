@@ -302,4 +302,32 @@ extern "C" {
         int* delta_stringency_level,
         const float* kGroupedConvolutionalFilterWeights,
         const float* kUnemploymentConvolutionalFilters,
-        const float* kUnemploymentBias
+        const float* kUnemploymentBias,
+        float* signal,
+        const float kDailyProductionPerWorker,
+        const float* maximum_productivity,
+        float* obs_a_world_agent_state,
+        float* obs_a_world_agent_postsubsidy_productivity,
+        float* obs_a_world_lagged_stringency_level,
+        float* obs_a_time,
+        float* obs_p_world_agent_state,
+        float* obs_p_world_agent_postsubsidy_productivity,
+        float* obs_p_world_lagged_stringency_level,
+        float* obs_p_time,
+        int * env_timestep_arr,
+        const int kNumAgents,
+        const int kEpisodeLength
+    ) {
+        const int kEnvId = blockIdx.x;
+        const int kAgentId = threadIdx.x;
+
+        assert(env_timestep_arr[kEnvId] > 0 &&
+            env_timestep_arr[kEnvId] <= kEpisodeLength);
+        assert (kAgentId <= kNumAgents - 1);
+        const int kNumFeatures = 6;
+
+        if (kAgentId < (kNumAgents - 1)) {
+            // Indices for time-dependent and time-independent arrays
+            // Time dependent arrays have shapes (num_envs,
+            // kEpisodeLength + 1, kNumAgents - 1)
+            // Time independent arrays have shapes (num_envs, 
