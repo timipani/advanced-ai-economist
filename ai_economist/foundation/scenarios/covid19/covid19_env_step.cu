@@ -359,4 +359,38 @@ extern "C" {
                 beta,
                 kGamma,
                 kDeathRate,
-                k
+                kEnvId,
+                kAgentId,
+                env_timestep_arr[kEnvId],
+                kEpisodeLength,
+                kArrayIdxCurrentTime,
+                kArrayIdxPrevTime,
+                kTimeIndependentArrayIdx);
+
+            cuda_unemployment_step(
+                unemployed,
+                stringency_level,
+                delta_stringency_level,
+                kGroupedConvolutionalFilterWeights,
+                kUnemploymentConvolutionalFilters,
+                kUnemploymentBias,
+                signal,
+                kFilterLen,
+                kNumFilters,
+                kStatePopulation,
+                kNumAgents,
+                kEnvId,
+                kAgentId,
+                env_timestep_arr[kEnvId],
+                kArrayIdxCurrentTime,
+                kArrayIdxPrevTime);
+
+            cuda_economy_step(
+                infected,
+                deaths,
+                unemployed,
+                incapacitated,
+                cant_work,
+                num_people_that_can_work,
+                kStatePopulation,
+          
