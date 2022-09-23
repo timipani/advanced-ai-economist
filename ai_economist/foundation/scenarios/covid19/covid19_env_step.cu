@@ -330,4 +330,33 @@ extern "C" {
             // Indices for time-dependent and time-independent arrays
             // Time dependent arrays have shapes (num_envs,
             // kEpisodeLength + 1, kNumAgents - 1)
-            // Time independent arrays have shapes (num_envs, 
+            // Time independent arrays have shapes (num_envs, kNumAgents - 1)
+            const int kArrayIndexOffset = kEnvId * (kEpisodeLength + 1) *
+                (kNumAgents - 1);
+            int kArrayIdxCurrentTime = kArrayIndexOffset +
+                env_timestep_arr[kEnvId] * (kNumAgents - 1) + kAgentId;
+            int kArrayIdxPrevTime = kArrayIndexOffset +
+                (env_timestep_arr[kEnvId] - 1) * (kNumAgents - 1) + kAgentId;
+            const int kTimeIndependentArrayIdx = kEnvId *
+                (kNumAgents - 1) + kAgentId;
+
+            const float kStatePopulation = static_cast<float>(us_kStatePopulation[kAgentId]);
+
+            cuda_sir_step(
+                susceptible,
+                infected,
+                recovered,
+                vaccinated,
+                deaths,
+                num_vaccines_available_t,
+                kRealWorldStringencyPolicyHistory,
+                kStatePopulation,
+                kNumAgents,
+                kBetaDelay,
+                kBetaSlopes[kAgentId],
+                kbetaIntercepts[kAgentId],
+                stringency_level,
+                beta,
+                kGamma,
+                kDeathRate,
+                k
