@@ -393,4 +393,28 @@ extern "C" {
                 cant_work,
                 num_people_that_can_work,
                 kStatePopulation,
-          
+                kInfectionTooSickToWorkRate,
+                kPopulationBetweenAge18And65,
+                kDailyProductionPerWorker,
+                productivity,
+                subsidy,
+                postsubsidy_productivity,
+                env_timestep_arr[kEnvId],
+                kArrayIdxCurrentTime,
+                kTimeIndependentArrayIdx);
+
+            // CUDA version of generate observations
+            // Agents' observations
+            int kFeatureArrayIndexOffset = kEnvId * kNumFeatures *
+                (kNumAgents - 1) + kAgentId;
+            obs_a_world_agent_state[
+                kFeatureArrayIndexOffset + 0 * (kNumAgents - 1)
+            ] = susceptible[kArrayIdxCurrentTime] / kStatePopulation;
+            obs_a_world_agent_state[
+                kFeatureArrayIndexOffset + 1 * (kNumAgents - 1)
+            ] = infected[kArrayIdxCurrentTime] / kStatePopulation;
+            obs_a_world_agent_state[
+                kFeatureArrayIndexOffset + 2 * (kNumAgents - 1)
+            ] = recovered[kArrayIdxCurrentTime] / kStatePopulation;
+            obs_a_world_agent_state[
+                kFeatureArrayIndexOffset + 3 * (kNumAgents
