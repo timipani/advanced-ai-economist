@@ -417,4 +417,29 @@ extern "C" {
                 kFeatureArrayIndexOffset + 2 * (kNumAgents - 1)
             ] = recovered[kArrayIdxCurrentTime] / kStatePopulation;
             obs_a_world_agent_state[
-                kFeatureArrayIndexOffset + 3 * (kNumAgents
+                kFeatureArrayIndexOffset + 3 * (kNumAgents - 1)
+            ] = deaths[kArrayIdxCurrentTime] / kStatePopulation;
+            obs_a_world_agent_state[
+                kFeatureArrayIndexOffset + 4 * (kNumAgents - 1)
+            ] = vaccinated[kArrayIdxCurrentTime] / kStatePopulation;
+            obs_a_world_agent_state[
+                kFeatureArrayIndexOffset + 5 * (kNumAgents - 1)
+            ] = unemployed[kArrayIdxCurrentTime] / kStatePopulation;
+
+            for (int feature_id = 0; feature_id < kNumFeatures; feature_id ++) {
+                const int kIndex = feature_id * (kNumAgents - 1);
+                obs_p_world_agent_state[kFeatureArrayIndexOffset +
+                    kIndex
+                ] = obs_a_world_agent_state[kFeatureArrayIndexOffset +
+                    kIndex];
+            }
+
+            obs_a_world_agent_postsubsidy_productivity[
+                kTimeIndependentArrayIdx
+            ] = postsubsidy_productivity[kArrayIdxCurrentTime] /
+                maximum_productivity[kAgentId];
+            obs_p_world_agent_postsubsidy_productivity[
+                kTimeIndependentArrayIdx
+            ] = obs_a_world_agent_postsubsidy_productivity[
+                    kTimeIndependentArrayIdx
+  
