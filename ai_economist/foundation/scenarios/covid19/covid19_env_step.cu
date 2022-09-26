@@ -442,4 +442,28 @@ extern "C" {
                 kTimeIndependentArrayIdx
             ] = obs_a_world_agent_postsubsidy_productivity[
                     kTimeIndependentArrayIdx
-  
+                ];
+
+            int t_beta = env_timestep_arr[kEnvId] - kBetaDelay + 1;
+            if (t_beta < 0) {
+                obs_a_world_lagged_stringency_level[
+                    kTimeIndependentArrayIdx
+                ] = kRealWorldStringencyPolicyHistory[
+                        env_timestep_arr[kEnvId] * (kNumAgents - 1) + kAgentId
+                    ] / static_cast<float>(kNumStringencyLevels);
+            } else {
+                obs_a_world_lagged_stringency_level[
+                    kTimeIndependentArrayIdx
+                ] = stringency_level[
+                        kArrayIndexOffset +
+                        t_beta * (kNumAgents - 1) +
+                        kAgentId
+                    ] / static_cast<float>(kNumStringencyLevels);
+            }
+            obs_p_world_lagged_stringency_level[
+                kTimeIndependentArrayIdx
+            ] = obs_a_world_lagged_stringency_level[
+                    kTimeIndependentArrayIdx];
+            // Below, we assume observation scaling = True
+            // (otherwise, 'obs_a_time[kTimeIndependentArrayIdx] =
+            // static_cast<flo
