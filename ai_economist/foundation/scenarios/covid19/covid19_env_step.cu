@@ -466,4 +466,30 @@ extern "C" {
                     kTimeIndependentArrayIdx];
             // Below, we assume observation scaling = True
             // (otherwise, 'obs_a_time[kTimeIndependentArrayIdx] =
-            // static_cast<flo
+            // static_cast<float>(env_timestep_arr[kEnvId])
+            obs_a_time[kTimeIndependentArrayIdx] =
+                env_timestep_arr[kEnvId] / static_cast<float>(kEpisodeLength);
+        } else if (kAgentId == kNumAgents - 1) {
+            obs_p_time[kEnvId] = env_timestep_arr[kEnvId] /
+            static_cast<float>(kEpisodeLength);
+        }
+    }
+
+    // CUDA version of the compute_reward() in
+    // "ai_economist.foundation.scenarios.covid19_env.py"
+    __global__ void CudaComputeReward(
+        float* rewards_a,
+        float* rewards_p,
+        const int kNumDaysInAnYear,
+        const int kValueOfLife,
+        const float kRiskFreeInterestRate,
+        const float kEconomicRewardCrraEta,
+        const float* kMinMarginalAgentHealthIndex,
+        const float* kMaxMarginalAgentHealthIndex,
+        const float* kMinMarginalAgentEconomicIndex,
+        const float* kMaxMarginalAgentEconomicIndex,
+        const float kMinMarginalPlannerHealthIndex,
+        const float kMaxMarginalPlannerHealthIndex,
+        const float kMinMarginalPlannerEconomicIndex,
+        const float kMaxMarginalPlannerEconomicIndex,
+        const
