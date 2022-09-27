@@ -492,4 +492,33 @@ extern "C" {
         const float kMaxMarginalPlannerHealthIndex,
         const float kMinMarginalPlannerEconomicIndex,
         const float kMaxMarginalPlannerEconomicIndex,
-        const
+        const float* kWeightageOnMarginalAgentHealthIndex,
+        const float* kWeightageOnMarginalPlannerHealthIndex,
+        const float kWeightageOnMarginalAgentEconomicIndex,
+        const float kWeightageOnMarginalPlannerEconomicIndex,
+        const float* kAgentsHealthNorm,
+        const float* kAgentsEconomicNorm,
+        const float kPlannerHealthNorm,
+        const float kPlannerEconomicNorm,
+        float* deaths,
+        float* subsidy,
+        float* postsubsidy_productivity,
+        int* env_done_arr,
+        int* env_timestep_arr,
+        const int kNumAgents,
+        const int kEpisodeLength
+    ) {
+        const int kEnvId = blockIdx.x;
+        const int kAgentId = threadIdx.x;
+
+        assert(env_timestep_arr[kEnvId] > 0 &&
+             env_timestep_arr[kEnvId] <= kEpisodeLength);
+        assert (kAgentId <= kNumAgents - 1);
+
+        const int kArrayIndexOffset = kEnvId * (kEpisodeLength + 1) *
+            (kNumAgents - 1);
+        if (kAgentId < (kNumAgents - 1)) {
+            // Agents' rewards
+            // Indices for time-dependent and time-independent arrays
+            // Time dependent arrays have shapes (num_envs,
+            // kEpisodeLength + 1, kNumAgents 
