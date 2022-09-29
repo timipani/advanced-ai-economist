@@ -521,4 +521,27 @@ extern "C" {
             // Agents' rewards
             // Indices for time-dependent and time-independent arrays
             // Time dependent arrays have shapes (num_envs,
-            // kEpisodeLength + 1, kNumAgents 
+            // kEpisodeLength + 1, kNumAgents - 1)
+            // Time independent arrays have shapes (num_envs, kNumAgents - 1)
+            int kArrayIdxCurrentTime = kArrayIndexOffset +
+                env_timestep_arr[kEnvId] * (kNumAgents - 1) + kAgentId;
+            int kArrayIdxPrevTime = kArrayIndexOffset +
+                (env_timestep_arr[kEnvId] - 1) * (kNumAgents - 1) + kAgentId;
+            const int kTimeIndependentArrayIdx = kEnvId *
+                (kNumAgents - 1) + kAgentId;
+
+            float marginal_deaths = deaths[kArrayIdxCurrentTime] -
+                deaths[kArrayIdxPrevTime];
+
+            // Note: changing the order of operations to prevent overflow
+            float marginal_agent_health_index = - marginal_deaths /
+                (kAgentsHealthNorm[kAgentId] /
+                static_cast<float>(kValueOfLife));
+
+            float marginal_agent_economic_index = crra_nonlinearity(
+                postsubsidy_productivity[kArrayIdxCurrentTime] /
+                kAgentsEconomicNorm[kAgentId],
+                kEconomicRewardCrraEta,
+                kNumDaysInAnYear);
+
+            ma
