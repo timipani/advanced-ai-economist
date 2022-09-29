@@ -544,4 +544,25 @@ extern "C" {
                 kEconomicRewardCrraEta,
                 kNumDaysInAnYear);
 
-            ma
+            marginal_agent_health_index = min_max_normalization(
+                marginal_agent_health_index,
+                kMinMarginalAgentHealthIndex[kAgentId],
+                kMaxMarginalAgentHealthIndex[kAgentId]);
+            marginal_agent_economic_index = min_max_normalization(
+                marginal_agent_economic_index,
+                kMinMarginalAgentEconomicIndex[kAgentId],
+                kMaxMarginalAgentEconomicIndex[kAgentId]);
+
+            rewards_a[kTimeIndependentArrayIdx] = get_rew(
+                kWeightageOnMarginalAgentHealthIndex[kAgentId],
+                marginal_agent_health_index,
+                kWeightageOnMarginalPlannerHealthIndex[kAgentId],
+                marginal_agent_economic_index);
+        } else if (kAgentId == kNumAgents - 1) {
+            // Planner's rewards
+            float total_marginal_deaths = 0;
+            for (int ag_id = 0; ag_id < (kNumAgents - 1); ag_id ++) {
+                total_marginal_deaths += (
+                    deaths[kArrayIndexOffset + env_timestep_arr[kEnvId] *
+                        (kNumAgents - 1) + ag_id] -
+                   
