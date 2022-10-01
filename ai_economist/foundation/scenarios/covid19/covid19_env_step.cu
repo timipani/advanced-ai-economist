@@ -565,4 +565,25 @@ extern "C" {
                 total_marginal_deaths += (
                     deaths[kArrayIndexOffset + env_timestep_arr[kEnvId] *
                         (kNumAgents - 1) + ag_id] -
-                   
+                    deaths[kArrayIndexOffset + (env_timestep_arr[kEnvId] - 1) *
+                        (kNumAgents - 1) + ag_id]);
+            }
+            // Note: changing the order of operations to prevent overflow
+            float marginal_planner_health_index = -total_marginal_deaths /
+                (kPlannerHealthNorm / static_cast<float>(kValueOfLife));
+
+            float total_subsidy = 0.0;
+            float total_postsubsidy_productivity = 0.0;
+            for (int ag_id = 0; ag_id < (kNumAgents - 1); ag_id ++) {
+                total_subsidy += subsidy[kArrayIndexOffset +
+                    env_timestep_arr[kEnvId] * (kNumAgents - 1) + ag_id];
+                total_postsubsidy_productivity +=
+                    postsubsidy_productivity[kArrayIndexOffset +
+                    env_timestep_arr[kEnvId] * (kNumAgents - 1) + ag_id];
+            }
+
+            float cost_of_subsidy = (1 + kRiskFreeInterestRate) *
+                total_subsidy;
+            float marginal_planner_economic_index = crra_nonlinearity(
+                (total_postsubsidy_productivity - cost_of_subsidy) /
+                    kPlannerEconomi
