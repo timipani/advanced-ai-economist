@@ -586,4 +586,31 @@ extern "C" {
                 total_subsidy;
             float marginal_planner_economic_index = crra_nonlinearity(
                 (total_postsubsidy_productivity - cost_of_subsidy) /
-                    kPlannerEconomi
+                    kPlannerEconomicNorm,
+                kEconomicRewardCrraEta,
+                kNumDaysInAnYear);
+
+            marginal_planner_health_index = min_max_normalization(
+                marginal_planner_health_index,
+                kMinMarginalPlannerHealthIndex,
+                kMaxMarginalPlannerHealthIndex);
+            marginal_planner_economic_index = min_max_normalization(
+                marginal_planner_economic_index,
+                kMinMarginalPlannerEconomicIndex,
+                kMaxMarginalPlannerEconomicIndex);
+
+            rewards_p[kEnvId] = get_rew(
+                kWeightageOnMarginalAgentEconomicIndex,
+                marginal_planner_health_index,
+                kWeightageOnMarginalPlannerEconomicIndex,
+                marginal_planner_economic_index);
+        }
+
+        // Wait here for all agents to finish computing rewards
+        __syncthreads();
+
+        // Use only agent 0's thread to set done_arr
+        if (kAgentId == 0) {
+            if (env_timestep_arr[kEnvId] == kEpisodeLength) {
+                env_timestep_arr[kEnvId] = 0;
+                env_done_arr[kEnvId] = 1;
