@@ -328,3 +328,10 @@ class OneStepEconomy(BaseEnvironment):
             ] = rewards.inv_income_weighted_utility(
                 coin_endowments=pretax_incomes,  # coin_endowments,
                 utilities=np.array(
+                    [curr_optimization_metric[agent.idx] for agent in agents]
+                ),
+            )
+        else:
+            print("No valid planner reward selected!")
+            raise NotImplementedError
+        return curr_optimization_metric
