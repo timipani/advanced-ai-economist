@@ -614,3 +614,7 @@ extern "C" {
             if (env_timestep_arr[kEnvId] == kEpisodeLength) {
                 env_timestep_arr[kEnvId] = 0;
                 env_done_arr[kEnvId] = 1;
+            }
+        }
+    }
+}
