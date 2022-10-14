@@ -44,4 +44,22 @@ class Uniform(BaseEnvironment):
         wood_clumpiness (float): Degree of wood clumping.
         starting_stone_coverage (int, float): Target coverage of stone at t=0.
         stone_regen_halfwidth (int): Regen halfwidth for stone.
-        stone_regen_weight (float):
+        stone_regen_weight (float): Regen weight for stone.
+        stone_max_health (int): Max stone units per stone source tile.
+        stone_clumpiness (float): Degree of stone clumping.
+        gradient_steepness (int, float): How steeply source tile probability falls
+            off from the top/bottom of the map.
+        checker_source_blocks (bool): Whether to space source tiles in a "checker"
+            formation.
+        starting_agent_coin (int, float): Amount of coin agents have at t=0. Defaults
+            to zero coin.
+        isoelastic_eta (float): Parameter controlling the shape of agent utility
+            wrt coin endowment.
+        energy_cost (float): Coefficient for converting labor to negative utility.
+        energy_warmup_constant (float): Decay constant that controls the rate at which
+            the effective energy cost is annealed from 0 to energy_cost. Set to 0
+            (default) to disable annealing, meaning that the effective energy cost is
+            always energy_cost. The units of the decay constant depend on the choice of
+            energy_warmup_method.
+        energy_warmup_method (str): How to schedule energy annealing (warmup). If
+            "decay" (d
