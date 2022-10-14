@@ -25,4 +25,23 @@ class Uniform(BaseEnvironment):
             a spatial social dilemma
         Regen Weight: regen probability per tile counted by the regen kernel
         Max Health: how many resource units can populate a source block
-        Clumpiness: degree to which resources 
+        Clumpiness: degree to which resources are spatially clustered
+        Gradient Steepness: degree to which stone/wood are restricted to the top/bottom
+            of the map
+
+    Args:
+        planner_gets_spatial_obs (bool): Whether the planner agent receives spatial
+            observations from the world.
+        full_observability (bool): Whether the mobile agents' spatial observation
+            includes the full world view or is instead an egocentric view.
+        mobile_agent_observation_range (int): If not using full_observability,
+            the spatial range (on each side of the agent) that is visible in the
+            spatial observations.
+        starting_wood_coverage (int, float): Target coverage of wood at t=0.
+        wood_regen_halfwidth (int): Regen halfwidth for wood.
+        wood_regen_weight (float): Regen weight for wood.
+        wood_max_health (int): Max wood units per wood source tile.
+        wood_clumpiness (float): Degree of wood clumping.
+        starting_stone_coverage (int, float): Target coverage of stone at t=0.
+        stone_regen_halfwidth (int): Regen halfwidth for stone.
+        stone_regen_weight (float):
