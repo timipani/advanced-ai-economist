@@ -88,4 +88,32 @@ class Uniform(BaseEnvironment):
         wood_regen_weight=0.01,
         wood_max_health=1,
         starting_stone_coverage=0.025,
-        sto
+        stone_regen_halfwidth=0,
+        stone_regen_weight=0.01,
+        stone_max_health=1,
+        wood_clumpiness=0.35,
+        stone_clumpiness=0.5,
+        gradient_steepness=8,
+        checker_source_blocks=False,
+        starting_agent_coin=0,
+        isoelastic_eta=0.23,
+        energy_cost=0.21,
+        energy_warmup_constant=0,
+        energy_warmup_method="decay",
+        planner_reward_type="coin_eq_times_productivity",
+        mixing_weight_gini_vs_coin=0.0,
+        **base_env_kwargs
+    ):
+        super().__init__(*base_env_args, **base_env_kwargs)
+
+        # Whether agents receive spatial information in their observation tensor
+        self._planner_gets_spatial_info = bool(planner_gets_spatial_info)
+
+        # Whether the (non-planner) agents can see the whole world map
+        self._full_observability = bool(full_observability)
+
+        self._mobile_agent_observation_range = int(mobile_agent_observation_range)
+
+        # For controlling how resource regeneration behavior
+        #  - Coverage: if fraction, target fraction of total tiles;
+        #  if i
