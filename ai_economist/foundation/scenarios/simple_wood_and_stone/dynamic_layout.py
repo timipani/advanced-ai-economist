@@ -138,4 +138,25 @@ class Uniform(BaseEnvironment):
         self._checker_mask = (r + c) == 1
         m = 2 if self._checker_source_blocks else 1
         #
-        self.layout_specs["Wood"]["starting_co
+        self.layout_specs["Wood"]["starting_coverage"] = (
+            float(starting_wood_coverage) * m
+        )
+        self.layout_specs["Stone"]["starting_coverage"] = (
+            float(starting_stone_coverage) * m
+        )
+        assert 0 < self.layout_specs["Wood"]["starting_coverage"] < 1
+        assert 0 < self.layout_specs["Stone"]["starting_coverage"] < 1
+        #
+        self.layout_specs["Wood"]["regen_halfwidth"] = int(wood_regen_halfwidth)
+        self.layout_specs["Stone"]["regen_halfwidth"] = int(stone_regen_halfwidth)
+        assert 0 <= self.layout_specs["Wood"]["regen_halfwidth"] <= 3
+        assert 0 <= self.layout_specs["Stone"]["regen_halfwidth"] <= 3
+        #
+        self.layout_specs["Wood"]["regen_weight"] = float(wood_regen_weight)
+        self.layout_specs["Stone"]["regen_weight"] = float(stone_regen_weight)
+        assert 0 <= self.layout_specs["Wood"]["regen_weight"] <= 1
+        assert 0 <= self.layout_specs["Stone"]["regen_weight"] <= 1
+        #
+        self.layout_specs["Wood"]["max_health"] = int(wood_max_health)
+        self.layout_specs["Stone"]["max_health"] = int(stone_max_health)
+  
