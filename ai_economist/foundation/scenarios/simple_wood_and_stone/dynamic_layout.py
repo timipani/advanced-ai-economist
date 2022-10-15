@@ -62,4 +62,30 @@ class Uniform(BaseEnvironment):
             always energy_cost. The units of the decay constant depend on the choice of
             energy_warmup_method.
         energy_warmup_method (str): How to schedule energy annealing (warmup). If
-            "decay" (d
+            "decay" (default), use the number of completed episodes. If "auto",
+            use the number of timesteps where the average agent reward was positive.
+        planner_reward_type (str): The type of reward used for the planner. Options
+            are "coin_eq_times_productivity" (default),
+            "inv_income_weighted_coin_endowment", and "inv_income_weighted_utility".
+        mixing_weight_gini_vs_coin (float): Degree to which equality is ignored w/
+            "coin_eq_times_productivity". Default is 0, which weights equality and
+            productivity equally. If set to 1, only productivity is rewarded.
+
+    """
+
+    name = "uniform/simple_wood_and_stone"
+    agent_subclasses = ["BasicMobileAgent", "BasicPlanner"]
+    required_entities = ["Wood", "Stone"]
+
+    def __init__(
+        self,
+        *base_env_args,
+        planner_gets_spatial_info=True,
+        full_observability=False,
+        mobile_agent_observation_range=5,
+        starting_wood_coverage=0.025,
+        wood_regen_halfwidth=0,
+        wood_regen_weight=0.01,
+        wood_max_health=1,
+        starting_stone_coverage=0.025,
+        sto
