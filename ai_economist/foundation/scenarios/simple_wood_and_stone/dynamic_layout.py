@@ -116,4 +116,26 @@ class Uniform(BaseEnvironment):
 
         # For controlling how resource regeneration behavior
         #  - Coverage: if fraction, target fraction of total tiles;
-        #  if i
+        #  if integer, target number of tiles
+        #  - Regen Halfwidth: width of regen kernel = 1 + (2 * halfwidth)
+        #  - Regen Weight: regen probability per tile counted by the regen kernel
+        #  - Max Health: how many resource units can populate a source block
+        #  - Clumpiness: degree to which resources are spatially clustered
+        #  - Gradient Steepness: degree to which stone/wood
+        #  are restricted to top/bottom of map
+        self.layout_specs = dict(Wood={}, Stone={})
+        #
+        if starting_wood_coverage >= 1:
+            starting_wood_coverage /= np.prod(self.world_size)
+        if starting_stone_coverage >= 1:
+            starting_stone_coverage /= np.prod(self.world_size)
+        assert (starting_stone_coverage + starting_wood_coverage) < 0.5
+        #
+        self._checker_source_blocks = bool(checker_source_blocks)
+        c, r = np.meshgrid(
+            np.arange(self.world_size[1]) % 2, np.arange(self.world_size[0]) % 2
+        )
+        self._checker_mask = (r + c) == 1
+        m = 2 if self._checker_source_blocks else 1
+        #
+        self.layout_specs["Wood"]["starting_co
