@@ -187,4 +187,28 @@ class Uniform(BaseEnvironment):
 
         # The amount that labor is weighted in utility computation
         # (once annealing is finished)
-        self.energy_cost = float(
+        self.energy_cost = float(energy_cost)
+        assert self.energy_cost >= 0
+
+        # What value to use for calculating the progress of energy annealing
+        # If method = 'decay': #completed episodes
+        # If method = 'auto' : #timesteps where avg. agent reward > 0
+        self.energy_warmup_method = energy_warmup_method.lower()
+        assert self.energy_warmup_method in ["decay", "auto"]
+        # Decay constant for annealing to full energy cost
+        # (if energy_warmup_constant == 0, there is no annealing)
+        self.energy_warmup_constant = float(energy_warmup_constant)
+        assert self.energy_warmup_constant >= 0
+        self._auto_warmup_integrator = 0
+
+        # Which social welfare function to use
+        self.planner_reward_type = str(planner_reward_type).lower()
+
+        # How much to weight equality if using SWF=eq*prod:
+        # 0 -> SWF=eq*prod
+        # 1 -> SWF=prod
+        self.mixing_weight_gini_vs_coin = float(mixing_weight_gini_vs_coin)
+        assert 0 <= self.mixing_weight_gini_vs_coin <= 1.0
+
+        # Use this to calculate marginal changes and deliver that as reward
+        self.init_optimization_
