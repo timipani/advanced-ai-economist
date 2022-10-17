@@ -159,4 +159,32 @@ class Uniform(BaseEnvironment):
         #
         self.layout_specs["Wood"]["max_health"] = int(wood_max_health)
         self.layout_specs["Stone"]["max_health"] = int(stone_max_health)
-  
+        assert self.layout_specs["Wood"]["max_health"] > 0
+        assert self.layout_specs["Stone"]["max_health"] > 0
+        #
+        self.clumpiness = {
+            "Wood": float(wood_clumpiness),
+            "Stone": float(stone_clumpiness),
+        }
+        assert all(0 <= v <= 1 for v in self.clumpiness.values())
+        #
+        self.gradient_steepness = float(gradient_steepness)
+        assert self.gradient_steepness >= 1.0
+        #
+        self.source_prob_maps = self.make_source_prob_maps()
+        self.source_maps = {
+            k: np.zeros_like(v) for k, v in self.source_prob_maps.items()
+        }
+
+        # How much coin do agents begin with at upon reset
+        self.starting_agent_coin = float(starting_agent_coin)
+        assert self.starting_agent_coin >= 0.0
+
+        # Controls the diminishing marginal utility of coin.
+        # isoelastic_eta=0 means no diminishing utility.
+        self.isoelastic_eta = float(isoelastic_eta)
+        assert 0.0 <= self.isoelastic_eta <= 1.0
+
+        # The amount that labor is weighted in utility computation
+        # (once annealing is finished)
+        self.energy_cost = float(
