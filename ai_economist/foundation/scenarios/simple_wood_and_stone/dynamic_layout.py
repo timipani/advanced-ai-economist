@@ -211,4 +211,34 @@ class Uniform(BaseEnvironment):
         assert 0 <= self.mixing_weight_gini_vs_coin <= 1.0
 
         # Use this to calculate marginal changes and deliver that as reward
-        self.init_optimization_
+        self.init_optimization_metric = {agent.idx: 0 for agent in self.all_agents}
+        self.prev_optimization_metric = {agent.idx: 0 for agent in self.all_agents}
+        self.curr_optimization_metric = {agent.idx: 0 for agent in self.all_agents}
+
+    @property
+    def energy_weight(self):
+        """
+        Energy annealing progress. Multiply with self.energy_cost to get the
+        effective energy coefficient.
+        """
+        if self.energy_warmup_constant <= 0.0:
+            return 1.0
+
+        if self.energy_warmup_method == "decay":
+            return float(1.0 - np.exp(-self._completions / self.energy_warmup_constant))
+
+        if self.energy_warmup_method == "auto":
+            return float(
+                1.0
+                - np.exp(-self._auto_warmup_integrator / self.energy_warmup_constant)
+            )
+
+        raise NotImplementedError
+
+    def get_current_optimization_metrics(self):
+        """
+        Compute optimization metrics based on the current state. Used to compute reward.
+
+        Returns:
+            curr_optimization_metric (dict): A dictionary of {agent.idx: metric}
+                with an entry for each agent (including the planner) i
