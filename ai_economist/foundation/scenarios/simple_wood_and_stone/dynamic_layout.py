@@ -265,4 +265,35 @@ class Uniform(BaseEnvironment):
         elif self.planner_reward_type == "inv_income_weighted_coin_endowments":
             curr_optimization_metric[
                 self.world.planner.idx
-            ] = rewards.inv_income_weighted_c
+            ] = rewards.inv_income_weighted_coin_endowments(
+                coin_endowments=np.array(
+                    [agent.total_endowment("Coin") for agent in self.world.agents]
+                )
+            )
+        elif self.planner_reward_type == "inv_income_weighted_utility":
+            curr_optimization_metric[
+                self.world.planner.idx
+            ] = rewards.inv_income_weighted_utility(
+                coin_endowments=np.array(
+                    [agent.total_endowment("Coin") for agent in self.world.agents]
+                ),
+                utilities=np.array(
+                    [curr_optimization_metric[agent.idx] for agent in self.world.agents]
+                ),
+            )
+        else:
+            print("No valid planner reward selected!")
+            raise NotImplementedError
+        return curr_optimization_metric
+
+    def make_source_prob_maps(self):
+        """
+        Make maps specifying how likely each location is to be assigned as a resource
+        source tile.
+
+        Returns:
+            source_prob_maps (dict): Contains a source probability map for both
+                stone and wood
+        """
+        prob_gradient = (
+            np.arang
