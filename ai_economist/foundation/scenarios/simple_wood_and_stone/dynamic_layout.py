@@ -241,4 +241,28 @@ class Uniform(BaseEnvironment):
 
         Returns:
             curr_optimization_metric (dict): A dictionary of {agent.idx: metric}
-                with an entry for each agent (including the planner) i
+                with an entry for each agent (including the planner) in the env.
+        """
+        curr_optimization_metric = {}
+        # (for agents)
+        for agent in self.world.agents:
+            curr_optimization_metric[agent.idx] = rewards.isoelastic_coin_minus_labor(
+                coin_endowment=agent.total_endowment("Coin"),
+                total_labor=agent.state["endogenous"]["Labor"],
+                isoelastic_eta=self.isoelastic_eta,
+                labor_coefficient=self.energy_weight * self.energy_cost,
+            )
+        # (for the planner)
+        if self.planner_reward_type == "coin_eq_times_productivity":
+            curr_optimization_metric[
+                self.world.planner.idx
+            ] = rewards.coin_eq_times_productivity(
+                coin_endowments=np.array(
+                    [agent.total_endowment("Coin") for agent in self.world.agents]
+                ),
+                equality_weight=1 - self.mixing_weight_gini_vs_coin,
+            )
+        elif self.planner_reward_type == "inv_income_weighted_coin_endowments":
+            curr_optimization_metric[
+                self.world.planner.idx
+            ] = rewards.inv_income_weighted_c
