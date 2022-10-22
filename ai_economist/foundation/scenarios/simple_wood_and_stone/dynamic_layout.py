@@ -296,4 +296,34 @@ class Uniform(BaseEnvironment):
                 stone and wood
         """
         prob_gradient = (
-            np.arang
+            np.arange(self.world_size[0])[:, None].repeat(self.world_size[1], axis=1)
+            ** self.gradient_steepness
+        )
+        prob_gradient = prob_gradient / np.mean(prob_gradient)
+
+        return {
+            "Wood": prob_gradient * self.layout_specs["Wood"]["starting_coverage"],
+            "Stone": prob_gradient[-1::-1]
+            * self.layout_specs["Wood"]["starting_coverage"],
+        }
+
+    # The following methods must be implemented for each scenario
+    # -----------------------------------------------------------
+
+    def reset_starting_layout(self):
+        """
+        Part 1/2 of scenario reset. This method handles resetting the state of the
+        environment managed by the scenario (i.e. resource & landmark layout).
+
+        Here, generate a resource source layout consistent with target parameters.
+        """
+        happy_coverage = False
+        n_reset_tries = 0
+
+        # Attempt to do a reset until an attempt limit is reached or coverage is good
+        while n_reset_tries < 100 and not happy_coverage:
+            self.world.maps.clear()
+
+            self.source_maps = {
+                k: np.zeros_like(v) for k, v in self.source_prob_maps.items()
+           
