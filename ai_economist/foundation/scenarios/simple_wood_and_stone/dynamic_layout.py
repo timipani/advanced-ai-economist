@@ -326,4 +326,36 @@ class Uniform(BaseEnvironment):
 
             self.source_maps = {
                 k: np.zeros_like(v) for k, v in self.source_prob_maps.items()
-           
+            }
+
+            resources = ["Wood", "Stone"]
+
+            for resource in resources:
+                clump = 1 - np.clip(self.clumpiness[resource], 0.0, 0.99)
+
+                source_prob = self.source_prob_maps[resource] * 0.1 * clump
+
+                empty = self.world.maps.empty
+
+                tmp = np.random.rand(*source_prob.shape)
+                maybe_source_map = (tmp < source_prob) * empty
+
+                n_tries = 0
+                while np.mean(maybe_source_map) < (
+                    self.layout_specs[resource]["starting_coverage"] * clump
+                ):
+                    tmp *= 0.9
+                    maybe_source_map = (tmp < source_prob) * empty
+                    n_tries += 1
+                    if n_tries > 200:
+                        break
+
+                while (
+                    np.mean(maybe_source_map)
+                    < self.layout_specs[resource]["starting_coverage"]
+                ):
+                    kernel = np.random.randn(7, 7) > 0
+                    tmp = signal.convolve2d(
+                        maybe_source_map
+                        + (0.2 * np.random.randn(*maybe_source_map.shape))
+                        
