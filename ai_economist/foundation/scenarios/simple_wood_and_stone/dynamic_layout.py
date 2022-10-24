@@ -386,4 +386,28 @@ class Uniform(BaseEnvironment):
         # Apply checkering, if applicable
         if self._checker_source_blocks:
             for resource, source_map in self.source_maps.items():
-                source_map = source_map * self.
+                source_map = source_map * self._checker_mask
+                self.source_maps[resource] = source_map
+                self.world.maps.set(resource, source_map)
+                self.world.maps.set(resource + "SourceBlock", source_map)
+
+    def reset_agent_states(self):
+        """
+        Part 2/2 of scenario reset. This method handles resetting the state of the
+        agents themselves (i.e. inventory, locations, etc.).
+
+        Here, empty inventories, give mobile agents any starting coin, and place them
+        in random accessible locations to start.
+        """
+        self.world.clear_agent_locs()
+
+        for agent in self.world.agents:
+            # Clear everything to start with
+            agent.state["inventory"] = {k: 0 for k in agent.inventory.keys()}
+            agent.state["escrow"] = {k: 0 for k in agent.inventory.keys()}
+            agent.state["endogenous"] = {k: 0 for k in agent.endogenous.keys()}
+            # Add starting coin
+            agent.state["inventory"]["Coin"] = float(self.starting_agent_coin)
+
+        # Clear everything for the planner
+        self.world.planner.state["inve
