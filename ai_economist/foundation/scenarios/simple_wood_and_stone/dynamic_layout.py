@@ -358,4 +358,32 @@ class Uniform(BaseEnvironment):
                     tmp = signal.convolve2d(
                         maybe_source_map
                         + (0.2 * np.random.randn(*maybe_source_map.shape))
-                        
+                        - 0.25,
+                        kernel.astype(np.float32),
+                        "same",
+                    )
+                    maybe_source_map = np.maximum(tmp > 0, maybe_source_map) * empty
+
+                self.source_maps[resource] = maybe_source_map
+                self.world.maps.set(
+                    resource, maybe_source_map
+                )  # * self.layout_specs[resource]['max_health'])
+                self.world.maps.set(resource + "SourceBlock", maybe_source_map)
+
+            # Restart if the resource distribution is too far off the target coverage
+            happy_coverage = True
+            for resource in resources:
+                coverage_quotient = (
+                    np.mean(self.source_maps[resource])
+                    / self.layout_specs[resource]["starting_coverage"]
+                )
+                bound = 0.4
+                if not (1 / (1 + bound)) <= coverage_quotient <= (1 + bound):
+                    happy_coverage = False
+
+            n_reset_tries += 1
+
+        # Apply checkering, if applicable
+        if self._checker_source_blocks:
+            for resource, source_map in self.source_maps.items():
+                source_map = source_map * self.
