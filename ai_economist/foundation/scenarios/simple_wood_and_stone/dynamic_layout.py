@@ -410,4 +410,32 @@ class Uniform(BaseEnvironment):
             agent.state["inventory"]["Coin"] = float(self.starting_agent_coin)
 
         # Clear everything for the planner
-        self.world.planner.state["inve
+        self.world.planner.state["inventory"] = {
+            k: 0 for k in self.world.planner.inventory.keys()
+        }
+        self.world.planner.state["escrow"] = {
+            k: 0 for k in self.world.planner.escrow.keys()
+        }
+
+        # Place the agents randomly in the world
+        for agent in self.world.get_random_order_agents():
+            r = np.random.randint(0, self.world_size[0])
+            c = np.random.randint(0, self.world_size[1])
+            n_tries = 0
+            while not self.world.can_agent_occupy(r, c, agent):
+                r = np.random.randint(0, self.world_size[0])
+                c = np.random.randint(0, self.world_size[1])
+                n_tries += 1
+                if n_tries > 200:
+                    raise TimeoutError
+            self.world.set_agent_loc(agent, r, c)
+
+    def scenario_step(self):
+        """
+        Update the state of the world according to whatever rules this scenario
+        implements.
+
+        This gets called in the 'step' method (of base_env) after going through each
+        component step and before generating observations, rewards, etc.
+
+        In this class of scenarios, the scenario step handles stochas
