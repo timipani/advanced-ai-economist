@@ -470,4 +470,23 @@ class Uniform(BaseEnvironment):
                 ),
             )
 
-    def ge
+    def generate_observations(self):
+        """
+        Generate observations associated with this scenario.
+
+        A scenario does not need to produce observations and can provide observations
+        for only some agent types; however, for a given agent type, it should either
+        always or never yield an observation. If it does yield an observation,
+        that observation should always have the same structure/sizes!
+
+        Returns:
+            obs (dict): A dictionary of {agent.idx: agent_obs_dict}. In words,
+                return a dictionary with an entry for each agent (which can including
+                the planner) for which this scenario provides an observation. For each
+                entry, the key specifies the index of the agent and the value contains
+                its associated observation dictionary.
+
+        Here, non-planner agents receive spatial observations (depending on the env
+        config) as well as the contents of their inventory and endogenous quantities.
+        The planner also receives spatial observations (again, depending on the env
+        config) as well as the inventory o
