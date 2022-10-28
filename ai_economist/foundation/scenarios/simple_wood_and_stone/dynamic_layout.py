@@ -438,4 +438,36 @@ class Uniform(BaseEnvironment):
         This gets called in the 'step' method (of base_env) after going through each
         component step and before generating observations, rewards, etc.
 
-        In this class of scenarios, the scenario step handles stochas
+        In this class of scenarios, the scenario step handles stochastic resource
+        regeneration.
+        """
+
+        resources = ["Wood", "Stone"]
+
+        for resource in resources:
+            d = 1 + (2 * self.layout_specs[resource]["regen_halfwidth"])
+            kernel = (
+                self.layout_specs[resource]["regen_weight"] * np.ones((d, d)) / (d ** 2)
+            )
+
+            resource_map = self.world.maps.get(resource)
+            resource_source_blocks = self.world.maps.get(resource + "SourceBlock")
+            spawnable = (
+                self.world.maps.empty + resource_map + resource_source_blocks
+            ) > 0
+            spawnable *= resource_source_blocks > 0
+
+            health = np.maximum(resource_map, resource_source_blocks)
+            respawn = np.random.rand(*health.shape) < signal.convolve2d(
+                health, kernel, "same"
+            )
+            respawn *= spawnable
+
+            self.world.maps.set(
+                resource,
+                np.minimum(
+                    resource_map + respawn, self.layout_specs[resource]["max_health"]
+                ),
+            )
+
+    def ge
