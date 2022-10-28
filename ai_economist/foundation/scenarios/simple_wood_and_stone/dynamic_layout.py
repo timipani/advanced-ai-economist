@@ -489,4 +489,38 @@ class Uniform(BaseEnvironment):
         Here, non-planner agents receive spatial observations (depending on the env
         config) as well as the contents of their inventory and endogenous quantities.
         The planner also receives spatial observations (again, depending on the env
-        config) as well as the inventory o
+        config) as well as the inventory of each of the mobile agents.
+        """
+        obs = {}
+        curr_map = self.world.maps.state
+
+        owner_map = self.world.maps.owner_state
+        loc_map = self.world.loc_map
+        agent_idx_maps = np.concatenate([owner_map, loc_map[None, :, :]], axis=0)
+        agent_idx_maps += 2
+        agent_idx_maps[agent_idx_maps == 1] = 0
+
+        agent_locs = {
+            str(agent.idx): {
+                "loc-row": agent.loc[0] / self.world_size[0],
+                "loc-col": agent.loc[1] / self.world_size[1],
+            }
+            for agent in self.world.agents
+        }
+        agent_invs = {
+            str(agent.idx): {
+                "inventory-" + k: v * self.inv_scale for k, v in agent.inventory.items()
+            }
+            for agent in self.world.agents
+        }
+
+        obs[self.world.planner.idx] = {
+            "inventory-" + k: v * self.inv_scale
+            for k, v in self.world.planner.inventory.items()
+        }
+        if self._planner_gets_spatial_info:
+            obs[self.world.planner.idx].update(
+                dict(map=curr_map, idx_map=agent_idx_maps)
+            )
+
+        # Mobi
