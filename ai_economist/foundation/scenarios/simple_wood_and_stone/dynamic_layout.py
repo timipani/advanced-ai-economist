@@ -523,4 +523,34 @@ class Uniform(BaseEnvironment):
                 dict(map=curr_map, idx_map=agent_idx_maps)
             )
 
-        # Mobi
+        # Mobile agents see the full map. Convey location info via one-hot map channels.
+        if self._full_observability:
+            for agent in self.world.agents:
+                my_map = np.array(agent_idx_maps)
+                my_map[my_map == int(agent.idx) + 2] = 1
+                sidx = str(agent.idx)
+                obs[sidx] = {"map": curr_map, "idx_map": my_map}
+                obs[sidx].update(agent_invs[sidx])
+
+        # Mobile agents only see within a window around their position
+        else:
+            w = (
+                self._mobile_agent_observation_range
+            )  # View halfwidth (only applicable without full observability)
+
+            padded_map = np.pad(
+                curr_map,
+                [(0, 1), (w, w), (w, w)],
+                mode="constant",
+                constant_values=[(0, 1), (0, 0), (0, 0)],
+            )
+
+            padded_idx = np.pad(
+                agent_idx_maps,
+                [(0, 0), (w, w), (w, w)],
+                mode="constant",
+                constant_values=[(0, 0), (0, 0), (0, 0)],
+            )
+
+            for agent in self.world.agents:
+                r, c = 
