@@ -553,4 +553,34 @@ class Uniform(BaseEnvironment):
             )
 
             for agent in self.world.agents:
-                r, c = 
+                r, c = [c + w for c in agent.loc]
+                visible_map = padded_map[
+                    :, (r - w) : (r + w + 1), (c - w) : (c + w + 1)
+                ]
+                visible_idx = np.array(
+                    padded_idx[:, (r - w) : (r + w + 1), (c - w) : (c + w + 1)]
+                )
+
+                visible_idx[visible_idx == int(agent.idx) + 2] = 1
+
+                sidx = str(agent.idx)
+
+                obs[sidx] = {"map": visible_map, "idx_map": visible_idx}
+                obs[sidx].update(agent_locs[sidx])
+                obs[sidx].update(agent_invs[sidx])
+
+                # Agent-wise planner info (gets crunched into the planner obs in the
+                # base scenario code)
+                obs["p" + sidx] = agent_invs[sidx]
+                if self._planner_gets_spatial_info:
+                    obs["p" + sidx].update(agent_locs[sidx])
+
+        return obs
+
+    def compute_reward(self):
+        """
+        Apply the reward function(s) associated with this scenario to get the rewards
+        from this step.
+
+        Returns:
+            rew (dict): A dictionary of {agent.i
