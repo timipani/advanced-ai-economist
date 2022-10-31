@@ -583,4 +583,26 @@ class Uniform(BaseEnvironment):
         from this step.
 
         Returns:
-            rew (dict): A dictionary of {agent.i
+            rew (dict): A dictionary of {agent.idx: agent_obs_dict}. In words,
+                return a dictionary with an entry for each agent in the environment
+                (including the planner). For each entry, the key specifies the index of
+                the agent and the value contains the scalar reward earned this timestep.
+
+        Rewards are computed as the marginal utility (agents) or marginal social
+        welfare (planner) experienced on this timestep. Ignoring discounting,
+        this means that agents' (planner's) objective is to maximize the utility
+        (social welfare) associated with the terminal state of the episode.
+        """
+
+        # "curr_optimization_metric" hasn't been updated yet, so it gives us the
+        # utility from the last step.
+        utility_at_end_of_last_time_step = deepcopy(self.curr_optimization_metric)
+
+        # compute current objectives and store the values
+        self.curr_optimization_metric = self.get_current_optimization_metrics()
+
+        # reward = curr - prev objectives
+        rew = {
+            k: float(v - utility_at_end_of_last_time_step[k])
+            for k, v in self.curr_optimization_metric.items()
+      
