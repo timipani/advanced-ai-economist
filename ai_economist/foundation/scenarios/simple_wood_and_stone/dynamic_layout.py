@@ -662,4 +662,31 @@ class Uniform(BaseEnvironment):
         metrics["social/productivity"] = social_metrics.get_productivity(
             coin_endowments
         )
-        metrics["social/equality"] = social_metrics.get_equali
+        metrics["social/equality"] = social_metrics.get_equality(coin_endowments)
+
+        utilities = np.array(
+            [self.curr_optimization_metric[agent.idx] for agent in self.world.agents]
+        )
+        metrics[
+            "social_welfare/coin_eq_times_productivity"
+        ] = rewards.coin_eq_times_productivity(
+            coin_endowments=coin_endowments, equality_weight=1.0
+        )
+        metrics[
+            "social_welfare/inv_income_weighted_coin_endow"
+        ] = rewards.inv_income_weighted_coin_endowments(coin_endowments=coin_endowments)
+        metrics[
+            "social_welfare/inv_income_weighted_utility"
+        ] = rewards.inv_income_weighted_utility(
+            coin_endowments=coin_endowments, utilities=utilities
+        )
+
+        for agent in self.all_agents:
+            for resource, quantity in agent.inventory.items():
+                metrics[
+                    "endow/{}/{}".format(agent.idx, resource)
+                ] = agent.total_endowment(resource)
+
+            if agent.endogenous is not None:
+                for resource, quantity in agent.endogenous.items():
+             
