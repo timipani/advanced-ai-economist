@@ -605,4 +605,34 @@ class Uniform(BaseEnvironment):
         rew = {
             k: float(v - utility_at_end_of_last_time_step[k])
             for k, v in self.curr_optimization_metric.items()
-      
+        }
+
+        # store the previous objective values
+        self.prev_optimization_metric.update(utility_at_end_of_last_time_step)
+
+        # Automatic Energy Cost Annealing
+        # -------------------------------
+        avg_agent_rew = np.mean([rew[a.idx] for a in self.world.agents])
+        # Count the number of timesteps where the avg agent reward was > 0
+        if avg_agent_rew > 0:
+            self._auto_warmup_integrator += 1
+
+        return rew
+
+    # Optional methods for customization
+    # ----------------------------------
+
+    def additional_reset_steps(self):
+        """
+        Extra scenario-specific steps that should be performed at the end of the reset
+        cycle.
+
+        For each reset cycle...
+            First, reset_starting_layout() and reset_agent_states() will be called.
+
+            Second, <component>.reset() will be called for each registered component.
+
+            Lastly, this method will be called to allow for any final customization of
+            the reset cycle.
+
+        For this scenario, this method resets o
