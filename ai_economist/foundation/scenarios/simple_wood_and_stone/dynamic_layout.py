@@ -635,4 +635,31 @@ class Uniform(BaseEnvironment):
             Lastly, this method will be called to allow for any final customization of
             the reset cycle.
 
-        For this scenario, this method resets o
+        For this scenario, this method resets optimization metric trackers.
+        """
+        # compute current objectives
+        curr_optimization_metric = self.get_current_optimization_metrics()
+
+        self.curr_optimization_metric = deepcopy(curr_optimization_metric)
+        self.init_optimization_metric = deepcopy(curr_optimization_metric)
+        self.prev_optimization_metric = deepcopy(curr_optimization_metric)
+
+    def scenario_metrics(self):
+        """
+        Allows the scenario to generate metrics (collected along with component metrics
+        in the 'metrics' property).
+
+        To have the scenario add metrics, this function needs to return a dictionary of
+        {metric_key: value} where 'value' is a scalar (no nesting or lists!)
+
+        Here, summarize social metrics, endowments, utilities, and labor cost annealing
+        """
+        metrics = dict()
+
+        coin_endowments = np.array(
+            [agent.total_endowment("Coin") for agent in self.world.agents]
+        )
+        metrics["social/productivity"] = social_metrics.get_productivity(
+            coin_endowments
+        )
+        metrics["social/equality"] = social_metrics.get_equali
