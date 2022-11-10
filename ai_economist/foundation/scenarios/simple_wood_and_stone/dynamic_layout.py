@@ -689,4 +689,32 @@ class Uniform(BaseEnvironment):
 
             if agent.endogenous is not None:
                 for resource, quantity in agent.endogenous.items():
-             
+                    metrics["endogenous/{}/{}".format(agent.idx, resource)] = quantity
+
+            metrics["util/{}".format(agent.idx)] = self.curr_optimization_metric[
+                agent.idx
+            ]
+
+        # Labor weight
+        metrics["labor/weighted_cost"] = self.energy_cost * self.energy_weight
+        metrics["labor/warmup_integrator"] = int(self._auto_warmup_integrator)
+
+        return metrics
+
+
+@scenario_registry.add
+class MultiZone(Uniform):
+    """
+    World containing stone and wood clustered in "zones" with stochastic regeneration.
+
+    For controlling how resource regeneration behavior...
+        Regen Halfwidth: width of regen kernel = 1 + (2 * halfwidth); set >0 to create
+            spatial social dilemma
+        Regen Weight: regen probability per tile counted by the regen kernel
+        Max Health: how many resource units can populate a source block
+
+    Args:
+        num_partitions_row (int): Number of height-wise partitions (controls #zones).
+        num_partitions_col (int): Number of width-wise partitions (controls #zones).
+        num_wood_zones (int): Number of zones where wood will appear.
+        num_stone_zones (int): Numb
