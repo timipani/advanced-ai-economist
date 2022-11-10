@@ -717,4 +717,21 @@ class MultiZone(Uniform):
         num_partitions_row (int): Number of height-wise partitions (controls #zones).
         num_partitions_col (int): Number of width-wise partitions (controls #zones).
         num_wood_zones (int): Number of zones where wood will appear.
-        num_stone_zones (int): Numb
+        num_stone_zones (int): Number of zones where stone will appear.
+        num_wood_and_stone_zones (int): Number of zones where both wood and stone will
+            appear.
+        planner_gets_spatial_obs (bool): Whether the planner agent receives spatial
+            observations from the world.
+        full_observability (bool): Whether the mobile agents' spatial observation
+            includes the full world view or is instead an egocentric view.
+        mobile_agent_observation_range (int): If not using full_observability,
+            the spatial range (on each side of the agent) that is visible in the
+            spatial observations.
+        wood_regen_halfwidth (int): Regen halfwidth for wood.
+        wood_regen_weight (float): Regen weight for wood.
+        wood_max_health (int): Max wood units per wood source tile.
+        stone_regen_halfwidth (int): Regen halfwidth for stone.
+        stone_regen_weight (float): Regen weight for stone.
+        stone_max_health (int): Max stone units per stone source tile.
+        starting_agent_coin (int, float): Amount of coin agents have at t=0.
+        isoelastic_eta (float): Parameter controlling the shape of a
