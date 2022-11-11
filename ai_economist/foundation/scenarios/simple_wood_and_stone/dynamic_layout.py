@@ -787,4 +787,30 @@ class MultiZone(Uniform):
         # determines initial world probability masses
         zone_names = list(self.zone_specs.keys())
         zone_indices = [v[0] for _, v in self.zone_specs.items()]
-        num
+        num_zones_per_type = [self.zone_specs[k][1] for k in zone_names]
+        num_zones = sum(num_zones_per_type)
+
+        num_partitions_row = self.num_partitions_row
+        num_partitions_col = self.num_partitions_col
+        num_regions = num_partitions_row * num_partitions_col
+
+        assert num_regions >= num_zones
+
+        # define regions and starting resource-zone-type
+        # (wood, stone, mixed) for each region
+
+        # note: row, col index over regions
+        partition_size_row = int(np.ceil(self.world_size[0] / num_partitions_row))
+        partition_size_col = int(np.ceil(self.world_size[1] / num_partitions_col))
+
+        # serialize regions in the world and give them an index.
+        # -1 means no source blocks in that region
+        grid_zone_indices = np.concatenate(
+            [
+                np.repeat(zone_indices, num_zones_per_type),
+                np.array([-1] * (num_regions - num_zones)),
+            ]
+        )
+        np.random.shuffle(grid_zone_indices)
+        grid_zone_indices = grid_zone_indices.reshape(
+            (num_partitions_row, num
