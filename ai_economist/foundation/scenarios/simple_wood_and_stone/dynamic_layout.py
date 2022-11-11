@@ -749,4 +749,42 @@ class MultiZone(Uniform):
             are "coin_eq_times_productivity" (default),
             "inv_income_weighted_coin_endowment", and "inv_income_weighted_utility".
         mixing_weight_gini_vs_coin (float): Degree to which equality is ignored w/
-            "coin_eq_times_productivity". Default is 0, whic
+            "coin_eq_times_productivity". Default is 0, which weights equality and
+            productivity equally. If set to 1, only productivity is rewarded.
+    """
+
+    name = "multi_zone/simple_wood_and_stone"
+
+    def __init__(
+        self,
+        *args,
+        num_partitions_row=8,
+        num_partitions_col=8,
+        num_wood_zones=6,
+        num_stone_zones=6,
+        num_wood_and_stone_zones=4,
+        **kwargs
+    ):
+        self.num_partitions_row = num_partitions_row
+        self.num_partitions_col = num_partitions_col
+        self.zone_specs = {
+            "Wood": (0, num_wood_zones),
+            "Stone": (1, num_stone_zones),
+            "WoodStone": (2, num_wood_and_stone_zones),
+        }
+
+        super().__init__(*args, **kwargs)
+
+    def make_source_prob_maps(self):
+        """
+        Make maps specifying how likely each location is to be assigned as a resource
+        source tile.
+
+        Returns:
+            source_prob_maps (dict): Contains a source probability map for both
+                stone and wood.
+        """
+        # determines initial world probability masses
+        zone_names = list(self.zone_specs.keys())
+        zone_indices = [v[0] for _, v in self.zone_specs.items()]
+        num
