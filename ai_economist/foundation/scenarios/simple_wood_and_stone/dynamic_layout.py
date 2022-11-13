@@ -843,4 +843,37 @@ class MultiZone(Uniform):
                 np.equal(grid_zone_indices, self.zone_specs["WoodStone"][0]),
             ),
             np.ones_like(grid_zone_indices),
-            np.zeros_like(grid_zone_indi
+            np.zeros_like(grid_zone_indices),
+        )
+        stone_prob = np.kron(
+            stone_prob, np.ones((partition_size_row, partition_size_col))
+        )
+        stone_prob = stone_prob[: self.world_size[0], : self.world_size[1]]
+        stone_prob = stone_prob / np.mean(stone_prob)
+
+        try:
+            assert stone_prob.shape[0] == self.world_size[0]
+            assert stone_prob.shape[1] == self.world_size[1]
+        except AssertionError:
+            print("World not correct size!")
+            raise
+
+        return {
+            "Wood": wood_prob * self.layout_specs["Wood"]["starting_coverage"],
+            "Stone": stone_prob * self.layout_specs["Wood"]["starting_coverage"],
+        }
+
+    def reset_starting_layout(self):
+        """
+        Reset the starting layout of the world. Modifies parent scenario method such
+        that, before doing the reset, it first remakes the source prob maps.
+        """
+        self.source_prob_maps = self.make_source_prob_maps()
+        super().reset_starting_layout()
+
+
+@scenario_registry.add
+class Quadrant(Uniform):
+    """
+    World containing wood and stone, with water creating 4 nearly closed-off quadrants.
+ 
