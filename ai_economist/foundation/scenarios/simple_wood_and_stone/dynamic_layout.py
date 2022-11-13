@@ -896,4 +896,21 @@ class Quadrant(Uniform):
         full_observability (bool): Whether the mobile agents' spatial observation
             includes the full world view or is instead an egocentric view.
         mobile_agent_observation_range (int): If not using full_observability,
-      
+            the spatial range (on each side of the agent) that is visible in the
+            spatial observations.
+        starting_wood_coverage (int, float): Target coverage of wood at t=0.
+        wood_regen_halfwidth (int): Regen halfwidth for wood.
+        wood_regen_weight (float): Regen weight for wood.
+        wood_max_health (int): Max wood units per wood source tile.
+        wood_clumpiness (float): Degree of wood clumping.
+        starting_stone_coverage (int, float): Target coverage of stone at t=0.
+        stone_regen_halfwidth (int): Regen halfwidth for stone.
+        stone_regen_weight (float): Regen weight for stone.
+        stone_max_health (int): Max stone units per stone source tile.
+        stone_clumpiness (float): Degree of stone clumping.
+        gradient_steepness (int, float): How steeply source tile probability falls
+            off from the top/bottom of the map.
+        checker_source_blocks (bool): Whether to space source tiles in a "checker"
+            formation.
+        starting_agent_coin (int, float): Amount of coin agents have at t=0.
+        isoelastic_eta (float): Parameter controlling the shape of age
