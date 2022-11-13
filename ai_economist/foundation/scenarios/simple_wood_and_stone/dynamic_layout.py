@@ -813,4 +813,34 @@ class MultiZone(Uniform):
         )
         np.random.shuffle(grid_zone_indices)
         grid_zone_indices = grid_zone_indices.reshape(
-            (num_partitions_row, num
+            (num_partitions_row, num_partitions_col)
+        )
+
+        wood_prob = np.where(
+            np.logical_or(
+                np.equal(grid_zone_indices, self.zone_specs["Wood"][0]),
+                np.equal(grid_zone_indices, self.zone_specs["WoodStone"][0]),
+            ),
+            np.ones_like(grid_zone_indices),
+            np.zeros_like(grid_zone_indices),
+        )
+        wood_prob = np.kron(
+            wood_prob, np.ones((partition_size_row, partition_size_col))
+        )
+        wood_prob = wood_prob[: self.world_size[0], : self.world_size[1]]
+        wood_prob = wood_prob / np.mean(wood_prob)
+
+        try:
+            assert wood_prob.shape[0] == self.world_size[0]
+            assert wood_prob.shape[1] == self.world_size[1]
+        except AssertionError:
+            print("World not correct size!")
+            raise
+
+        stone_prob = np.where(
+            np.logical_or(
+                np.equal(grid_zone_indices, self.zone_specs["Stone"][0]),
+                np.equal(grid_zone_indices, self.zone_specs["WoodStone"][0]),
+            ),
+            np.ones_like(grid_zone_indices),
+            np.zeros_like(grid_zone_indi
