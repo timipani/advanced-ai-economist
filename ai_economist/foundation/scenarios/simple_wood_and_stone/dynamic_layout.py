@@ -876,4 +876,24 @@ class MultiZone(Uniform):
 class Quadrant(Uniform):
     """
     World containing wood and stone, with water creating 4 nearly closed-off quadrants.
- 
+    Wood is concentrated along the left of the map, stone along the top, creating
+    different resource concentrations within each of the quadrants.
+
+    For controlling how resource regeneration behavior...
+        Coverage: if fraction, target fraction of total tiles; if integer, target number
+            of tiles
+        Regen Halfwidth: width of regen kernel = 1 + (2 * halfwidth); set >0 to create
+            a spatial social dilemma
+        Regen Weight: regen probability per tile counted by the regen kernel
+        Max Health: how many resource units can populate a source block
+        Clumpiness: degree to which resources are spatially clustered
+        Gradient Steepness: degree to which stone/wood are restricted to the top/bottom
+            of the map
+
+    Args:
+        planner_gets_spatial_obs (bool): Whether the planner agent receives spatial
+            observations from the world.
+        full_observability (bool): Whether the mobile agents' spatial observation
+            includes the full world view or is instead an egocentric view.
+        mobile_agent_observation_range (int): If not using full_observability,
+      
