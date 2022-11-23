@@ -913,4 +913,20 @@ class Quadrant(Uniform):
         checker_source_blocks (bool): Whether to space source tiles in a "checker"
             formation.
         starting_agent_coin (int, float): Amount of coin agents have at t=0.
-        isoelastic_eta (float): Parameter controlling the shape of age
+        isoelastic_eta (float): Parameter controlling the shape of agent utility
+            wrt coin endowment.
+        energy_cost (float): Coefficient for converting labor to negative utility.
+        energy_warmup_constant (float): Decay constant that controls the rate at which
+            the effective energy cost is annealed from 0 to energy_cost. Set to 0
+            (default) to disable annealing, meaning that the effective energy cost is
+            always energy_cost. The units of the decay constant depend on the choice of
+            energy_warmup_method.
+        energy_warmup_method (str): How to schedule energy annealing (warmup). If
+            "decay" (default), use the number of completed episodes. If "auto",
+            use the number of timesteps where the average agent reward was positive.
+        planner_reward_type (str): The type of reward used for the planner. Options
+            are "coin_eq_times_productivity" (default),
+            "inv_income_weighted_coin_endowment", and "inv_income_weighted_utility".
+        mixing_weight_gini_vs_coin (float): Degree to which equality is ignored w/
+            "coin_eq_times_productivity". Default is 0, which weights equality and
+            productivity equally. If set to 1, only p
