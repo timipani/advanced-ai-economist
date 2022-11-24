@@ -963,4 +963,37 @@ class Quadrant(Uniform):
         source tile.
 
         Returns:
-            source_prob_maps (dict): Contains a so
+            source_prob_maps (dict): Contains a source probability map for both
+                stone and wood
+        """
+        width = self.world_size[1]
+        height = self.world_size[0]
+
+        prob_gradient = np.arange(height)[:, None].repeat(width, axis=1) ** (
+            self.gradient_steepness / 2
+        )
+        w_prob_gradient = prob_gradient[::-1]
+
+        prob_gradient = np.arange(width)[None].repeat(height, axis=0) ** (
+            self.gradient_steepness / 2
+        )
+        s_prob_gradient = prob_gradient[:, ::-1]
+
+        prob_sum = s_prob_gradient + w_prob_gradient
+
+        s_prob_gradient = prob_sum * s_prob_gradient
+        w_prob_gradient = prob_sum * w_prob_gradient
+
+        s_prob_gradient = s_prob_gradient / np.sum(s_prob_gradient)
+        w_prob_gradient = w_prob_gradient / np.sum(w_prob_gradient)
+
+        return {"Stone": s_prob_gradient, "Wood": w_prob_gradient}
+
+    def reset_starting_layout(self):
+        """
+        Reset the starting layout of the world. Modifies parent scenario method to
+        add water and remove resources from water locations.
+        """
+
+        # Generate the starting layout like normal
+        super
