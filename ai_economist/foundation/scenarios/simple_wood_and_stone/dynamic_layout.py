@@ -996,4 +996,26 @@ class Quadrant(Uniform):
         """
 
         # Generate the starting layout like normal
-        super
+        super().reset_starting_layout()
+
+        width = self.world_size[1]
+        height = self.world_size[0]
+
+        # Remove anything at the water line
+        for entity, state in self.world.maps.items():
+            if isinstance(state, dict):
+                state["health"][:, height // 2] = 0
+                state["health"][width // 2, :] = 0
+                state["owner"][:, height // 2] = -1
+                state["owner"][width // 2, :] = -1
+            else:
+                state[:, height // 2] = 0
+                state[width // 2, :] = 0
+            self.world.maps.set(entity, state)
+        for entity, state in self.source_maps.items():
+            state[:, height // 2] = 0
+            state[width // 2, :] = 0
+            self.source_maps[entity] = state
+
+        # Place water
+        self.world.maps.set("Water", self._water)
