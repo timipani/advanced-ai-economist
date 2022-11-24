@@ -929,4 +929,38 @@ class Quadrant(Uniform):
             "inv_income_weighted_coin_endowment", and "inv_income_weighted_utility".
         mixing_weight_gini_vs_coin (float): Degree to which equality is ignored w/
             "coin_eq_times_productivity". Default is 0, which weights equality and
-            productivity equally. If set to 1, only p
+            productivity equally. If set to 1, only productivity is rewarded.
+
+    """
+
+    name = "quadrant/simple_wood_and_stone"
+    required_entities = Uniform.required_entities + ["Water"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        width = self.world_size[1]
+        height = self.world_size[0]
+
+        o0 = 0.2
+        o1 = 0.35
+        rN = (0.5 + np.arange(height)) / height
+        cN = (0.5 + np.arange(width)) / width
+        rSeg = ((rN < o0) + (rN > o1)) * ((rN < 1 - o1) + (rN > 1 - o0))
+        cSeg = ((cN < o0) + (cN > o1)) * ((cN < 1 - o1) + (cN > 1 - o0))
+        water = np.zeros((height, width))
+        water[:, height // 2] = rSeg
+        water[width // 2, :] = cSeg
+        self._water = water
+
+        for k, v in self.source_prob_maps.items():
+            v = v * (1 - self._water)
+            v = v / np.sum(v)
+            self.source_prob_maps[k] = v
+
+    def make_source_prob_maps(self):
+        """
+        Make maps specifying how likely each location is to be assigned as a resource
+        source tile.
+
+        Returns:
+            source_prob_maps (dict): Contains a so
