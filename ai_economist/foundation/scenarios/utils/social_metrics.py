@@ -37,4 +37,39 @@ def get_gini(endowments):
         norm = 2 * n_agents * endowments.sum(axis=0)
         unscaled_gini = diff / (norm + 1e-10)
         gini = unscaled_gini / ((n_agents - 1) / n_agents)
-  
+        return gini
+
+    # Much faster. Slightly overestimated for low n.
+    s_endows = np.sort(endowments)
+    return 1 - (2 / (n_agents + 1)) * np.sum(
+        np.cumsum(s_endows) / (np.sum(s_endows) + 1e-10)
+    )
+
+
+def get_equality(endowments):
+    """Returns the complement of the normalized Gini index (equality = 1 - Gini).
+
+    Args:
+        endowments (ndarray): The array of endowments for each of the agents in the
+            simulated economy.
+
+    Returns:
+        Normalized equality index for the distribution of endowments (float). A value
+            of 0 indicates everything belongs to 1 agent (perfect inequality),
+            whereas a value of 1 indicates all agents have equal endowments (perfect
+            equality).
+    """
+    return 1 - get_gini(endowments)
+
+
+def get_productivity(coin_endowments):
+    """Returns the total coin inside the simulated economy.
+
+    Args:
+        coin_endowments (ndarray): The array of coin endowments for each of the
+            agents in the simulated economy.
+
+    Returns:
+        Total coin endowment (float).
+    """
+    return np
