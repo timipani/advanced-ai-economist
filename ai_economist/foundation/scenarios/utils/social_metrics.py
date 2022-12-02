@@ -72,4 +72,4 @@ def get_productivity(coin_endowments):
     Returns:
         Total coin endowment (float).
     """
-    return np
+    return np.sum(coin_endowments)
