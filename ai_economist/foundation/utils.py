@@ -67,4 +67,31 @@ def verify_activation_code():
             exp_from_code = int(code, 16)
             hashed_msg_from_signature = pow(signature, exp_from_code, key_pair.n)
 
-            return has
+            return hashed_msg == hashed_msg_from_signature
+        except ValueError:
+            return False
+
+    activation_code_filename = "activation_code.txt"
+
+    filepath = os.path.join(path_to_activation_code_dir, activation_code_filename)
+    if activation_code_filename in os.listdir(path_to_activation_code_dir):
+        print("Using the activation code already present in '{}'".format(filepath))
+        with open(filepath, "r") as fp:
+            activation_code = fp.read()
+            fp.close()
+        if validate_activation_code(activation_code):
+            return  # already activated
+        print(
+            "The activation code saved in '{}' is incorrect! "
+            "Please correct the activation code and try again.".format(filepath)
+        )
+        sys.exit(0)
+    else:
+        print(
+            "In order to run this simulation, you will need an activation code.\n"
+            "Please fill out the form at "
+            "https://forms.gle/dJ2gKDBqLDko1g7m7 and we will send you an "
+            "activation code to the provided email address.\n"
+        )
+        num_attempts = 5
+        attempt_num = 0
