@@ -37,4 +37,34 @@ def save_episode_log(game_object, filepath, compression_level=16):
 
 
 def load_episode_log(filepath):
-    """Load
+    """Load the dense log saved at provided filepath"""
+    with lz4.frame.open(filepath, mode="rb") as log_file:
+        log_bytes = log_file.read()
+    return json.loads(log_bytes)
+
+
+def verify_activation_code():
+    """
+    Validate the user's activation code.
+    If the activation code is valid, also save it in a text file for future reference.
+    If the activation code is invalid, simply exit the program
+    """
+    path_to_activation_code_dir = os.path.dirname(os.path.abspath(__file__))
+
+    def validate_activation_code(code, msg=b"covid19 code activation"):
+        filepath = os.path.abspath(
+            os.path.join(
+                path_to_activation_code_dir,
+                "scenarios/covid19/key_to_check_activation_code_against",
+            )
+        )
+        with open(filepath, "r") as fp:
+            key_pair = RSA.import_key(fp.read())
+
+        hashed_msg = int.from_bytes(sha512(msg).digest(), byteorder="big")
+        signature = pow(hashed_msg, key_pair.d, key_pair.n)
+        try:
+            exp_from_code = int(code, 16)
+            hashed_msg_from_signature = pow(signature, exp_from_code, key_pair.n)
+
+            return has
