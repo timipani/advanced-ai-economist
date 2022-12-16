@@ -95,3 +95,29 @@ def verify_activation_code():
         )
         num_attempts = 5
         attempt_num = 0
+        while attempt_num < num_attempts:
+            activation_code = input(
+                f"Whenever you are ready, "
+                "please enter the activation code: "
+                f"(attempt {attempt_num + 1} / {num_attempts})"
+            )
+            attempt_num += 1
+            if validate_activation_code(activation_code):
+                print(
+                    "Saving the activation code in '{}' for future "
+                    "use.".format(filepath)
+                )
+                with open(
+                    os.path.join(path_to_activation_code_dir, activation_code_filename),
+                    "w",
+                ) as fp:
+                    fp.write(activation_code)
+                    fp.close()
+                return
+            print("Incorrect activation code. Please try again.")
+        print(
+            "You have had {} attempts to provide the activate code. Unfortunately, "
+            "none of the activation code(s) you provided could be validated. "
+            "Exiting...".format(num_attempts)
+        )
+        sys.exit(0)
