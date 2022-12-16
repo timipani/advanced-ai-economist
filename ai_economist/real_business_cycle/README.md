@@ -52,3 +52,70 @@ experiment/experimentname/
         brgovernment/
             ...
         hparams.yaml
+        action_arrays.pickle
+        episode_XXXX_consumer.npz
+        episode_XXXX_government.npz
+        episode_XXXX_firm.npz
+        saved_models/
+            consumer_policy_XXX.pt
+            firm_policy_XXX.pt
+            government_policy_XXX.pt.
+
+    rollout-777777-77777/
+        ...
+```
+
+Files:
+
+`rollout-XXXXXX-XXX`: subdirectory containing all output for a single run.
+
+`hparams.yaml`: configuration dictionary with hyperparameters
+
+`action_arrays.pickle`: contains saved action arrays (allowing mapping action indices to the actual action, e.g. index 1 is price 1000.0, etc.)
+
+`episode_XXXX_AGENTTYPE.npz`: Contains dense rollouts stored as the output of a numpy.savez call. When loaded, can be treated like a dictionary of numpy arrays.  Has keys: `['states', 'actions', 'rewards', 'action_array', 'aux_array']` (view keys by using `.files`). `states`, `actions`, `rewards`, and `aux_array` all refer to saved copies of CUDA arrays (described below). `action_array` is a small array mapping action indices to the actual action.
+
+`saved_models/AGENTTYPE_policy_XXX.pt`: a saved PyTorch state dict of the policy network, after episode XXX.
+
+## Structure Of Arrays
+
+`states` for any given agent type is an array storing observed states. It has shape `batch_size, ep_length, num_agents, agent_total_state_dim`.
+
+`actions` is an array consisting of the action _indices_ (integers). For firms and government, it is of shape `batch_size, ep_length, num_agents`. For consumers, it is of shape `batch_size, ep_length, num_agents, num_action_heads`.
+
+`rewards` stores total rewards, and is of shape `batch_size, ep_length, num_agents`.
+
+The `aux_array` stores additional information and may differ per agent type. The consumer `aux_array` stores _actual_ consumption of each firm's good (as opposed to attempted consumption). The firm `aux_array` stores the amount bought by the export market.
+
+## State Array Layout:
+
+States observed by each agent consist of a global state, plus additional state dimensions per agent.
+
+Global state: total dimension 4 * num_firms + 2 + 1
+- prices: 1 per firm
+- wages: 1 per firm
+- inventories: 1 per firm
+- overdemanded flag: 1 per firm
+- time
+
+Consumer additional state variables: total dimension global state + 2
+- budget
+- theta
+
+Firm additional state variables: total dimension global state + 3 + num_firms
+- budget
+- capital
+- production alpha
+- one-hot representation identifying which firm
+
+## What Gets Loaded And Written By BR Code?
+
+The best response code loads in the `hparams.yaml` file, and the policies at a given time step (i.e. `saved_models/...policy_XXX.pt`). It then trains one of the policies while keeping the others fixed. Results are written to directories `brfirm`, `brconsumer`, `brgovernment` and contain dense rollouts and saved policy checkpoints, but from the best response training.
+
+## Which Hyperparameters Are Managed And Where?
+
+Initial values of state variables (budgets, initial wages, levels of capital, and so on) are set by the code in the method `__init_cuda_data_structs`. Some of these can be controlled from the hyperparameter dict; others are currently hardcoded.
+
+Other hyperparameters are specified in the configuration dictionary.
+
+Finally, the technology parameter (A) of the production function is currently hardcoded in the function call in `rbc/cuda/firm_rbc.cu`.
