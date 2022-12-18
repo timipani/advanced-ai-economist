@@ -56,4 +56,34 @@ def all_agents_export_experiment_template(
     )  # time
 
     global_state_digit_dims = list(
-  
+        range(2 * NUMFIRMS, 3 * NUMFIRMS)
+    )  # stocks are the only global state var that can get huge
+    consumer_state_dim = (
+        global_state_dim + 1 + 1
+    )  # budget  # theta, the disutility of work
+
+    firm_state_dim = (
+        global_state_dim
+        + 1  # budget
+        + 1  # capital
+        + 1  # production alpha
+        + NUMFIRMS  # onehot specifying which firm
+    )
+
+    episodes_to_anneal_firm = 100000
+    episodes_to_anneal_government = 100000
+    government_phase1_start = 100000
+    government_state_dim = global_state_dim
+    DEFAULT_CFG_DICT = {
+        # actions_array key will be added below
+        "agents": {
+            "num_consumers": NUMCONSUMERS,
+            "num_firms": NUMFIRMS,
+            "num_governments": NUMGOVERNMENTS,
+            "global_state_dim": global_state_dim,
+            "consumer_state_dim": consumer_state_dim,
+            # action vectors are how much consume from each firm,
+            # how much to work, and which firm to choose
+            "consumer_action_dim": NUMFIRMS + 1 + 1,
+            "consumer_num_consume_actions": consumption_choices.shape[0],
+            "consumer_num_work_actions": work_choices.shap
