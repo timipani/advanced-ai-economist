@@ -105,4 +105,29 @@ def all_agents_export_experiment_template(
             + [global_state_dim],  # global state + consumer budget
             # global state + firm budget (do we need capital?)
             "firm_digit_dims": global_state_digit_dims + [global_state_dim],
-            # g
+            # govt only has global state
+            "government_digit_dims": global_state_digit_dims,
+            "firm_reward_scale": 10000,
+            "government_reward_scale": 100000,
+            "consumer_reward_scale": 50.0,
+            "firm_anneal_wages": {
+                "anneal_on": True,
+                "start": 22.0,
+                "increase_const": float(wage_choices.max() - 22.0)
+                / (episodes_to_anneal_firm),
+                "decrease_const": (22.0) / episodes_to_anneal_firm,
+            },
+            "firm_anneal_prices": {
+                "anneal_on": True,
+                "start": 1000.0,
+                "increase_const": float(price_choices.max() - 1000.00)
+                / episodes_to_anneal_firm,
+                "decrease_const": (1000.0) / episodes_to_anneal_firm,
+            },
+            "government_anneal_taxes": {
+                "anneal_on": True,
+                "start": 0.0,
+                "increase_const": 1.0 / episodes_to_anneal_government,
+            },
+            "firm_begin_anneal_action": 0,
+            "government_begin_anneal_action": government_phase1_sta
