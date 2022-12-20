@@ -190,4 +190,38 @@ def all_agents_export_experiment_template(
             "entropy": 0.0,
             "value_loss_weight": 1.0,
             "digit_representation_size": 10,
-            "lagr_nu
+            "lagr_num_steps": 1,
+            "boost_firm_reward_factor": 1.0,
+        },
+    }
+    return (
+        DEFAULT_CFG_DICT,
+        consumption_choices,
+        work_choices,
+        price_and_wage,
+        tax_choices,
+        None,
+        None,
+    )
+
+
+def all_agents_short_export_experiment_template(
+    NUMFIRMS, NUMCONSUMERS, NUMGOVERNMENTS, episodes_const=10000
+):
+    consumption_choices = [
+        np.array([0.0 + 1.0 * c for c in range(11)], dtype=_NP_DTYPE)
+    ]
+    work_choices = [
+        np.array([0.0 + 20 * 13 * h for h in range(5)], dtype=_NP_DTYPE)
+    ]  # specify dtype -- be consistent?
+
+    consumption_choices = np.array(
+        list(itertools.product(*consumption_choices)), dtype=_NP_DTYPE
+    )
+    work_choices = np.array(list(itertools.product(*work_choices)), dtype=_NP_DTYPE)
+
+    price_choices = np.array([0.0 + 500.0 * c for c in range(6)], dtype=_NP_DTYPE)
+    wage_choices = np.array([0.0, 11.0, 22.0, 33.0, 44.0], dtype=_NP_DTYPE)
+    capital_choices = np.array([0.1], dtype=_NP_DTYPE)
+    price_and_wage = np.array(
+        list(itertools.product(price_choices, wage_choices, capital_choices)
