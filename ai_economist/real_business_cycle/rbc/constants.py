@@ -130,4 +130,33 @@ def all_agents_export_experiment_template(
                 "increase_const": 1.0 / episodes_to_anneal_government,
             },
             "firm_begin_anneal_action": 0,
-            "government_begin_anneal_action": government_phase1_sta
+            "government_begin_anneal_action": government_phase1_start,
+            "consumer_anneal_theta": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+            },
+            "consumer_anneal_entropy": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+                "coef_floor": 0.1,
+            },
+            "firm_anneal_entropy": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+                "coef_floor": 0.1,
+            },
+            "govt_anneal_entropy": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+                "coef_floor": 0.1,
+            },
+            "consumer_noponzi_eta": 0.0,
+            "consumer_penalty_scale": 1.0,
+            "firm_noponzi_eta": 0.0,
+            "firm_training_start": episodes_to_anneal_firm,
+            "government_training_start": government_phase1_start
+            + episodes_to_anneal_government,
+            "consumer_training_start": 0,
+            "government_counts_firm_reward": 0,
+            "should_boost_firm_reward": False,
+            "firm_reward_for_go
