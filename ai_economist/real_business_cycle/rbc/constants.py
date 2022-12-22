@@ -285,4 +285,25 @@ def all_agents_short_export_experiment_template(
             # actions are price and wage for own firm, and capital choices
             "firm_action_dim": 3,
             "firm_num_actions": price_and_wage.shape[0],
-            "government_state_dim": gove
+            "government_state_dim": government_state_dim,
+            "government_action_dim": 2,
+            "government_num_actions": tax_choices.shape[0],
+            "max_possible_consumption": float(consumption_choices.max()),
+            "max_possible_hours_worked": float(work_choices.max()),
+            "max_possible_wage": float(wage_choices.max()),
+            "max_possible_price": float(price_choices.max()),
+            # these are dims which, due to being on a large scale,
+            # have to be expanded to a digit representation
+            "consumer_digit_dims": global_state_digit_dims
+            + [global_state_dim],  # global state + consumer budget
+            "firm_digit_dims": global_state_digit_dims
+            + [global_state_dim],  # global state + firm budget (do we need capital?)
+            # govt only has global state
+            "government_digit_dims": global_state_digit_dims,
+            "firm_reward_scale": 10000,
+            "government_reward_scale": 100000,
+            "consumer_reward_scale": 50.0,
+            "firm_anneal_wages": {
+                "anneal_on": True,
+                "start": 22.0,
+     
