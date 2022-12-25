@@ -361,4 +361,44 @@ def all_agents_short_export_experiment_template(
             "initial_stocks": 0.0,
             "initial_prices": 1000.0,
             "initial_wages": 22.0,
-            "interest
+            "interest_rate": 0.1,
+            "consumer_theta": 0.01,
+            "crra_param": 0.1,
+            "production_alpha": "fixed_array",  # only works for exactly 10 firms, kluge
+            "initial_capital": "twolevel",
+            "paretoscaletheta": 4.0,
+            "importer_price": 500.0,
+            "importer_quantity": 100.0,
+            "use_importer": 1,
+        },
+        "train": {
+            "batch_size": 8,
+            "base_seed": 1234,
+            "save_dense_every": 2000,
+            "save_model_every": 10000,
+            "num_episodes": 200000,
+            "infinite_episodes": False,
+            "lr": 0.01,
+            "gamma": 0.9999,
+            "entropy": 0.0,
+            "value_loss_weight": 1.0,
+            "digit_representation_size": 10,
+            "lagr_num_steps": 1,
+            "boost_firm_reward_factor": 1.0,
+        },
+    }
+    return (
+        DEFAULT_CFG_DICT,
+        consumption_choices,
+        work_choices,
+        price_and_wage,
+        tax_choices,
+        None,
+        None,
+    )
+
+
+def very_short_test_template(
+    NUMFIRMS, NUMCONSUMERS, NUMGOVERNMENTS, episodes_const=30000
+):
+  
