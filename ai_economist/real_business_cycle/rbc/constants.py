@@ -333,4 +333,32 @@ def all_agents_short_export_experiment_template(
                 "exp_decay_length_in_steps": episodes_const,
                 "coef_floor": 0.1,
             },
-          
+            "firm_anneal_entropy": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+                "coef_floor": 0.1,
+            },
+            "govt_anneal_entropy": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+                "coef_floor": 0.1,
+            },
+            "consumer_noponzi_eta": 0.0,
+            "consumer_penalty_scale": 1.0,
+            "firm_noponzi_eta": 0.0,
+            "firm_training_start": episodes_to_anneal_firm,
+            "government_training_start": government_phase1_start
+            + episodes_to_anneal_government,
+            "consumer_training_start": 0,
+            "government_counts_firm_reward": 0,
+            "should_boost_firm_reward": False,
+            "firm_reward_for_government_factor": 0.0025,
+        },
+        "world": {
+            "maxtime": 10,
+            "initial_firm_endowment": 22.0 * 1000 * NUMCONSUMERS,
+            "initial_consumer_endowment": 2000,
+            "initial_stocks": 0.0,
+            "initial_prices": 1000.0,
+            "initial_wages": 22.0,
+            "interest
