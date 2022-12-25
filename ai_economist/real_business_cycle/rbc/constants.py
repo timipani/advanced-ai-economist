@@ -306,4 +306,31 @@ def all_agents_short_export_experiment_template(
             "firm_anneal_wages": {
                 "anneal_on": True,
                 "start": 22.0,
-     
+                "increase_const": float(wage_choices.max() - 22.0)
+                / (episodes_to_anneal_firm),
+                "decrease_const": (22.0) / episodes_to_anneal_firm,
+            },
+            "firm_anneal_prices": {
+                "anneal_on": True,
+                "start": 1000.0,
+                "increase_const": float(price_choices.max() - 1000.00)
+                / episodes_to_anneal_firm,
+                "decrease_const": (1000.0) / episodes_to_anneal_firm,
+            },
+            "government_anneal_taxes": {
+                "anneal_on": True,
+                "start": 0.0,
+                "increase_const": 1.0 / episodes_to_anneal_government,
+            },
+            "firm_begin_anneal_action": 0,
+            "government_begin_anneal_action": government_phase1_start,
+            "consumer_anneal_theta": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+            },
+            "consumer_anneal_entropy": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+                "coef_floor": 0.1,
+            },
+          
