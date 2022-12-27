@@ -430,3 +430,41 @@ def very_short_test_template(
     )
     tax_choices = np.array(
         list(itertools.product(income_taxation_choices, corporate_taxation_choices)),
+        dtype=_NP_DTYPE,
+    )
+    global_state_dim = (
+        NUMFIRMS  # prices
+        + NUMFIRMS  # wages
+        + NUMFIRMS  # stocks
+        + NUMFIRMS  # was good overdemanded
+        + 2 * NUMGOVERNMENTS  # tax rates
+        + 1
+    )  # time
+
+    global_state_digit_dims = list(
+        range(2 * NUMFIRMS, 3 * NUMFIRMS)
+    )  # stocks are the only global state var that can get huge
+    consumer_state_dim = (
+        global_state_dim + 1 + 1
+    )  # budget  # theta, the disutility of work
+
+    firm_state_dim = (
+        global_state_dim
+        + 1  # budget
+        + 1  # capital
+        + 1  # production alpha
+        + NUMFIRMS  # onehot specifying which firm
+    )
+
+    episodes_to_anneal_firm = 10
+    episodes_to_anneal_government = 10
+    government_phase1_start = 10
+    government_state_dim = global_state_dim
+    DEFAULT_CFG_DICT = {
+        # actions_array key will be added below
+        "agents": {
+            "num_consumers": NUMCONSUMERS,
+            "num_firms": NUMFIRMS,
+            "num_governments": NUMGOVERNMENTS,
+            "global_state_dim": global_state_dim,
+       
