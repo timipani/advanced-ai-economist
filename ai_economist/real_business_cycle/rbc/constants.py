@@ -467,4 +467,23 @@ def very_short_test_template(
             "num_firms": NUMFIRMS,
             "num_governments": NUMGOVERNMENTS,
             "global_state_dim": global_state_dim,
-       
+            "consumer_state_dim": consumer_state_dim,
+            # action vectors are how much consume from each firm,
+            # how much to work, and which firm to choose
+            "consumer_action_dim": NUMFIRMS + 1 + 1,
+            "consumer_num_consume_actions": consumption_choices.shape[0],
+            "consumer_num_work_actions": work_choices.shape[0],
+            "consumer_num_whichfirm_actions": NUMFIRMS,
+            "firm_state_dim": firm_state_dim,  # what are observations?
+            # actions are price and wage for own firm, and capital choices
+            "firm_action_dim": 3,
+            "firm_num_actions": price_and_wage.shape[0],
+            "government_state_dim": government_state_dim,
+            "government_action_dim": 2,
+            "government_num_actions": tax_choices.shape[0],
+            "max_possible_consumption": float(consumption_choices.max()),
+            "max_possible_hours_worked": float(work_choices.max()),
+            "max_possible_wage": float(wage_choices.max()),
+            "max_possible_price": float(price_choices.max()),
+            # these are dims which, due to being on a large scale,
+ 
