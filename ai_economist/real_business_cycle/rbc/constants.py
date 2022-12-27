@@ -486,4 +486,27 @@ def very_short_test_template(
             "max_possible_wage": float(wage_choices.max()),
             "max_possible_price": float(price_choices.max()),
             # these are dims which, due to being on a large scale,
- 
+            # have to be expanded to a digit representation
+            "consumer_digit_dims": global_state_digit_dims
+            + [global_state_dim],  # global state + consumer budget
+            "firm_digit_dims": global_state_digit_dims
+            + [global_state_dim],  # global state + firm budget (do we need capital?)
+            # govt only has global state
+            "government_digit_dims": global_state_digit_dims,
+            "firm_reward_scale": 10000,
+            "government_reward_scale": 100000,
+            "consumer_reward_scale": 50.0,
+            "firm_anneal_wages": {
+                "anneal_on": True,
+                "start": 22.0,
+                "increase_const": float(wage_choices.max() - 22.0)
+                / (episodes_to_anneal_firm),
+                "decrease_const": (22.0) / episodes_to_anneal_firm,
+            },
+            "firm_anneal_prices": {
+                "anneal_on": True,
+                "start": 1000.0,
+                "increase_const": float(price_choices.max() - 1000.00)
+                / episodes_to_anneal_firm,
+                "decrease_const": (1000.0) / episodes_to_anneal_firm,
+  
