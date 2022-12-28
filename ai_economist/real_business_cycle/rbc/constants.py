@@ -509,4 +509,32 @@ def very_short_test_template(
                 "increase_const": float(price_choices.max() - 1000.00)
                 / episodes_to_anneal_firm,
                 "decrease_const": (1000.0) / episodes_to_anneal_firm,
-  
+            },
+            "government_anneal_taxes": {
+                "anneal_on": True,
+                "start": 0.0,
+                "increase_const": 1.0 / episodes_to_anneal_government,
+            },
+            "firm_begin_anneal_action": 0,
+            "government_begin_anneal_action": government_phase1_start,
+            "consumer_anneal_theta": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+            },
+            "consumer_anneal_entropy": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+                "coef_floor": 0.1,
+            },
+            "firm_anneal_entropy": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+                "coef_floor": 0.1,
+            },
+            "govt_anneal_entropy": {
+                "anneal_on": True,
+                "exp_decay_length_in_steps": episodes_const,
+                "coef_floor": 0.1,
+            },
+            "consumer_noponzi_eta": 0.0,
+      
