@@ -603,4 +603,35 @@ def global_state_scaling_factors(cfg_dict):
 
     digit_size = cfg_dict["train"]["digit_representation_size"]
 
-    return
+    return torch.tensor(
+        # prices, wages, stocks, overdemanded
+        ([max_price] * num_firms)
+        + ([max_wage] * num_firms)
+        + ([1.0] * num_firms * digit_size)  # stocks are expanded to digit form
+        + ([1.0] * num_firms)
+        + ([1.0] * (2 * num_governments))
+        + [maxtime]
+    )
+
+
+def consumer_state_scaling_factors(cfg_dict):
+    global_state_scales = global_state_scaling_factors(cfg_dict)
+    digit_size = cfg_dict["train"]["digit_representation_size"]
+    consumer_scales = torch.tensor(
+        ([1.0] * digit_size) + [cfg_dict["world"]["consumer_theta"]]
+    )
+    return torch.cat((global_state_scales, consumer_scales)).cuda()
+
+
+def firm_state_scaling_factors(cfg_dict):
+    num_firms = cfg_dict["agents"]["num_firms"]
+    global_state_scales = global_state_scaling_factors(cfg_dict)
+    digit_size = cfg_dict["train"]["digit_representation_size"]
+    # budget, capital, alpha, one-hot
+    firm_scales = torch.tensor(
+        ([1.0] * digit_size) + [10000.0, 1.0] + ([1.0] * num_firms)
+    )
+    return torch.cat((global_state_scales, firm_scales)).cuda()
+
+
+def govt_state_scaling_factors(cfg_d
