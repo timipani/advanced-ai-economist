@@ -563,3 +563,44 @@ def very_short_test_template(
             "production_alpha": "fixed_array",  # only works for exactly 10 firms, kluge
             "initial_capital": "twolevel",
             "paretoscaletheta": 4.0,
+            "importer_price": 500.0,
+            "importer_quantity": 100.0,
+            "use_importer": 1,
+        },
+        "train": {
+            "batch_size": 8,
+            "base_seed": 1234,
+            "save_dense_every": 2000,
+            "save_model_every": 10000,
+            "num_episodes": 100,
+            "infinite_episodes": False,
+            "lr": 0.01,
+            "gamma": 0.9999,
+            "entropy": 0.0,
+            "value_loss_weight": 1.0,
+            "digit_representation_size": 10,
+            "lagr_num_steps": 1,
+            "boost_firm_reward_factor": 1.0,
+        },
+    }
+    return (
+        DEFAULT_CFG_DICT,
+        consumption_choices,
+        work_choices,
+        price_and_wage,
+        tax_choices,
+        None,
+        None,
+    )
+
+
+def global_state_scaling_factors(cfg_dict):
+    max_wage = cfg_dict["agents"]["max_possible_wage"]
+    max_price = cfg_dict["agents"]["max_possible_price"]
+    num_firms = cfg_dict["agents"]["num_firms"]
+    num_governments = cfg_dict["agents"]["num_governments"]
+    maxtime = cfg_dict["world"]["maxtime"]
+
+    digit_size = cfg_dict["train"]["digit_representation_size"]
+
+    return
