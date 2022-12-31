@@ -634,4 +634,5 @@ def firm_state_scaling_factors(cfg_dict):
     return torch.cat((global_state_scales, firm_scales)).cuda()
 
 
-def govt_state_scaling_factors(cfg_d
+def govt_state_scaling_factors(cfg_dict):
+    return global_state_scaling_factors(cfg_dict).cuda()
