@@ -41,4 +41,51 @@ module_path = Path(__file__).parent
 def interval_list_contains(interval_list, step):
     for (lower, upper_non_inclusive) in interval_list:
         if lower <= step < upper_non_inclusive:
-            return 
+            return True
+    return False
+
+
+class NoOpOptimizer:
+    """
+    Dummy Optimizer.
+    """
+
+    def __init__(self):
+        pass
+
+    def step(self):
+        pass
+
+
+def seed_everything(seed):
+    torch.manual_seed(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+
+
+def reverse_cumsum(x):
+    # assumes summing along episode iteration dim
+    return x + torch.sum(x, dim=-2, keepdims=True) - torch.cumsum(x, dim=-2)
+
+
+def discounted_returns(rewards, gamma):
+    maxt = rewards.shape[-2]
+    cumulative_rewards = 0
+    returns = torch.zeros_like(rewards)
+    for t in reversed(range(maxt)):
+        returns[:, t, :] = rewards[:, t, :] + gamma * cumulative_rewards
+        cumulative_rewards = rewards[:, t, :] + cumulative_rewards
+    return returns
+
+
+def compute_theta_coef(hparams_dict, episode):
+    anneal_dict = hparams_dict["agents"]["consumer_anneal_theta"]
+    if anneal_dict["anneal_on"]:
+        exp_decay_length_in_steps = anneal_dict["exp_decay_length_in_steps"]
+        theta_coef = np.float32(1.0 - (np.exp(-episode / exp_decay_length_in_steps)))
+    else:
+        return np.float32(1.0)
+    return theta_coef
+
+
+def government_action_mask
