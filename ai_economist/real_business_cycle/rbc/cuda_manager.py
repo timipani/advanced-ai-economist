@@ -88,4 +88,31 @@ def compute_theta_coef(hparams_dict, episode):
     return theta_coef
 
 
-def government_action_mask
+def government_action_mask(hparams_dict, step):
+    government_actions_array = hparams_dict["agents"]["government_actions_array"]
+    tax_annealing_params = hparams_dict["agents"]["government_anneal_taxes"]
+
+    income_tax = torch.tensor(government_actions_array[:, 0]).cuda()
+    corporate_tax = torch.tensor(government_actions_array[:, 1]).cuda()
+    mask = torch.zeros(income_tax.shape[0]).cuda()
+
+    if not tax_annealing_params["anneal_on"]:
+        return None
+    a0 = tax_annealing_params["start"]
+    max_tax = tax_annealing_params["increase_const"] * step + a0
+    mask[(income_tax > max_tax) | (corporate_tax > max_tax)] -= 1000.0
+
+    return mask
+
+
+def firm_action_mask(hparams_dict, step):
+    # pick out all firm actions where wage is the wrong height,
+    # and assign -1000.0 to those
+    firm_actions_array = hparams_dict["agents"]["firm_actions_array"]
+    wage_annealing_params = hparams_dict["agents"]["firm_anneal_wages"]
+    price_annealing_params = hparams_dict["agents"]["firm_anneal_prices"]
+    wages = torch.tensor(firm_actions_array[:, 1]).cuda()
+    prices = torch.tensor(firm_actions_array[:, 0]).cuda()
+    mask = torch.zeros(wages.shape[0]).cuda()
+
+    if not (wage_annea
