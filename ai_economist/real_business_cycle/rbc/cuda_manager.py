@@ -145,4 +145,36 @@ def get_cuda_code(rel_path_to_cu_file, **preprocessor_vars_to_replace):
     return code_string, options_list
 
 
-d
+def add_penalty_for_no_ponzi(
+    states, rewards, budget_offset, penalty_coef=20.0, penalty_scale=100.0
+):
+    budget_violations = -torch.clamp_max(states[..., budget_offset], 0.0)
+    rewards[:, -1, :] -= penalty_coef * budget_violations / penalty_scale
+
+
+def update_government_rewards(
+    government_rewards, consumer_rewards, firm_rewards, cfg_dict
+):
+    assert (
+        government_rewards == 0.0
+    ).all()  # govt should have been assigned exactly 0 in cuda step function
+    total_rewards = consumer_rewards.sum(dim=-1)
+    if cfg_dict["agents"]["government_counts_firm_reward"] == 1:
+        total_rewards = total_rewards + cfg_dict["agents"].get(
+            "firm_reward_for_government_factor", 1.0
+        ) * firm_rewards.sum(dim=-1)
+
+    government_rewards[..., 0] = total_rewards[:]  # one govt for now
+
+
+def update_penalty_coef(
+    states,
+    budget_offset,
+    prev_penalty_coef,
+    penalty_step_size=0.01,
+    penalty_scale=100.0,
+):
+    budget_violations = -torch.clamp_max(states[..., budget_offset], 0.0)
+    new_penalty_coef = (
+        prev_penalty_coef
+        + penalty_step_size * (budget_violations / penalty_
