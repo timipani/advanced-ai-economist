@@ -215,4 +215,45 @@ def anneal_entropy_coef(entropy_dict, step):
     if entropy_dict is None:
         return 1.0
 
-    if entr
+    if entropy_dict["anneal_on"]:
+        coef_floor = entropy_dict.get("coef_floor", 0.0)
+        return max(
+            np.exp(-step / entropy_dict["exp_decay_length_in_steps"]), coef_floor
+        )
+    return 1.0
+
+
+def get_grad_norm(policy):
+    grad_norm = 0.0
+    for p in list(filter(lambda p: p.grad is not None, policy.parameters())):
+        grad_norm += (p.grad.data.norm(2).item()) ** 2
+    return grad_norm
+
+
+def get_ev(adv, returns, cutoff=-1.0):
+    return max(cutoff, (1 - (adv.detach().var() / returns.detach().var())).item())
+
+
+def consumer_ppo_step(
+    policy,
+    states,
+    actions,
+    rewards,
+    optimizer,
+    gamma_const,
+    entropy_val=0.0,
+    value_loss_weight=1.0,
+    ppo_num_updates=3,
+    reward_scale=1.0,
+    clip_grad_norm=None,
+    clip_param=0.1,
+):
+    # Get initial policy predictions
+    multi_action_probs, old_value_preds = policy(states)
+
+    old_value_preds = old_value_preds.detach()
+    # Get returns
+    rescaled_rewards = rewards / reward_scale
+    G_discounted_returns = discounted_returns(rescaled_rewards, gamma_const)
+
+    # Value function loss
