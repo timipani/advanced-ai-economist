@@ -177,4 +177,42 @@ def update_penalty_coef(
     budget_violations = -torch.clamp_max(states[..., budget_offset], 0.0)
     new_penalty_coef = (
         prev_penalty_coef
-        + penalty_step_size * (budget_violations / penalty_
+        + penalty_step_size * (budget_violations / penalty_scale).mean().item()
+    )
+    return new_penalty_coef
+
+
+def get_actions_from_inds(action_inds, agents_dict):
+
+    _action_inds = action_inds.cpu().to(torch.long)
+
+    consumption_action_tensor = torch.tensor(
+        agents_dict["consumer_consumption_actions_array"]
+    )
+
+    work_action_tensor = torch.tensor(agents_dict["consumer_work_actions_array"])
+    num_firms = agents_dict["num_firms"]
+    out_shape = _action_inds.shape[:-1] + (agents_dict["consumer_action_dim"],)
+    consumer_actions_out = torch.zeros(out_shape)
+    idx_hours_worked = num_firms
+    idx_which_firm = num_firms + 1
+
+    for i in range(num_firms):
+        consumer_actions_out[..., i] = consumption_action_tensor[
+            _action_inds[..., i], :
+        ].squeeze(dim=-1)
+
+    consumer_actions_out[..., num_firms] = work_action_tensor[
+        _action_inds[..., idx_hours_worked], :
+    ].squeeze(dim=-1)
+
+    consumer_actions_out[..., (num_firms + 1)] = _action_inds[..., idx_which_firm]
+
+    return consumer_actions_out
+
+
+def anneal_entropy_coef(entropy_dict, step):
+    if entropy_dict is None:
+        return 1.0
+
+    if entr
