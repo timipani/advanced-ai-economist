@@ -115,4 +115,34 @@ def firm_action_mask(hparams_dict, step):
     prices = torch.tensor(firm_actions_array[:, 0]).cuda()
     mask = torch.zeros(wages.shape[0]).cuda()
 
-    if not (wage_annea
+    if not (wage_annealing_params["anneal_on"] or price_annealing_params["anneal_on"]):
+        return None
+
+    if wage_annealing_params["anneal_on"]:
+        a0 = wage_annealing_params["start"]
+        max_wage = wage_annealing_params["increase_const"] * step + a0
+        min_wage = -wage_annealing_params["decrease_const"] * step + a0
+        mask[(wages < min_wage) | (wages > max_wage)] -= 1000.0
+    if price_annealing_params["anneal_on"]:
+        a0 = price_annealing_params["start"]
+        max_price = price_annealing_params["increase_const"] * step + a0
+        min_price = -price_annealing_params["decrease_const"] * step + a0
+        mask[(prices < min_price) | (prices > max_price)] -= 1000.0
+
+    return mask
+
+
+def get_cuda_code(rel_path_to_cu_file, **preprocessor_vars_to_replace):
+    with open(module_path / rel_path_to_cu_file) as cudasource:
+        code_string = cudasource.read()
+
+    # format for preprocessor macros in firm_rbc.cu is M_VARNAME.
+    # Specify all these as args to nvcc.
+    options_list = [
+        f"-D M_{k.upper()}={v}" for k, v in preprocessor_vars_to_replace.items()
+    ]
+
+    return code_string, options_list
+
+
+d
