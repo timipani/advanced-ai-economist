@@ -285,4 +285,34 @@ def consumer_ppo_step(
         value_loss = torch.max(value_loss_new, value_loss_clipped).mean()
 
         # Policy loss with value function baseline.
-        advantages = G_discounted_returns - valu
+        advantages = G_discounted_returns - value_preds.detach().squeeze(dim=-1)
+        # Don't propagate through to VF network.
+        assert not advantages.requires_grad
+
+        # Trick: standardize advantages
+        standardized_advantages = (advantages - advantages.mean()) / (
+            advantages.std() + 1e-6
+        )
+        sum_mean_entropy = 0.0  # mean over batch and agents
+        sum_neg_log_probs = 0.0
+
+        for action_ind, probs in enumerate(multi_action_probs):
+            _CategoricalDist = Categorical(probs)
+            sum_neg_log_probs += -1.0 * _CategoricalDist.log_prob(
+                actions[..., action_ind]
+            )
+            sum_mean_entropy += _CategoricalDist.entropy().mean()
+
+        assert sum_neg_log_probs.requires_grad
+        # note: log probs are negative, so negate again here
+        ratio = torch.exp(-sum_neg_log_probs + sum_old_log_probs)
+        surr1 = ratio * standardized_advantages
+        surr2 = (
+            torch.clamp(ratio, 1.0 - clip_param, 1.0 + clip_param)
+            * standardized_advantages
+        )
+
+        ppo_loss = -torch.min(surr1, surr2).mean()
+
+        loss = (
+            ppo_loss - en
