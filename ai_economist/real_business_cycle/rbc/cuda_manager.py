@@ -257,3 +257,32 @@ def consumer_ppo_step(
     G_discounted_returns = discounted_returns(rescaled_rewards, gamma_const)
 
     # Value function loss
+
+    sum_old_log_probs = 0.0
+    for action_ind, probs in enumerate(multi_action_probs):
+        _CategoricalDist = Categorical(probs)
+        sum_old_log_probs += -1.0 * _CategoricalDist.log_prob(actions[..., action_ind])
+    sum_old_log_probs = sum_old_log_probs.detach()
+
+    assert not G_discounted_returns.requires_grad
+    assert not sum_old_log_probs.requires_grad
+    assert not old_value_preds.requires_grad
+
+    # Compute ppo loss
+    for _ in range(ppo_num_updates):
+        multi_action_probs, value_preds = policy(states)
+        get_huber_loss = torch.nn.SmoothL1Loss()
+        value_pred_clipped = old_value_preds + (value_preds - old_value_preds).clamp(
+            -clip_param, clip_param
+        )
+        value_loss_new = get_huber_loss(
+            value_preds.squeeze(dim=-1), G_discounted_returns
+        )  # can use huber loss instead
+        value_loss_clipped = get_huber_loss(
+            value_pred_clipped.squeeze(dim=-1), G_discounted_returns
+        )
+
+        value_loss = torch.max(value_loss_new, value_loss_clipped).mean()
+
+        # Policy loss with value function baseline.
+        advantages = G_discounted_returns - valu
