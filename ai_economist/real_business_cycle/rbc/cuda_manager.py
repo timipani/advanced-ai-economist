@@ -315,4 +315,50 @@ def consumer_ppo_step(
         ppo_loss = -torch.min(surr1, surr2).mean()
 
         loss = (
-            ppo_loss - en
+            ppo_loss - entropy_val * sum_mean_entropy + value_loss_weight * value_loss
+        )
+
+        # Apply gradients
+        optimizer.zero_grad()
+        loss.backward()
+
+        if clip_grad_norm is not None:
+            torch.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=clip_grad_norm)
+
+        optimizer.step()
+
+
+def ppo_step(
+    policy,
+    states,
+    actions,
+    rewards,
+    optimizer,
+    gamma_const,
+    entropy_val=0.0,
+    value_loss_weight=1.0,
+    ppo_num_updates=3,
+    actions_mask=None,
+    reward_scale=1.0,
+    clip_grad_norm=None,
+    clip_param=0.1,
+):
+    # Get initial policy predictions
+    probs, old_value_preds = policy(states, actions_mask=actions_mask)
+    old_value_preds = old_value_preds.detach()
+
+    # Get returns
+    rescaled_rewards = rewards / reward_scale
+    G_discounted_returns = discounted_returns(rescaled_rewards, gamma_const)
+
+    # Value function loss
+
+    _CategoricalDist = Categorical(probs)
+    old_log_probs = -1.0 * _CategoricalDist.log_prob(actions).detach()
+
+    assert not G_discounted_returns.requires_grad
+    assert not old_log_probs.requires_grad
+    assert not old_value_preds.requires_grad
+
+    # Compute ppo loss
+    for _ in ra
