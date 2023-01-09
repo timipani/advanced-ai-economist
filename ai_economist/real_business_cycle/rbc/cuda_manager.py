@@ -428,4 +428,34 @@ def consumer_policy_gradient_step(
     # Get policy and value predictions
     multi_action_probs, value_preds = policy(states)
 
-    # Get return
+    # Get returns
+    rescaled_rewards = rewards / reward_scale
+    G_discounted_returns = discounted_returns(rescaled_rewards, gamma_const)
+
+    # Value function loss
+    get_huber_loss = torch.nn.SmoothL1Loss()
+    value_loss = get_huber_loss(
+        value_preds.squeeze(dim=-1), G_discounted_returns
+    ).mean()  # can use huber loss instead
+
+    # Policy loss with value function baseline.
+    advantages = G_discounted_returns - value_preds.detach().squeeze(dim=-1)
+    # Don't propagate through to VF network.
+    assert not advantages.requires_grad
+
+    # Trick: standardize advantages
+    standardized_advantages = (advantages - advantages.mean()) / (
+        advantages.std() + 1e-6
+    )
+
+    # Compute policy loss
+    sum_mean_entropy = 0.0  # mean over batch and agents
+    sum_neg_log_probs = 0.0
+
+    for action_ind, probs in enumerate(multi_action_probs):
+        _CategoricalDist = Categorical(probs)
+        sum_neg_log_probs += -1.0 * _CategoricalDist.log_prob(actions[..., action_ind])
+        sum_mean_entropy += _CategoricalDist.entropy().mean()
+
+    pg_loss = (sum_neg_log_probs * standardized_advantages).mean()
+    
