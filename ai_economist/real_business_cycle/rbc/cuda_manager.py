@@ -387,4 +387,45 @@ def ppo_step(
         )
 
         _CategoricalDist = Categorical(probs)
-        neg_log_probs = -1.0 * _CategoricalDist.log_prob(actio
+        neg_log_probs = -1.0 * _CategoricalDist.log_prob(actions)
+        mean_entropy = _CategoricalDist.entropy().mean()
+
+        assert neg_log_probs.requires_grad
+        # note: log probs are negative, so negate again here
+        ratio = torch.exp(-neg_log_probs + old_log_probs)
+        surr1 = ratio * standardized_advantages
+        surr2 = (
+            torch.clamp(ratio, 1.0 - clip_param, 1.0 + clip_param)
+            * standardized_advantages
+        )
+
+        ppo_loss = -torch.min(surr1, surr2).mean()
+
+        loss = ppo_loss - entropy_val * mean_entropy + value_loss_weight * value_loss
+
+        # Apply gradients
+        optimizer.zero_grad()
+        loss.backward()
+
+        if clip_grad_norm is not None:
+            torch.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=clip_grad_norm)
+
+        optimizer.step()
+
+
+def consumer_policy_gradient_step(
+    policy,
+    states,
+    actions,
+    rewards,
+    optimizer,
+    gamma_const,
+    entropy_val=0.0,
+    value_loss_weight=1.0,
+    reward_scale=1.0,
+    clip_grad_norm=None,
+):
+    # Get policy and value predictions
+    multi_action_probs, value_preds = policy(states)
+
+    # Get return
