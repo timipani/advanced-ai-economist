@@ -361,4 +361,30 @@ def ppo_step(
     assert not old_value_preds.requires_grad
 
     # Compute ppo loss
-    for _ in ra
+    for _ in range(ppo_num_updates):
+        probs, value_preds = policy(states, actions_mask=actions_mask)
+        get_huber_loss = torch.nn.SmoothL1Loss()
+        value_pred_clipped = old_value_preds + (value_preds - old_value_preds).clamp(
+            -clip_param, clip_param
+        )
+        value_loss_new = get_huber_loss(
+            value_preds.squeeze(dim=-1), G_discounted_returns
+        )  # can use huber loss instead
+        value_loss_clipped = get_huber_loss(
+            value_pred_clipped.squeeze(dim=-1), G_discounted_returns
+        )
+
+        value_loss = torch.max(value_loss_new, value_loss_clipped).mean()
+
+        # Policy loss with value function baseline.
+        advantages = G_discounted_returns - value_preds.detach().squeeze(dim=-1)
+        # Don't propagate through to VF network.
+        assert not advantages.requires_grad
+
+        # Trick: standardize advantages
+        standardized_advantages = (advantages - advantages.mean()) / (
+            advantages.std() + 1e-6
+        )
+
+        _CategoricalDist = Categorical(probs)
+        neg_log_probs = -1.0 * _CategoricalDist.log_prob(actio
