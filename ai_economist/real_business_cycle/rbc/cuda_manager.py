@@ -497,4 +497,37 @@ def policy_gradient_step(
     ).mean()  # can use huber loss instead
     advantages = G_discounted_returns - value_preds.detach().squeeze(
         dim=-1
-    )  # compute advantages 
+    )  # compute advantages (don't propagate through to VF network)
+    assert not advantages.requires_grad
+    # mean and standardize advantages
+    standardized_advantages = (advantages - advantages.mean()) / (
+        advantages.std() + 1e-6
+    )
+    assert not standardized_advantages.requires_grad
+    m = Categorical(probs)
+    pg_loss = (-m.log_prob(actions) * standardized_advantages).mean()
+    assert pg_loss.requires_grad
+    entropy_regularize = entropy_val * m.entropy().mean()
+    loss = pg_loss - entropy_regularize + value_loss_weight * value_loss
+    loss.backward()
+
+    if clip_grad_norm is not None:
+        torch.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=clip_grad_norm)
+
+    optimizer.step()
+
+
+def save_dense_log(
+    save_dir,
+    epi,
+    agent_type_arrays,
+    agent_action_arrays,
+    agent_aux_arrays,
+):
+    print(f"Saving dense log at episode {epi}")
+    for agent_type in ["consumer", "firm", "government"]:
+        states_batch, actions_batch, rewards_batch = agent_type_arrays[agent_type]
+        aux_array = agent_aux_arrays[agent_type]
+        if aux_array is not None:
+            aux_array = aux_array.cpu().numpy()
+        
