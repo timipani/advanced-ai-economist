@@ -458,4 +458,43 @@ def consumer_policy_gradient_step(
         sum_mean_entropy += _CategoricalDist.entropy().mean()
 
     pg_loss = (sum_neg_log_probs * standardized_advantages).mean()
-    
+    assert sum_neg_log_probs.requires_grad
+
+    loss = pg_loss - entropy_val * sum_mean_entropy + value_loss_weight * value_loss
+
+    # Apply gradients
+    optimizer.zero_grad()
+    loss.backward()
+
+    if clip_grad_norm is not None:
+        torch.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=clip_grad_norm)
+
+    optimizer.step()
+
+
+def policy_gradient_step(
+    policy,
+    states,
+    actions,
+    rewards,
+    optimizer,
+    gamma_const,
+    entropy_val=0.0,
+    value_loss_weight=1.0,
+    actions_mask=None,
+    reward_scale=1.0,
+    clip_grad_norm=None,
+):
+
+    # here, we must perform digit scaling
+    optimizer.zero_grad()
+    probs, value_preds = policy(states, actions_mask=actions_mask)
+    rewards = rewards / reward_scale
+    G_discounted_returns = discounted_returns(rewards, gamma_const)
+    get_huber_loss = torch.nn.SmoothL1Loss()
+    value_loss = get_huber_loss(
+        value_preds.squeeze(dim=-1), G_discounted_returns
+    ).mean()  # can use huber loss instead
+    advantages = G_discounted_returns - value_preds.detach().squeeze(
+        dim=-1
+    )  # compute advantages 
