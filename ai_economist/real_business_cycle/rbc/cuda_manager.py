@@ -566,4 +566,32 @@ def save_policy_parameters(
         firm_path = (
             Path(save_dir) / Path("saved_models") / Path(f"firm_policy_{epi}.pt")
         )
-        firm_path_lat
+        firm_path_latest = (
+            Path(save_dir) / Path("saved_models") / Path("firm_policy_latest.pt")
+        )
+
+        os.makedirs(firm_path.parent, exist_ok=True)
+        torch.save(firm_policy.state_dict(), firm_path)
+        torch.save(firm_policy.state_dict(), firm_path_latest)
+    if freeze_govt is None:
+        government_path = (
+            Path(save_dir) / Path("saved_models") / Path(f"government_policy_{epi}.pt")
+        )
+        government_path_latest = (
+            Path(save_dir) / Path("saved_models") / Path("government_policy_latest.pt")
+        )
+
+        os.makedirs(government_path.parent, exist_ok=True)
+        torch.save(government_policy.state_dict(), government_path)
+        torch.save(government_policy.state_dict(), government_path_latest)
+
+
+class ConsumerFirmRunManagerBatchParallel:
+    """
+    The Real Business Cycle Experiment Management Class.
+    """
+
+    def __init__(self, cfg_dict, freeze_firms=None, freeze_govt=None):
+        self.cfg_dict = cfg_dict
+        self.train_dict = cfg_dict["train"]
+        self.agents_dict = cfg_dict["ag
