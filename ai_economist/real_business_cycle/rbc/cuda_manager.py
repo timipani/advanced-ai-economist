@@ -530,4 +530,40 @@ def save_dense_log(
         aux_array = agent_aux_arrays[agent_type]
         if aux_array is not None:
             aux_array = aux_array.cpu().numpy()
-        
+        np.savez(
+            str(Path(save_dir) / Path(f"episode_{epi}_{agent_type}.npz")),
+            states=states_batch.cpu().numpy(),
+            actions=actions_batch.cpu().numpy(),
+            rewards=rewards_batch.cpu().numpy(),
+            action_array=agent_action_arrays[agent_type],
+            aux_array=aux_array,
+        )
+
+
+def save_policy_parameters(
+    save_dir,
+    epi,
+    consumer_policy,
+    firm_policy,
+    government_policy,
+    freeze_firms,
+    freeze_govt,
+):
+    print(f"saving model parameters at episode {epi}")
+    consumer_path = (
+        Path(save_dir) / Path("saved_models") / Path(f"consumer_policy_{epi}.pt")
+    )
+
+    # always save the latest, to be overwritten later
+    consumer_path_latest = (
+        Path(save_dir) / Path("saved_models") / Path("consumer_policy_latest.pt")
+    )
+    os.makedirs(consumer_path.parent, exist_ok=True)
+    torch.save(consumer_policy.state_dict(), consumer_path)
+    torch.save(consumer_policy.state_dict(), consumer_path_latest)
+
+    if freeze_firms is None:
+        firm_path = (
+            Path(save_dir) / Path("saved_models") / Path(f"firm_policy_{epi}.pt")
+        )
+        firm_path_lat
