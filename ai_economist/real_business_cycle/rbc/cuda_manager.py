@@ -671,4 +671,33 @@ class ConsumerFirmRunManagerBatchParallel:
         if "paretoscaletheta" in __wd:
             pareto_vals = np.expand_dims(
                 scipy.stats.pareto.ppf(
-                    (np.arange(num_consumers) / num_consume
+                    (np.arange(num_consumers) / num_consumers), __wd["paretoscaletheta"]
+                ),
+                axis=0,
+            )
+            consumer_states[:, :, consumer_state_dim - 1] = consumer_theta * (
+                1.0 / pareto_vals
+            )
+        else:
+            consumer_states[:, :, consumer_state_dim - 1] = consumer_theta
+        consumer_states[:, :, global_state_dim] = consumer_endowment
+
+        # firm states
+        # capital
+        if __wd.get("initial_capital", None) == "proportional":
+            for i in range(num_firms):
+                firm_states[:, i, global_state_dim + 1] = ((i + 1) / 10.0) * 2.0
+        elif __wd.get("initial_capital", None) == "twolevel":
+            for i in range(num_firms):
+                if i < (num_firms // 2):
+                    firm_states[:, i, global_state_dim + 1] = 5000
+                else:
+                    firm_states[:, i, global_state_dim + 1] = 10000
+        else:
+            firm_states[:, :, global_state_dim + 1] = 1.0
+
+        # production alpha
+        if __wd["production_alpha"] == "proportional":
+            half_firms = num_firms // 2
+            for i in range(num_firms):
+              
