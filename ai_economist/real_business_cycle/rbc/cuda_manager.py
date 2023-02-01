@@ -621,4 +621,29 @@ class ConsumerFirmRunManagerBatchParallel:
         government_state_dim = __ad["government_state_dim"]
         global_state_dim = __ad["global_state_dim"]
         consumer_endowment = __wd["initial_consumer_endowment"]
-        firm_endowment = __w
+        firm_endowment = __wd["initial_firm_endowment"]
+        initial_stocks = __wd["initial_stocks"]
+        initial_wages = __wd["initial_wages"]
+        initial_prices = __wd["initial_prices"]
+        consumer_theta = __wd["consumer_theta"]
+
+        consumer_rewards = np.zeros((batch_size, num_consumers), dtype=_NP_DTYPE)
+        consumer_states = np.zeros(
+            (batch_size, num_consumers, consumer_state_dim), dtype=_NP_DTYPE
+        )
+
+        firm_action_indices = np.zeros((batch_size, num_firms), dtype=np.int32)
+        firm_actions = np.zeros(
+            (batch_size, num_firms, firm_action_dim), dtype=_NP_DTYPE
+        )
+        firm_rewards = np.zeros((batch_size, num_firms), dtype=_NP_DTYPE)
+        firm_states = np.zeros((batch_size, num_firms, firm_state_dim), dtype=_NP_DTYPE)
+
+        government_action_indices = np.zeros(
+            (batch_size, num_governments), dtype=np.int32
+        )
+        government_actions = np.zeros(
+            (batch_size, num_governments, government_action_dim), dtype=_NP_DTYPE
+        )
+        government_rewards = np.zeros((batch_size, num_governments), dtype=_NP_DTYPE)
+        go
