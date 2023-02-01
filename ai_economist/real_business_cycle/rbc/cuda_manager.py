@@ -646,4 +646,29 @@ class ConsumerFirmRunManagerBatchParallel:
             (batch_size, num_governments, government_action_dim), dtype=_NP_DTYPE
         )
         government_rewards = np.zeros((batch_size, num_governments), dtype=_NP_DTYPE)
-        go
+        government_states = np.zeros(
+            (batch_size, num_governments, government_state_dim), dtype=_NP_DTYPE
+        )
+
+        # initialize states to right values here
+
+        # global state init
+        # for consumers, firms, and governments
+        for state_arr in [consumer_states, firm_states, government_states]:
+            # set prices to 1.0
+            state_arr[:, :, 0:num_firms] = initial_prices
+            # set wages to 0.0
+            state_arr[:, :, num_firms : (2 * num_firms)] = initial_wages
+            # set stocks to 0.0
+            state_arr[:, :, (2 * num_firms) : (3 * num_firms)] = initial_stocks
+            # set goods overdemanded to 0.0
+            state_arr[:, :, (3 * num_firms) : (4 * num_firms)] = 0.0
+            # set taxes to 0.0
+            state_arr[:, :, (4 * num_firms)] = 0.0
+            state_arr[:, :, (4 * num_firms) + 1] = 0.0
+
+        # consumer states, set theta and initial budget
+        if "paretoscaletheta" in __wd:
+            pareto_vals = np.expand_dims(
+                scipy.stats.pareto.ppf(
+                    (np.arange(num_consumers) / num_consume
