@@ -594,4 +594,31 @@ class ConsumerFirmRunManagerBatchParallel:
     def __init__(self, cfg_dict, freeze_firms=None, freeze_govt=None):
         self.cfg_dict = cfg_dict
         self.train_dict = cfg_dict["train"]
-        self.agents_dict = cfg_dict["ag
+        self.agents_dict = cfg_dict["agents"]
+        self.world_dict = cfg_dict["world"]
+        self.save_dense_every = self.train_dict["save_dense_every"]
+        self.save_dir = self.train_dict["save_dir"]
+
+        self.freeze_firms = freeze_firms
+        self.freeze_govt = freeze_govt
+
+        self.__init_cuda_functions()
+        self.__init_cuda_data_structs()
+        self.__init_torch_data()
+
+    def __init_cuda_data_structs(self):
+        __td = self.train_dict
+        __ad = self.agents_dict
+        __wd = self.world_dict
+        batch_size = __td["batch_size"]
+        num_consumers = __ad["num_consumers"]
+        num_firms = __ad["num_firms"]
+        num_governments = __ad["num_governments"]
+        firm_action_dim = __ad["firm_action_dim"]
+        government_action_dim = __ad["government_action_dim"]
+        consumer_state_dim = __ad["consumer_state_dim"]
+        firm_state_dim = __ad["firm_state_dim"]
+        government_state_dim = __ad["government_state_dim"]
+        global_state_dim = __ad["global_state_dim"]
+        consumer_endowment = __wd["initial_consumer_endowment"]
+        firm_endowment = __w
