@@ -723,4 +723,27 @@ class ConsumerFirmRunManagerBatchParallel:
             consumer_rewards.nbytes
         )
         self.consumer_states_checkpoint_gpu_pycuda = cuda_driver.mem_alloc(
-            consumer_
+            consumer_states.nbytes
+        )
+        cuda_driver.memcpy_htod(self.consumer_rewards_gpu_pycuda, consumer_rewards)
+        cuda_driver.memcpy_htod(
+            self.consumer_states_checkpoint_gpu_pycuda, consumer_states
+        )
+
+        self.firm_states_gpu_tensor = torch.from_numpy(firm_states).cuda()
+        self.firm_action_indices_gpu_pycuda = cuda_driver.mem_alloc(
+            firm_action_indices.nbytes
+        )
+        self.firm_actions_gpu_pycuda = cuda_driver.mem_alloc(firm_actions.nbytes)
+        self.firm_rewards_gpu_pycuda = cuda_driver.mem_alloc(firm_rewards.nbytes)
+        self.firm_states_checkpoint_gpu_pycuda = cuda_driver.mem_alloc(
+            firm_states.nbytes
+        )
+        cuda_driver.memcpy_htod(
+            self.firm_action_indices_gpu_pycuda, firm_action_indices
+        )
+        cuda_driver.memcpy_htod(self.firm_actions_gpu_pycuda, firm_actions)
+        cuda_driver.memcpy_htod(self.firm_rewards_gpu_pycuda, firm_rewards)
+        cuda_driver.memcpy_htod(self.firm_states_checkpoint_gpu_pycuda, firm_states)
+
+        self.government_states_gpu_tensor = tor
