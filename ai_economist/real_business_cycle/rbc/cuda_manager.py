@@ -700,4 +700,27 @@ class ConsumerFirmRunManagerBatchParallel:
         if __wd["production_alpha"] == "proportional":
             half_firms = num_firms // 2
             for i in range(num_firms):
-              
+                firm_states[:, i, global_state_dim + 2] = ((i % half_firms) + 1) * 0.2
+        elif __wd["production_alpha"] == "fixed_array":
+            alpha_arr = [0.2, 0.3, 0.4, 0.6, 0.8, 0.2, 0.3, 0.4, 0.6, 0.8]
+            for i in range(num_firms):
+                firm_states[:, i, global_state_dim + 2] = alpha_arr[i]
+        else:
+            for i in range(num_firms):
+                firm_states[:, i, global_state_dim + 2] = __wd["production_alpha"]
+
+        # set one-hot fields correctly by index for each firm
+        onehot_rows = np.eye(num_firms)
+        firm_states[:, :, (global_state_dim + 3) :] = onehot_rows
+        firm_states[:, :, global_state_dim] = firm_endowment
+
+        # government states
+        # for now, nothing beyond global state
+
+        self.consumer_states_gpu_tensor = torch.from_numpy(consumer_states).cuda()
+        # these are now tensors bc sampling for consumers via pytorch
+        self.consumer_rewards_gpu_pycuda = cuda_driver.mem_alloc(
+            consumer_rewards.nbytes
+        )
+        self.consumer_states_checkpoint_gpu_pycuda = cuda_driver.mem_alloc(
+            consumer_
