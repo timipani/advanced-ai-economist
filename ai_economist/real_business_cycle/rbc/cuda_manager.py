@@ -775,4 +775,38 @@ class ConsumerFirmRunManagerBatchParallel:
 
         batch_size = __td["batch_size"]
         num_consumers = __ad["num_consumers"]
- 
+        num_firms = __ad["num_firms"]
+        num_governments = __ad["num_governments"]
+        consumer_action_dim = __ad["consumer_action_dim"]
+        consumer_state_dim = __ad["consumer_state_dim"]
+        firm_state_dim = __ad["firm_state_dim"]
+        government_state_dim = __ad["government_state_dim"]
+        num_iters = int(self.world_dict["maxtime"])
+
+        consumer_states_batch = torch.zeros(
+            batch_size,
+            num_iters,
+            num_consumers,
+            consumer_state_dim,
+            dtype=torch.float32,
+            device="cpu",
+        )
+        consumer_actions_single = torch.zeros(
+            batch_size,
+            num_consumers,
+            num_firms + 1 + 1,
+            dtype=torch.int32,
+            device="cpu",
+        )
+        consumer_actions_batch = torch.zeros(
+            batch_size,
+            num_iters,
+            num_consumers,
+            num_firms + 1 + 1,
+            dtype=torch.int32,
+            device="cpu",
+        )
+
+        # auxiliary state info that is not part of observables.
+        # currently just the realized consumption
+        consumer_aux_batch = torch.ze
