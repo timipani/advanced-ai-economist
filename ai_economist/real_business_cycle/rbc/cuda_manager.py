@@ -746,4 +746,33 @@ class ConsumerFirmRunManagerBatchParallel:
         cuda_driver.memcpy_htod(self.firm_rewards_gpu_pycuda, firm_rewards)
         cuda_driver.memcpy_htod(self.firm_states_checkpoint_gpu_pycuda, firm_states)
 
-        self.government_states_gpu_tensor = tor
+        self.government_states_gpu_tensor = torch.from_numpy(government_states).cuda()
+        self.government_action_indices_gpu_pycuda = cuda_driver.mem_alloc(
+            government_action_indices.nbytes
+        )
+        self.government_actions_gpu_pycuda = cuda_driver.mem_alloc(
+            government_actions.nbytes
+        )
+        self.government_rewards_gpu_pycuda = cuda_driver.mem_alloc(
+            government_rewards.nbytes
+        )
+        self.government_states_checkpoint_gpu_pycuda = cuda_driver.mem_alloc(
+            government_states.nbytes
+        )
+        cuda_driver.memcpy_htod(
+            self.government_action_indices_gpu_pycuda, government_action_indices
+        )
+        cuda_driver.memcpy_htod(self.government_actions_gpu_pycuda, government_actions)
+        cuda_driver.memcpy_htod(self.government_rewards_gpu_pycuda, government_rewards)
+        cuda_driver.memcpy_htod(
+            self.government_states_checkpoint_gpu_pycuda, government_states
+        )
+
+    def __init_torch_data(self):
+
+        __td = self.train_dict
+        __ad = self.agents_dict
+
+        batch_size = __td["batch_size"]
+        num_consumers = __ad["num_consumers"]
+ 
