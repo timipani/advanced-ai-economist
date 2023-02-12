@@ -839,4 +839,33 @@ class ConsumerFirmRunManagerBatchParallel:
             num_iters,
             num_firms,
             firm_state_dim,
-       
+            dtype=torch.float32,
+            device="cpu",
+        )
+        firm_actions_batch = torch.zeros(
+            batch_size, num_iters, num_firms, dtype=torch.int32, device="cpu"
+        )
+        firm_rewards_batch = torch.zeros(
+            batch_size, num_iters, num_firms, dtype=torch.float32, device="cpu"
+        )
+        firm_aux_batch = torch.zeros(
+            batch_size, num_iters, num_firms, dtype=torch.float32, device="cpu"
+        )
+        self.firm_states_batch = firm_states_batch.cuda()
+        self.firm_actions_batch = firm_actions_batch.cuda()
+        self.firm_rewards_batch = firm_rewards_batch.cuda()
+        self.firm_aux_batch = firm_aux_batch.cuda()
+
+        government_states_batch = torch.zeros(
+            batch_size,
+            num_iters,
+            num_governments,
+            government_state_dim,
+            dtype=torch.float32,
+            device="cpu",
+        )
+        government_actions_batch = torch.zeros(
+            batch_size, num_iters, num_governments, dtype=torch.int32, device="cpu"
+        )
+        government_rewards_batch = torch.zeros(
+            batch_size, num_iters, num_governme
