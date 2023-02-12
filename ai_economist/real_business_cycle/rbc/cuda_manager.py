@@ -868,4 +868,31 @@ class ConsumerFirmRunManagerBatchParallel:
             batch_size, num_iters, num_governments, dtype=torch.int32, device="cpu"
         )
         government_rewards_batch = torch.zeros(
-            batch_size, num_iters, num_governme
+            batch_size, num_iters, num_governments, dtype=torch.float32, device="cpu"
+        )
+        self.government_states_batch = government_states_batch.cuda()
+        self.government_actions_batch = government_actions_batch.cuda()
+        self.government_rewards_batch = government_rewards_batch.cuda()
+
+    def __init_cuda_functions(self):
+
+        __td = self.train_dict
+        __ad = self.agents_dict
+        __wd = self.world_dict
+
+        if self.freeze_firms is not None:
+            countfirmreward = 0
+        else:
+            countfirmreward = self.agents_dict["government_counts_firm_reward"]
+
+        code, compiler_options = get_cuda_code(
+            Path("cuda") / Path("firm_rbc.cu"),
+            batchsize=__td["batch_size"],
+            numconsumers=__ad["num_consumers"],
+            numfirms=__ad["num_firms"],
+            numgovernments=__ad["num_governments"],
+            maxtime=__wd["maxtime"],
+            # numactionsconsumer=__ad["consumer_num_actions"],
+            numactionsconsumer=__ad["consumer_num_work_actions"],
+            numactionsfirm=__ad["firm_num_actions"],
+            numactionsgo
