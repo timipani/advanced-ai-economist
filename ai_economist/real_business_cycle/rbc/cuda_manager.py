@@ -895,4 +895,27 @@ class ConsumerFirmRunManagerBatchParallel:
             # numactionsconsumer=__ad["consumer_num_actions"],
             numactionsconsumer=__ad["consumer_num_work_actions"],
             numactionsfirm=__ad["firm_num_actions"],
-            numactionsgo
+            numactionsgovernment=__ad["government_num_actions"],
+            interestrate=__wd["interest_rate"],
+            crra_param=__wd["crra_param"],
+            shouldboostfirmreward=int(__td["should_boost_firm_reward"]),
+            boostfirmrewardfactor=__td["boost_firm_reward_factor"],
+            countfirmreward=countfirmreward,
+            importerprice=__wd["importer_price"],
+            importerquantity=__wd["importer_quantity"],
+            laborfloor=__wd.get("labor_floor", 0.0),
+            useimporter=__wd["use_importer"],
+        )
+
+        mod = SourceModule(code, options=compiler_options, no_extern_c=True)
+        self.mod = mod
+
+        # --------------------------------------------------------------------
+        # Define Consumer actions -- maanged in Pytorch
+        # --------------------------------------------------------------------
+        self.consumption_action_tensor = torch.tensor(
+            __ad["consumer_consumption_actions_array"].astype(_NP_DTYPE)
+        ).cuda()
+        self.work_action_tensor = torch.tensor(
+            __ad["consumer_work_actions_array"].astype(_NP_DTYPE)
+        ).cu
