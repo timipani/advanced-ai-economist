@@ -809,4 +809,34 @@ class ConsumerFirmRunManagerBatchParallel:
 
         # auxiliary state info that is not part of observables.
         # currently just the realized consumption
-        consumer_aux_batch = torch.ze
+        consumer_aux_batch = torch.zeros(
+            batch_size,
+            num_iters,
+            num_consumers,
+            num_firms,
+            dtype=torch.float32,
+            device="cpu",
+        )
+
+        consumer_rewards_batch = torch.zeros(
+            batch_size, num_iters, num_consumers, dtype=torch.float32, device="cpu"
+        )
+        self.consumer_states_batch_gpu_tensor = consumer_states_batch.cuda()
+        self.consumer_actions_batch_gpu_tensor = consumer_actions_batch.cuda()
+        self.consumer_actions_index_single_gpu_tensor = consumer_actions_single.cuda()
+        self.consumer_actions_single_gpu_tensor = torch.zeros(
+            batch_size,
+            num_consumers,
+            consumer_action_dim,
+            dtype=torch.float32,
+            device="cpu",
+        ).cuda()
+        self.consumer_rewards_batch_gpu_tensor = consumer_rewards_batch.cuda()
+        self.consumer_aux_batch_gpu_tensor = consumer_aux_batch.cuda()
+
+        firm_states_batch = torch.zeros(
+            batch_size,
+            num_iters,
+            num_firms,
+            firm_state_dim,
+       
