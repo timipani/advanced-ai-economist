@@ -918,4 +918,27 @@ class ConsumerFirmRunManagerBatchParallel:
         ).cuda()
         self.work_action_tensor = torch.tensor(
             __ad["consumer_work_actions_array"].astype(_NP_DTYPE)
-        ).cu
+        ).cuda()
+
+        # --------------------------------------------------------------------
+        # Define Firm actions -- maanged in CUDA
+        # --------------------------------------------------------------------
+        firm_index_to_action_gpu, _ = mod.get_global("kFirmIndexToAction")
+        cuda_driver.memcpy_htod(
+            firm_index_to_action_gpu,
+            __ad["firm_actions_array"].astype(_NP_DTYPE),
+        )
+
+        # --------------------------------------------------------------------
+        # Define Govt actions -- maanged in CUDA
+        # --------------------------------------------------------------------
+        government_index_to_action_gpu, _ = mod.get_global("kGovernmentIndexToAction")
+        cuda_driver.memcpy_htod(
+            government_index_to_action_gpu,
+            __ad["government_actions_array"].astype(_NP_DTYPE),
+        )
+
+        # --------------------------------------------------------------------
+        # Get handles to CUDA methods
+        # --------------------------------------------------------------------
+        self.cuda_init_random = mod.
