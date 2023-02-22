@@ -1000,4 +1000,31 @@ class ConsumerFirmRunManagerBatchParallel:
 
     def consumers_will_train_this_episode(self, epi):
         __ad = self.agents_dict
-        if "tr
+        if "training_schedule_mod" in self.agents_dict:
+            mod_val = epi % __ad["training_schedule_mod"]
+            return mod_val <= __ad["consumer_mod_threshold"]
+        if "consumer_training_list" in self.agents_dict:
+            return interval_list_contains(__ad["consumer_training_list"], epi)
+        if "train_consumers_every" in self.agents_dict:
+            mod_val = epi % __ad["train_consumers_every"]
+        else:
+            mod_val = 0
+        return epi >= self.agents_dict.get("consumer_training_start", 0) and (
+            mod_val == 0
+        )
+
+    def firms_will_train_this_episode(self, epi):
+        __ad = self.agents_dict
+        if "training_schedule_mod" in self.agents_dict:
+            mod_val = epi % __ad["training_schedule_mod"]
+            return mod_val > __ad["consumer_mod_threshold"]
+        if "firm_training_list" in self.agents_dict:
+            return interval_list_contains(__ad["firm_training_list"], epi) and (
+                self.freeze_firms is None
+            )
+        if "train_firms_every" in self.agents_dict:
+            mod_val = epi % __ad["train_firms_every"]
+        else:
+            mod_val = 0
+        return (
+        
