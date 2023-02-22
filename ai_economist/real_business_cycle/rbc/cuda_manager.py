@@ -941,4 +941,33 @@ class ConsumerFirmRunManagerBatchParallel:
         # --------------------------------------------------------------------
         # Get handles to CUDA methods
         # --------------------------------------------------------------------
-        self.cuda_init_random = mod.
+        self.cuda_init_random = mod.get_function("CudaInitKernel")
+        self.cuda_reset_env = mod.get_function("CudaResetEnv")
+        self.cuda_sample_actions = mod.get_function(
+            "CudaSampleFirmAndGovernmentActions"
+        )
+        self.cuda_step = mod.get_function("CudaStep")
+        self.cuda_free_mem = mod.get_function("CudaFreeRand")
+
+    def _update_consumer_actions_inplace(self):
+        # call after consumer_actions_single is updated
+        __ad = self.agents_dict
+
+        # Add asserts when ``loading'' arrays
+        # assert consumption_action_array.shape == (1, 1, 1)
+        # assert len(consumption_action_array.shape) == 3
+
+        num_firms = __ad["num_firms"]
+        idx_hours = num_firms
+        idx_which_firm = num_firms + 1
+        for i in range(num_firms):
+
+            consumption_actions_at_firm_i = (
+                self.consumer_actions_index_single_gpu_tensor[..., i].to(torch.long)
+            )
+
+            self.consumer_actions_single_gpu_tensor[
+                ..., i
+            ] = self.consumption_action_tensor[
+                consumption_actions_at_firm_i, :
+            ].squeeze(
