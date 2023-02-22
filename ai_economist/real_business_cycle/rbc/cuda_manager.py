@@ -971,3 +971,33 @@ class ConsumerFirmRunManagerBatchParallel:
             ] = self.consumption_action_tensor[
                 consumption_actions_at_firm_i, :
             ].squeeze(
+                dim=-1
+            )
+
+        consumer_hours_worked = self.consumer_actions_index_single_gpu_tensor[
+            ..., idx_hours
+        ].to(torch.long)
+
+        self.consumer_actions_single_gpu_tensor[
+            ..., num_firms
+        ] = self.work_action_tensor[consumer_hours_worked, :].squeeze(dim=-1)
+
+        self.consumer_actions_single_gpu_tensor[
+            ..., num_firms + 1
+        ] = self.consumer_actions_index_single_gpu_tensor[..., idx_which_firm]
+
+    def sample_consumer_actions_and_store(self, consumer_probs_list):
+        # Every consumer has A action heads, output as a list of tensors.
+        # Sample from each of these lists and store the results.
+
+        with torch.no_grad():
+            for i, probs in enumerate(consumer_probs_list):
+                dist = Categorical(probs)
+                samples = dist.sample()
+                self.consumer_actions_index_single_gpu_tensor[..., i] = samples
+
+            self._update_consumer_actions_inplace()
+
+    def consumers_will_train_this_episode(self, epi):
+        __ad = self.agents_dict
+        if "tr
