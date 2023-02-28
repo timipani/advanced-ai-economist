@@ -1057,4 +1057,34 @@ class ConsumerFirmRunManagerBatchParallel:
 
         __td = self.train_dict
         __ad = self.agents_dict
-        num_iters = int(self
+        num_iters = int(self.world_dict["maxtime"])
+        num_consumers = __ad["num_consumers"]
+        num_firms = __ad["num_firms"]
+        num_governments = __ad["num_governments"]
+        num_agents = num_consumers + num_firms + num_governments
+        block = (num_agents, 1, 1)
+        grid = (__td["batch_size"], 1)
+
+        seed_everything(__td["seed"])
+        self.cuda_init_random(np.int32(__td["seed"]), block=block, grid=grid)
+
+        # --------------------------------------------
+        # Define Consumer policy + optimizers
+        # --------------------------------------------
+        lr = __td["lr"]
+
+        consumer_expanded_size = size_after_digit_expansion(
+            __ad["consumer_state_dim"],
+            __ad["consumer_digit_dims"],
+            __td["digit_representation_size"],
+        )
+
+        consumer_policy = IndependentPolicyNet(
+            consumer_expanded_size,
+            [__ad["consumer_num_consume_actions"]] * num_firms
+            + [
+                __ad["consumer_num_work_actions"],
+                __ad["consumer_num_whichfirm_actions"],
+            ],
+            norm_consts=(
+                torch.zeros(consu
