@@ -1027,4 +1027,34 @@ class ConsumerFirmRunManagerBatchParallel:
         else:
             mod_val = 0
         return (
-        
+            (epi >= self.agents_dict.get("firm_training_start", 0))
+            and (self.freeze_firms is None)
+            and (mod_val == 0)
+        )
+
+    def governments_will_train_this_episode(self, epi):
+        __ad = self.agents_dict
+        if "government_training_list" in self.agents_dict:
+            return interval_list_contains(__ad["government_training_list"], epi) and (
+                self.freeze_govt is None
+            )
+        if "train_government_every" in self.agents_dict:
+            mod_val = epi % self.agents_dict["train_government_every"]
+        else:
+            mod_val = 0
+        return (
+            (epi >= self.agents_dict.get("government_training_start", 0))
+            and (self.freeze_govt is None)
+            and (mod_val == 0)
+        )
+
+    def bestresponse_train(
+        self, train_type, num_episodes, rollout_path, ep_str="latest", checkpoint=100
+    ):
+        # train one single type only
+        # load all policies from state dict
+        # reset all the environment stuff
+
+        __td = self.train_dict
+        __ad = self.agents_dict
+        num_iters = int(self
