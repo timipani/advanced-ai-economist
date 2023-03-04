@@ -1153,4 +1153,34 @@ class ConsumerFirmRunManagerBatchParallel:
                 self.consumer_actions_batch_gpu_tensor,
                 self.consumer_rewards_batch_gpu_tensor,
             ),
-      
+            "firm": (
+                self.firm_states_batch,
+                self.firm_actions_batch,
+                self.firm_rewards_batch,
+            ),
+            "government": (
+                self.government_states_batch,
+                self.government_actions_batch,
+                self.government_rewards_batch,
+            ),
+        }
+
+        agent_action_arrays = {
+            "consumer": __ad["consumer_work_actions_array"],
+            "firm": __ad["firm_actions_array"],
+            "government": __ad["government_actions_array"],
+        }
+
+        agent_aux_arrays = {
+            "consumer": (self.consumer_aux_batch_gpu_tensor),
+            "firm": (self.firm_aux_batch),
+            "government": None,
+        }
+
+        pbar = tqdm(range(num_episodes))
+        for epi in pbar:
+            annealed_entropy_coef = 0.1  # later, do some computation to anneal this
+            self.cuda_reset_env(
+                CudaTensorHolder(self.consumer_states_gpu_tensor),
+                CudaTensorHolder(self.firm_states_gpu_tensor),
+               
