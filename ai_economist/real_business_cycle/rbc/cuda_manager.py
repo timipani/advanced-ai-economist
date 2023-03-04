@@ -1087,4 +1087,37 @@ class ConsumerFirmRunManagerBatchParallel:
                 __ad["consumer_num_whichfirm_actions"],
             ],
             norm_consts=(
-                torch.zeros(consu
+                torch.zeros(consumer_expanded_size).cuda(),  # don't center for now
+                consumer_state_scaling_factors(self.cfg_dict),
+            ),
+        ).to("cuda")
+        consumer_policy.load_state_dict(
+            torch.load(
+                rollout_path
+                / Path("saved_models")
+                / Path(f"consumer_policy_{ep_str}.pt")
+            )
+        )
+
+        consumer_optim = torch.optim.Adam(consumer_policy.parameters(), lr=lr)
+        firm_expanded_size = size_after_digit_expansion(
+            __ad["firm_state_dim"],
+            __ad["firm_digit_dims"],
+            __td["digit_representation_size"],
+        )
+        firm_policy = PolicyNet(
+            firm_expanded_size,
+            __ad["firm_num_actions"],
+            norm_consts=(
+                torch.zeros(firm_expanded_size).cuda(),
+                firm_state_scaling_factors(self.cfg_dict),
+            ),
+        ).to("cuda")
+
+        firm_policy.load_state_dict(
+            torch.load(
+                rollout_path / Path("saved_models") / Path(f"firm_policy_{ep_str}.pt")
+            )
+        )
+
+        firm_optim = torch.optim.Adam(f
