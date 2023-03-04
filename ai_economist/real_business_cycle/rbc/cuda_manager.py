@@ -1120,4 +1120,37 @@ class ConsumerFirmRunManagerBatchParallel:
             )
         )
 
-        firm_optim = torch.optim.Adam(f
+        firm_optim = torch.optim.Adam(firm_policy.parameters(), lr=lr)
+        government_expanded_size = size_after_digit_expansion(
+            __ad["government_state_dim"],
+            __ad["government_digit_dims"],
+            __td["digit_representation_size"],
+        )
+
+        government_policy = PolicyNet(
+            government_expanded_size,
+            __ad["government_num_actions"],
+            norm_consts=(
+                torch.zeros(government_expanded_size).cuda(),
+                govt_state_scaling_factors(self.cfg_dict),
+            ),
+        ).to("cuda")
+
+        government_policy.load_state_dict(
+            torch.load(
+                rollout_path
+                / Path("saved_models")
+                / Path(f"government_policy_{ep_str}.pt")
+            )
+        )
+
+        government_optim = torch.optim.Adam(government_policy.parameters(), lr=lr)
+        rewards = []
+
+        agent_type_arrays = {
+            "consumer": (
+                self.consumer_states_batch_gpu_tensor,
+                self.consumer_actions_batch_gpu_tensor,
+                self.consumer_rewards_batch_gpu_tensor,
+            ),
+      
