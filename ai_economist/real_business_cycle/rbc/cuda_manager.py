@@ -1279,4 +1279,29 @@ class ConsumerFirmRunManagerBatchParallel:
                     block=block,
                     grid=grid,
                 )
-               
+                self.consumer_actions_batch_gpu_tensor[
+                    :, _iter, :, :
+                ] = self.consumer_actions_index_single_gpu_tensor
+            update_government_rewards(
+                self.government_rewards_batch,
+                self.consumer_rewards_batch_gpu_tensor,
+                self.firm_rewards_batch,
+                self.cfg_dict,
+            )
+            if train_type == "consumer":
+                consumer_reward_scale = self.agents_dict.get(
+                    "consumer_reward_scale", 1.0
+                )
+                consumer_policy_gradient_step(
+                    consumer_policy,
+                    expand_to_digit_form(
+                        self.consumer_states_batch_gpu_tensor,
+                        __ad["consumer_digit_dims"],
+                        __td["digit_representation_size"],
+                    ),
+                    self.consumer_actions_batch_gpu_tensor,
+                    self.consumer_rewards_batch_gpu_tensor,
+                    consumer_optim,
+                    __td["gamma"],
+                    entropy_val=annealed_entropy_coef * __td["entropy"],
+              
