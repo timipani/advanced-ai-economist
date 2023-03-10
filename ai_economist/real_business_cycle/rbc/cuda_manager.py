@@ -1304,4 +1304,26 @@ class ConsumerFirmRunManagerBatchParallel:
                     consumer_optim,
                     __td["gamma"],
                     entropy_val=annealed_entropy_coef * __td["entropy"],
-              
+                    value_loss_weight=__td["value_loss_weight"],
+                    reward_scale=consumer_reward_scale,
+                    clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
+                )
+                rewards.append(self.consumer_rewards_batch_gpu_tensor.mean().item())
+            elif train_type == "firm":
+                firm_reward_scale = self.agents_dict.get("firm_reward_scale", 1.0)
+                policy_gradient_step(
+                    firm_policy,
+                    expand_to_digit_form(
+                        self.firm_states_batch,
+                        __ad["firm_digit_dims"],
+                        __td["digit_representation_size"],
+                    ),
+                    self.firm_actions_batch,
+                    self.firm_rewards_batch,
+                    firm_optim,
+                    __td["gamma"],
+                    entropy_val=annealed_entropy_coef * __td["entropy"],
+                    value_loss_weight=__td["value_loss_weight"],
+                    actions_mask=None,
+                    reward_scale=firm_reward_scale,
+                    clip_grad_norm=self.train_
