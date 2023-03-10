@@ -1326,4 +1326,26 @@ class ConsumerFirmRunManagerBatchParallel:
                     value_loss_weight=__td["value_loss_weight"],
                     actions_mask=None,
                     reward_scale=firm_reward_scale,
-                    clip_grad_norm=self.train_
+                    clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
+                )
+                rewards.append(self.firm_rewards_batch.mean().item())
+            elif train_type == "government":
+                government_reward_scale = self.agents_dict.get(
+                    "government_reward_scale", 1.0
+                )
+                policy_gradient_step(
+                    government_policy,
+                    expand_to_digit_form(
+                        self.government_states_batch,
+                        __ad["government_digit_dims"],
+                        __td["digit_representation_size"],
+                    ),
+                    self.government_actions_batch,
+                    self.government_rewards_batch,
+                    government_optim,
+                    __td["gamma"],
+                    entropy_val=annealed_entropy_coef * __td["entropy"],
+                    value_loss_weight=__td["value_loss_weight"],
+                    actions_mask=None,
+                    reward_scale=government_reward_scale,
+                    clip_grad_norm=self.train_dict.get("clip_gra
