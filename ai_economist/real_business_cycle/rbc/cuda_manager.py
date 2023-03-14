@@ -1382,4 +1382,36 @@ class ConsumerFirmRunManagerBatchParallel:
 
     def train(self):
 
-    
+        __td = self.train_dict
+        __ad = self.agents_dict
+
+        # Create logdir
+        os.makedirs(__td["save_dir"], exist_ok=True)
+
+        # Constants
+        num_iters = int(self.world_dict["maxtime"])
+        num_consumers = __ad["num_consumers"]
+        num_firms = __ad["num_firms"]
+        num_governments = __ad["num_governments"]
+        num_agents = num_consumers + num_firms + num_governments
+
+        # CUDA params: defines data shape on the GPU
+        block = (num_agents, 1, 1)
+        grid = (__td["batch_size"], 1)
+
+        # Set seeds
+        seed_everything(__td["seed"])
+        self.cuda_init_random(np.int32(__td["seed"]), block=block, grid=grid)
+
+        # --------------------------------------------
+        # Define Consumer policy + optimizers
+        # --------------------------------------------
+        lr = __td["lr"]
+
+        consumer_expanded_size = size_after_digit_expansion(
+            __ad["consumer_state_dim"],
+            __ad["consumer_digit_dims"],
+            __td["digit_representation_size"],
+        )
+
+        consumer_policy = IndependentPolicyN
