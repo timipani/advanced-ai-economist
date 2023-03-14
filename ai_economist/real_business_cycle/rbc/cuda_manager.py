@@ -1348,4 +1348,38 @@ class ConsumerFirmRunManagerBatchParallel:
                     value_loss_weight=__td["value_loss_weight"],
                     actions_mask=None,
                     reward_scale=government_reward_scale,
-                    clip_grad_norm=self.train_dict.get("clip_gra
+                    clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
+                )
+                rewards.append(self.government_rewards_batch.mean().item())
+            pbar.set_postfix({"reward": rewards[-1]})
+            if (epi % checkpoint) == 0:
+                # save policy every checkpoint steps
+                save_policy_parameters(
+                    str(Path(self.save_dir) / f"br{train_type}"),
+                    epi,
+                    consumer_policy,
+                    firm_policy,
+                    government_policy,
+                    self.freeze_firms,
+                    self.freeze_govt,
+                )
+                save_dense_log(
+                    str(Path(self.save_dir) / f"br{train_type}"),
+                    epi,
+                    agent_type_arrays,
+                    agent_action_arrays,
+                    agent_aux_arrays,
+                )
+
+        print(
+            f"{train_type}: starting reward {rewards[0]}, "
+            f"ending reward {rewards[-1]}, "
+            f"improvement in reward after {num_episodes}: {rewards[-1] - rewards[0]}"
+        )
+
+        self.cuda_free_mem(block=block, grid=grid)
+        return rewards
+
+    def train(self):
+
+    
