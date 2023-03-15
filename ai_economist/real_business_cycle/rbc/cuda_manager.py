@@ -1446,4 +1446,36 @@ class ConsumerFirmRunManagerBatchParallel:
                 firm_expanded_size,
                 __ad["firm_num_actions"],
                 self.freeze_firms,
-          
+            )
+            firm_optim = NoOpOptimizer()
+        else:
+            firm_policy = PolicyNet(
+                firm_expanded_size,
+                __ad["firm_num_actions"],
+                norm_consts=(
+                    torch.zeros(firm_expanded_size).cuda(),
+                    firm_state_scaling_factors(self.cfg_dict),
+                ),
+            ).to("cuda")
+
+            firm_optim = torch.optim.Adam(
+                firm_policy.parameters(),
+                lr=lr * self.agents_dict.get("firm_lr_multiple", 1.0),
+            )
+
+        # --------------------------------------------
+        # Define Government policy + optimizers
+        # --------------------------------------------
+        government_expanded_size = size_after_digit_expansion(
+            __ad["government_state_dim"],
+            __ad["government_digit_dims"],
+            __td["digit_representation_size"],
+        )
+
+        if self.freeze_govt is not None:
+            government_policy = DeterministicPolicy(
+                government_expanded_size,
+                __ad["government_num_actions"],
+                self.freeze_govt,
+            )
+       
