@@ -1535,4 +1535,34 @@ class ConsumerFirmRunManagerBatchParallel:
         consumer_no_ponzi_coef = self.agents_dict.get("consumer_noponzi_start", 0.0)
         lagr_num_steps = self.train_dict.get("lagr_num_steps", 1)
 
-        firm_training_s
+        firm_training_start = self.agents_dict.get("firm_training_start", 0)
+        consumer_training_start = self.agents_dict.get("consumer_training_start", 0)
+        government_training_start = self.agents_dict.get("government_training_start", 0)
+
+        firm_action_start = self.agents_dict.get("firm_begin_anneal_action", 0)
+        government_action_start = self.agents_dict.get(
+            "government_begin_anneal_action", 0
+        )
+
+        # --------------------------------------------
+        # Training loop
+        # --------------------------------------------
+        if self.train_dict.get("infinite_episodes", False):
+            epi_iterator = itertools.count(0, 1)
+        else:
+            epi_iterator = range(__td["num_episodes"])
+
+        final_epi = None
+        for epi in tqdm(epi_iterator):
+
+            firm_actions_mask = firm_action_mask(
+                self.cfg_dict,
+                max(epi - firm_action_start, 0),
+            )
+            government_actions_mask = government_action_mask(
+                self.cfg_dict,
+                max(epi - government_action_start, 0),
+            )
+            theta_coef = compute_theta_coef(self.cfg_dict, epi)
+
+            #
