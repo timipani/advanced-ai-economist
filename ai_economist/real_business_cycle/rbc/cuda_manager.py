@@ -1565,4 +1565,32 @@ class ConsumerFirmRunManagerBatchParallel:
             )
             theta_coef = compute_theta_coef(self.cfg_dict, epi)
 
-            #
+            # Reset environment for all agents
+            self.cuda_reset_env(
+                CudaTensorHolder(self.consumer_states_gpu_tensor),
+                CudaTensorHolder(self.firm_states_gpu_tensor),
+                CudaTensorHolder(self.government_states_gpu_tensor),
+                self.consumer_states_checkpoint_gpu_pycuda,
+                self.firm_states_checkpoint_gpu_pycuda,
+                self.government_states_checkpoint_gpu_pycuda,
+                theta_coef,
+                block=block,
+                grid=grid,
+            )
+
+            # Learning Loop
+            for _iter in range(num_iters):
+
+                # ------------------------
+                # Run policy and get probs
+                # ------------------------
+                with torch.no_grad():
+                    # here, we must perform digit scaling
+                    consumer_probs_list, _ = consumer_policy(
+                        expand_to_digit_form(
+                            self.consumer_states_gpu_tensor,
+                            __ad["consumer_digit_dims"],
+                            __td["digit_representation_size"],
+                        )
+                    )
+                    firm_probs, _ = firm_policy
