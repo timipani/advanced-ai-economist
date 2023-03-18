@@ -1505,4 +1505,34 @@ class ConsumerFirmRunManagerBatchParallel:
                 self.consumer_rewards_batch_gpu_tensor,
             ),
             "firm": (
-                self.fi
+                self.firm_states_batch,
+                self.firm_actions_batch,
+                self.firm_rewards_batch,
+            ),
+            "government": (
+                self.government_states_batch,
+                self.government_actions_batch,
+                self.government_rewards_batch,
+            ),
+        }
+
+        agent_action_arrays = {
+            "consumer": __ad["consumer_work_actions_array"],
+            "firm": __ad["firm_actions_array"],
+            "government": __ad["government_actions_array"],
+        }
+
+        agent_aux_arrays = {
+            "consumer": (self.consumer_aux_batch_gpu_tensor),
+            "firm": (self.firm_aux_batch),
+            "government": None,
+        }
+
+        # --------------------------------------------
+        # Training policy XYZ starts at which step?
+        # --------------------------------------------
+        firm_no_ponzi_coef = self.agents_dict.get("firm_noponzi_start", 0.0)
+        consumer_no_ponzi_coef = self.agents_dict.get("consumer_noponzi_start", 0.0)
+        lagr_num_steps = self.train_dict.get("lagr_num_steps", 1)
+
+        firm_training_s
