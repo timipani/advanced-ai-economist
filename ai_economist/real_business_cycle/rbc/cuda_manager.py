@@ -1478,4 +1478,31 @@ class ConsumerFirmRunManagerBatchParallel:
                 __ad["government_num_actions"],
                 self.freeze_govt,
             )
-       
+            government_optim = NoOpOptimizer()
+        else:
+            government_policy = PolicyNet(
+                government_expanded_size,
+                __ad["government_num_actions"],
+                norm_consts=(
+                    torch.zeros(government_expanded_size).cuda(),
+                    govt_state_scaling_factors(self.cfg_dict),
+                ),
+            ).to("cuda")
+            government_optim = torch.optim.Adam(
+                government_policy.parameters(),
+                lr=lr * self.agents_dict.get("government_lr_multiple", 1.0),
+            )
+
+        # --------------------------------------------
+        # Logging
+        # --------------------------------------------
+        # For looking up GPU tensors
+        # --------------------------------------------
+        agent_type_arrays = {
+            "consumer": (
+                self.consumer_states_batch_gpu_tensor,
+                self.consumer_actions_batch_gpu_tensor,
+                self.consumer_rewards_batch_gpu_tensor,
+            ),
+            "firm": (
+                self.fi
