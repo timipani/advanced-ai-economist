@@ -1593,4 +1593,29 @@ class ConsumerFirmRunManagerBatchParallel:
                             __td["digit_representation_size"],
                         )
                     )
-                    firm_probs, _ = firm_policy
+                    firm_probs, _ = firm_policy(
+                        expand_to_digit_form(
+                            self.firm_states_gpu_tensor,
+                            __ad["firm_digit_dims"],
+                            __td["digit_representation_size"],
+                        ),
+                        actions_mask=firm_actions_mask,
+                    )
+                    government_probs, _ = government_policy(
+                        expand_to_digit_form(
+                            self.government_states_gpu_tensor,
+                            __ad["government_digit_dims"],
+                            __td["digit_representation_size"],
+                        ),
+                        actions_mask=government_actions_mask,
+                    )
+
+                # ------------------------
+                # Get action samples
+                # ------------------------
+                # Sample consumer actions using PyTorch here on GPU!
+                self.sample_consumer_actions_and_store(consumer_probs_list)
+
+                # Sample firms + govt actions using PyCUDA on GPU!
+                self.cuda_sample_actions(
+          
