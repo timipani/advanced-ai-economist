@@ -1661,4 +1661,33 @@ class ConsumerFirmRunManagerBatchParallel:
                     CudaTensorHolder(self.government_states_batch),
                     CudaTensorHolder(self.government_actions_batch),
                     CudaTensorHolder(self.government_rewards_batch),
-                    CudaTen
+                    CudaTensorHolder(self.consumer_aux_batch_gpu_tensor),
+                    CudaTensorHolder(self.firm_aux_batch),
+                    np.int32(_iter),
+                    block=block,
+                    grid=grid,
+                )
+                self.consumer_actions_batch_gpu_tensor[
+                    :, _iter, :, :
+                ] = self.consumer_actions_index_single_gpu_tensor
+
+            # ------------------------
+            # Add penalty for no-Ponzi
+            # ------------------------
+            add_penalty_for_no_ponzi(
+                self.firm_states_gpu_tensor,
+                self.firm_rewards_batch,
+                __ad["global_state_dim"],
+                penalty_coef=firm_no_ponzi_coef,
+            )
+            add_penalty_for_no_ponzi(
+                self.consumer_states_gpu_tensor,
+                self.consumer_rewards_batch_gpu_tensor,
+                __ad["global_state_dim"],
+                penalty_coef=consumer_no_ponzi_coef,
+                penalty_scale=__ad["consumer_penalty_scale"],
+            )
+
+            # add government rewards -- sum of consumer rewards
+            update_government_rewards(
+                self.government_rewards_batc
