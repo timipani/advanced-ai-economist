@@ -1642,4 +1642,23 @@ class ConsumerFirmRunManagerBatchParallel:
                     ),
                     # size: batches x n_consumers x 1 float
                     self.consumer_rewards_gpu_pycuda,
-                    CudaTensorHolde
+                    CudaTensorHolder(
+                        # size: batches x episode x n_consumers x consumer_state float
+                        self.consumer_states_batch_gpu_tensor
+                    ),
+                    CudaTensorHolder(self.consumer_rewards_batch_gpu_tensor),
+                    CudaTensorHolder(self.firm_states_gpu_tensor),
+                    self.firm_action_indices_gpu_pycuda,
+                    self.firm_actions_gpu_pycuda,
+                    self.firm_rewards_gpu_pycuda,
+                    CudaTensorHolder(self.firm_states_batch),
+                    CudaTensorHolder(self.firm_actions_batch),
+                    CudaTensorHolder(self.firm_rewards_batch),
+                    CudaTensorHolder(self.government_states_gpu_tensor),
+                    self.government_action_indices_gpu_pycuda,
+                    self.government_actions_gpu_pycuda,
+                    self.government_rewards_gpu_pycuda,
+                    CudaTensorHolder(self.government_states_batch),
+                    CudaTensorHolder(self.government_actions_batch),
+                    CudaTensorHolder(self.government_rewards_batch),
+                    CudaTen
