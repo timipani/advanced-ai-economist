@@ -1722,4 +1722,25 @@ class ConsumerFirmRunManagerBatchParallel:
             # --------------------------------
             if self.consumers_will_train_this_episode(epi):
                 consumer_entropy_coef = anneal_entropy_coef(
-                    self.ag
+                    self.agents_dict.get("consumer_anneal_entropy", None),
+                    epi - consumer_training_start,
+                )
+                consumer_reward_scale = self.agents_dict.get(
+                    "consumer_reward_scale", 1.0
+                )
+                if __td["use_ppo"]:
+                    consumer_ppo_step(
+                        consumer_policy,
+                        expand_to_digit_form(
+                            self.consumer_states_batch_gpu_tensor,
+                            __ad["consumer_digit_dims"],
+                            __td["digit_representation_size"],
+                        ),
+                        self.consumer_actions_batch_gpu_tensor,
+                        self.consumer_rewards_batch_gpu_tensor,
+                        consumer_optim,
+                        __td["gamma"],
+                        entropy_val=consumer_entropy_coef * __td["entropy"],
+                        value_loss_weight=__td["value_loss_weight"],
+                        reward_scale=consumer_reward_scale,
+                        ppo_num_updates=
