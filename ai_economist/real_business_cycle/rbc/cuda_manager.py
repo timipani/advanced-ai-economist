@@ -1690,4 +1690,36 @@ class ConsumerFirmRunManagerBatchParallel:
 
             # add government rewards -- sum of consumer rewards
             update_government_rewards(
-                self.government_rewards_batc
+                self.government_rewards_batch,
+                self.consumer_rewards_batch_gpu_tensor,
+                self.firm_rewards_batch,
+                self.cfg_dict,
+            )
+
+            # Save dense logs
+            # ------------------------
+            if (epi % __td["save_model_every"]) == 0:
+                save_policy_parameters(
+                    self.save_dir,
+                    epi,
+                    consumer_policy,
+                    firm_policy,
+                    government_policy,
+                    self.freeze_firms,
+                    self.freeze_govt,
+                )
+            if (epi % self.save_dense_every) == 0:
+                save_dense_log(
+                    self.save_dir,
+                    epi,
+                    agent_type_arrays,
+                    agent_action_arrays,
+                    agent_aux_arrays,
+                )
+
+            # --------------------------------
+            # Curriculum: Train Consumers
+            # --------------------------------
+            if self.consumers_will_train_this_episode(epi):
+                consumer_entropy_coef = anneal_entropy_coef(
+                    self.ag
