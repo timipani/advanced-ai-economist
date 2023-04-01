@@ -1743,4 +1743,25 @@ class ConsumerFirmRunManagerBatchParallel:
                         entropy_val=consumer_entropy_coef * __td["entropy"],
                         value_loss_weight=__td["value_loss_weight"],
                         reward_scale=consumer_reward_scale,
-                        ppo_num_updates=
+                        ppo_num_updates=__td["ppo_num_updates"],
+                        clip_param=__td["ppo_clip_param"],
+                        clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
+                    )
+                else:
+                    consumer_policy_gradient_step(
+                        consumer_policy,
+                        expand_to_digit_form(
+                            self.consumer_states_batch_gpu_tensor,
+                            __ad["consumer_digit_dims"],
+                            __td["digit_representation_size"],
+                        ),
+                        self.consumer_actions_batch_gpu_tensor,
+                        self.consumer_rewards_batch_gpu_tensor,
+                        consumer_optim,
+                        __td["gamma"],
+                        entropy_val=consumer_entropy_coef * __td["entropy"],
+                        value_loss_weight=__td["value_loss_weight"],
+                        reward_scale=consumer_reward_scale,
+                        clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
+                    )
+           
