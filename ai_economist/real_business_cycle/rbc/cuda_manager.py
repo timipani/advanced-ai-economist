@@ -1764,4 +1764,28 @@ class ConsumerFirmRunManagerBatchParallel:
                         reward_scale=consumer_reward_scale,
                         clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
                     )
-           
+                    if (epi % lagr_num_steps) == 0:
+                        consumer_no_ponzi_coef = update_penalty_coef(
+                            self.consumer_states_gpu_tensor,
+                            __ad["global_state_dim"],
+                            consumer_no_ponzi_coef,
+                            penalty_step_size=__ad["consumer_noponzi_eta"],
+                            penalty_scale=__ad["consumer_penalty_scale"],
+                        )
+            else:
+                pass
+
+            # --------------------------------
+            # Curriculum: Train Firms
+            # --------------------------------
+            if self.firms_will_train_this_episode(epi):
+                firm_entropy_coef = anneal_entropy_coef(
+                    self.agents_dict.get("firm_anneal_entropy", None),
+                    epi - firm_training_start,
+                )
+                firm_reward_scale = self.agents_dict.get("firm_reward_scale", 1.0)
+                if __td["use_ppo"]:
+                    ppo_step(
+                        firm_policy,
+                        expand_to_digit_form(
+                       
