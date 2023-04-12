@@ -1788,4 +1788,26 @@ class ConsumerFirmRunManagerBatchParallel:
                     ppo_step(
                         firm_policy,
                         expand_to_digit_form(
-                       
+                            self.firm_states_batch,
+                            __ad["firm_digit_dims"],
+                            __td["digit_representation_size"],
+                        ),
+                        self.firm_actions_batch,
+                        self.firm_rewards_batch,
+                        firm_optim,
+                        __td["gamma"],
+                        entropy_val=firm_entropy_coef * __td["entropy"],
+                        value_loss_weight=__td["value_loss_weight"],
+                        actions_mask=firm_actions_mask,
+                        reward_scale=firm_reward_scale,
+                        ppo_num_updates=__td["ppo_num_updates"],
+                        clip_param=__td["ppo_clip_param"],
+                        clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
+                    )
+                else:
+                    policy_gradient_step(
+                        firm_policy,
+                        expand_to_digit_form(
+                            self.firm_states_batch,
+                            __ad["firm_digit_dims"],
+   
