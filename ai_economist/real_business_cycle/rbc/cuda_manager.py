@@ -1810,4 +1810,28 @@ class ConsumerFirmRunManagerBatchParallel:
                         expand_to_digit_form(
                             self.firm_states_batch,
                             __ad["firm_digit_dims"],
-   
+                            __td["digit_representation_size"],
+                        ),
+                        self.firm_actions_batch,
+                        self.firm_rewards_batch,
+                        firm_optim,
+                        __td["gamma"],
+                        entropy_val=firm_entropy_coef * __td["entropy"],
+                        value_loss_weight=__td["value_loss_weight"],
+                        actions_mask=firm_actions_mask,
+                        reward_scale=firm_reward_scale,
+                        clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
+                    )
+
+                if (epi % lagr_num_steps) == 0:
+                    firm_no_ponzi_coef = update_penalty_coef(
+                        self.firm_states_gpu_tensor,
+                        __ad["global_state_dim"],
+                        firm_no_ponzi_coef,
+                        penalty_step_size=__ad["firm_noponzi_eta"],
+                    )
+            else:
+                pass
+
+            # --------------------------------
+     
