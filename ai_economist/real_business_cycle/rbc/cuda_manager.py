@@ -1879,4 +1879,41 @@ class ConsumerFirmRunManagerBatchParallel:
                         entropy_val=government_entropy_coef * __td["entropy"],
                         value_loss_weight=__td["value_loss_weight"],
                         actions_mask=government_actions_mask,
-                        reward_scale=government
+                        reward_scale=government_reward_scale,
+                        clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
+                    )
+            else:
+                pass
+
+            # Store the value of the final episode
+            final_epi = epi
+
+        # ------------------------------------------------------------------
+        # Post-Training (may not reach this with an infinite training loop!)
+        # Save FINAL dense log.
+        # ------------------------------------------------------------------
+        save_dense_log(
+            self.save_dir,
+            "final",
+            agent_type_arrays,
+            agent_action_arrays,
+            agent_aux_arrays,
+        )
+        save_policy_parameters(
+            self.save_dir,
+            final_epi,
+            consumer_policy,
+            firm_policy,
+            government_policy,
+            self.freeze_firms,
+            self.freeze_govt,
+        )
+
+        # ------------------------------------------------------------------
+        # Clean up
+        # ------------------------------------------------------------------
+
+        self.cuda_free_mem(block=block, grid=grid)
+
+
+class CudaTensor
