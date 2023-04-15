@@ -1834,4 +1834,27 @@ class ConsumerFirmRunManagerBatchParallel:
                 pass
 
             # --------------------------------
-     
+            # Curriculum: Train Governments
+            # --------------------------------
+            if self.governments_will_train_this_episode(epi):
+                government_entropy_coef = anneal_entropy_coef(
+                    self.agents_dict.get("govt_anneal_entropy", None),
+                    epi - government_training_start,
+                )
+                government_reward_scale = self.agents_dict.get(
+                    "government_reward_scale", 1.0
+                )
+                if __td["use_ppo"]:
+                    ppo_step(
+                        government_policy,
+                        expand_to_digit_form(
+                            self.government_states_batch,
+                            __ad["government_digit_dims"],
+                            __td["digit_representation_size"],
+                        ),
+                        self.government_actions_batch,
+                        self.government_rewards_batch,
+                        government_optim,
+                        __td["gamma"],
+                        entropy_val=government_entropy_coef * __td["entropy"],
+                        value_loss_weight=__td["
