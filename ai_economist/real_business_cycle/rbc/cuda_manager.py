@@ -1857,4 +1857,26 @@ class ConsumerFirmRunManagerBatchParallel:
                         government_optim,
                         __td["gamma"],
                         entropy_val=government_entropy_coef * __td["entropy"],
-                        value_loss_weight=__td["
+                        value_loss_weight=__td["value_loss_weight"],
+                        actions_mask=government_actions_mask,
+                        reward_scale=government_reward_scale,
+                        ppo_num_updates=__td["ppo_num_updates"],
+                        clip_param=__td["ppo_clip_param"],
+                        clip_grad_norm=self.train_dict.get("clip_grad_norm", None),
+                    )
+                else:
+                    policy_gradient_step(
+                        government_policy,
+                        expand_to_digit_form(
+                            self.government_states_batch,
+                            __ad["government_digit_dims"],
+                            __td["digit_representation_size"],
+                        ),
+                        self.government_actions_batch,
+                        self.government_rewards_batch,
+                        government_optim,
+                        __td["gamma"],
+                        entropy_val=government_entropy_coef * __td["entropy"],
+                        value_loss_weight=__td["value_loss_weight"],
+                        actions_mask=government_actions_mask,
+                        reward_scale=government
