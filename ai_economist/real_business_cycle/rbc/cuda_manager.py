@@ -1916,4 +1916,15 @@ class ConsumerFirmRunManagerBatchParallel:
         self.cuda_free_mem(block=block, grid=grid)
 
 
-class CudaTensor
+class CudaTensorHolder(pycuda.driver.PointerHolderBase):
+    """
+    A class that facilitates casting tensors to pointers.
+    """
+
+    def __init__(self, t):
+        super().__init__()
+        self.t = t
+        self.gpudata = t.data_ptr()
+
+    def get_pointer(self):
+        return self.t.data_ptr()
