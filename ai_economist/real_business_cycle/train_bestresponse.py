@@ -56,4 +56,26 @@ def run_rollout(rollout_path, arguments):
     for agent_type in agent_types:
         ep_rewards = defaultdict(list)
         for _ in range(arguments.repeat_runs):
-            for ep_st
+            for ep_str in arguments.ep_strs:
+                if not check_if_ep_str_policy_exists(rollout_path, ep_str):
+                    print(f"warning: {rollout_path} {ep_str} policy not found")
+                    ep_rewards[ep_str].append([0.0])
+                    continue
+                m = ConsumerFirmRunManagerBatchParallel(cfg_dict)
+                rewards_start = m.bestresponse_train(
+                    agent_type,
+                    arguments.num_episodes,
+                    rollout_path,
+                    ep_str=ep_str,
+                    checkpoint=arguments.checkpoint_model,
+                )
+                ep_rewards[ep_str].append(rewards_start)
+
+        with open(rollout_path / Path(f"br_{agent_type}_output.txt"), "w") as f:
+            for ep_str in arguments.ep_strs:
+                reward_arr = np.array(ep_rewards[ep_str])
+                print(
+                    f"mean reward (std) on rollout {ep_str}: "
+                    f"before BR training {reward_arr[:,0].mean()} "
+                    f"({reward_arr[:,0].std()}), "
+                    f"after BR training {reward_arr[:,-1].mean()
