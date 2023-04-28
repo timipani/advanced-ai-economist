@@ -105,4 +105,4 @@ if __name__ == "__main__":
                 run_rollout(rolloutpath, args)
     else:
         rolloutpath = Path(args.rolloutdir)
-        run
+        run_rollout(rolloutpath, args)
