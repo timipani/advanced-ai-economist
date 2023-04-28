@@ -78,4 +78,31 @@ def run_rollout(rollout_path, arguments):
                     f"mean reward (std) on rollout {ep_str}: "
                     f"before BR training {reward_arr[:,0].mean()} "
                     f"({reward_arr[:,0].std()}), "
-                    f"after BR training {reward_arr[:,-1].mean()
+                    f"after BR training {reward_arr[:,-1].mean()} "
+                    f"({reward_arr[:,-1].std()}), "
+                    f"mean improvement {(reward_arr[:,-1]-reward_arr[:,0]).mean()} "
+                    f"({(reward_arr[:,-1]-reward_arr[:,0]).std()}",
+                    file=f,
+                )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("rolloutdir", type=str)
+    parser.add_argument("num_episodes", type=int)
+    parser.add_argument("--experiment-dir", action="store_true")
+    parser.add_argument("--ep-strs", nargs="+", default=["0", "latest"])
+    parser.add_argument("--agent-type", type=str, default="all")
+    parser.add_argument("--repeat-runs", type=int, default=1)
+    parser.add_argument("--checkpoint-model", type=int, default=100)
+
+    args = parser.parse_args()
+
+    if args.experiment_dir:
+        exp_dir = Path(args.rolloutdir)
+        for rolloutpath in exp_dir.iterdir():
+            if rolloutpath.is_dir():
+                run_rollout(rolloutpath, args)
+    else:
+        rolloutpath = Path(args.rolloutdir)
+        run
