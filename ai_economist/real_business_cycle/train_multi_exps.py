@@ -76,4 +76,34 @@ if __name__ == "__main__":
         print("Not sweeping over hyperparameter combos...")
     else:
         for new_cfg in sweep_cfg_generator(
- 
+            default_cfg_dict,
+            tr_param_sweeps=train_param_sweeps,
+            ag_param_sweeps=agent_param_sweeps,
+            wld_param_sweeps=world_param_sweeps,
+            seed_from_timestamp=args.seed_from_timestamp,
+            group_name=args.group_name,
+        ):
+            create_job_dir(
+                args.experiment_dir,
+                args.job_name_base,
+                cfg=new_cfg,
+                action_arrays={
+                    "consumption_choices": consumption_choices,
+                    "work_choices": work_choices,
+                    "price_and_wage": price_and_wage,
+                    "tax_choices": tax_choices,
+                },
+            )
+
+    if args.dry_run:
+        print("Dry-run -> not actually training...")
+    else:
+        print("Training multiple experiments locally...")
+
+        # for dirs in experiment dir, run job
+        experiment_dirs = [
+            f.path for f in os.scandir(args.experiment_dir) if f.is_dir()
+        ]
+        for experiment in experiment_dirs:
+            run_experiment_batch_parallel(
+       
