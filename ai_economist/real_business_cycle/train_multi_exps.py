@@ -106,4 +106,14 @@ if __name__ == "__main__":
         ]
         for experiment in experiment_dirs:
             run_experiment_batch_parallel(
-       
+                experiment,
+                consumption_choices,
+                work_choices,
+                price_and_wage,
+                tax_choices,
+                group_name=args.group_name,
+                consumers_only=False,
+                no_firms=False,
+                default_firm_action=default_firm_action,
+                default_government_action=default_government_action,
+            )
