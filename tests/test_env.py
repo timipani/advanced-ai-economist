@@ -51,4 +51,35 @@ class CreateEnv:
                 {"ContinuousDoubleAuction": {"max_num_orders": 5}},
                 # (3) Movement and resource collection
                 {"Gather": {}},
-     
+            ],
+            # ===== SCENARIO =====
+            # Which scenario class to use
+            "scenario_name": "uniform/simple_wood_and_stone",
+            # (optional) kwargs of the chosen scenario class
+            "starting_agent_coin": 10,
+            "starting_stone_coverage": 0.10,
+            "starting_wood_coverage": 0.10,
+        }
+
+        # Create an environment instance from the config
+        self.env = foundation.make_env_instance(**self.env_config)
+
+
+class TestEnv(unittest.TestCase):
+    """Unit test to test the env wrapper, reset and step"""
+
+    def test_env_reset_and_step(self):
+        """
+        Unit tests for the reset and step calls
+        """
+        create_env = CreateEnv()
+        env = create_env.env
+
+        # Assert that the total number of agents matches the sum of the 'n_agents'
+        # configuration and the number of planners (1 in this case)
+        num_planners = 1
+        self.assertEqual(
+            len(env.all_agents), create_env.env_config["n_agents"] + num_planners
+        )
+
+        # Assert that the number of agents cre
