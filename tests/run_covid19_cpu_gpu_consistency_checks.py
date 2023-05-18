@@ -90,4 +90,12 @@ testing_class = EnvironmentCPUvsGPU(
     dual_mode_env_class=CovidAndEconomyEnvironment,
     env_configs=env_configs,
     num_envs=3,
-    num_epi
+    num_episodes=2,
+    env_wrapper=FoundationEnvWrapper,
+    env_registrar=env_registrar,
+    policy_tag_to_agent_id_map=policy_to_agent_ids_mapping,
+    create_separate_placeholders_for_each_policy=True,
+    obs_dim_corresponding_to_num_agents="last"
+)
+
+testing_class.test_env_reset_and_step()
