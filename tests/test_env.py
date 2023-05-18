@@ -28,4 +28,27 @@ class CreateEnv:
             # ===== STANDARD ARGUMENTS ======
             "n_agents": 4,  # Number of non-planner agents
             "world_size": [15, 15],  # [Height, Width] of the env world
-            "episode_length": 1000,  # Number 
+            "episode_length": 1000,  # Number of time-steps per episode
+            # In multi-action-mode, the policy selects an action for each action
+            # subspace (defined in component code)
+            # Otherwise, the policy selects only 1 action
+            "multi_action_mode_agents": False,
+            "multi_action_mode_planner": True,
+            # When flattening observations, concatenate scalar & vector observations
+            # before output
+            # Otherwise, return observations with minimal processing
+            "flatten_observations": False,
+            # When Flattening masks, concatenate each action subspace mask
+            # into a single array
+            # Note: flatten_masks = True is recommended for masking action logits
+            "flatten_masks": True,
+            # ===== COMPONENTS =====
+            # Which components to use
+            "components": [
+                # (1) Building houses
+                {"Build": {}},
+                # (2) Trading collectible resources
+                {"ContinuousDoubleAuction": {"max_num_orders": 5}},
+                # (3) Movement and resource collection
+                {"Gather": {}},
+     
