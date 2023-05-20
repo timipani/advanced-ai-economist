@@ -82,4 +82,30 @@ class TestEnv(unittest.TestCase):
             len(env.all_agents), create_env.env_config["n_agents"] + num_planners
         )
 
-        # Assert that the number of agents cre
+        # Assert that the number of agents created in the world
+        # matches the configuration specification
+        self.assertEqual(len(env.world.agents), create_env.env_config["n_agents"])
+
+        # Assert that the planner's index in the world is 'p'
+        self.assertEqual(env.world.planner.idx, "p")
+
+        obs = env.reset()
+
+        # Test whether the observation dictionary keys are created as expected
+        self.assertEqual(
+            sorted(list(obs.keys())),
+            [str(i) for i in range(create_env.env_config["n_agents"])] + ["p"],
+        )
+
+        obs, reward, done, info = env.step({})
+
+        # Check that the observation, reward and info keys match
+        self.assertEqual(obs.keys(), reward.keys())
+        self.assertEqual(obs.keys(), info.keys())
+
+        # Assert that __all__ is in done
+        assert "__all__" in done
+
+
+if __name__ == "__main__":
+    unittest.main()
