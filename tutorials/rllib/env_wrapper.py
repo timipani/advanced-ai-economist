@@ -75,4 +75,34 @@ class RLlibEnvWrapper(MultiAgentEnv):
         self.observation_space_pl = self._dict_to_spaces_dict(obs["p"])
 
         if self.env.world.agents[0].multi_action_mode:
-            self.action_space = spaces.MultiDiscrete
+            self.action_space = spaces.MultiDiscrete(
+                self.env.get_agent(self.sample_agent_idx).action_spaces
+            )
+            self.action_space.dtype = np.int64
+            self.action_space.nvec = self.action_space.nvec.astype(np.int64)
+
+        else:
+            self.action_space = spaces.Discrete(
+                self.env.get_agent(self.sample_agent_idx).action_spaces
+            )
+            self.action_space.dtype = np.int64
+
+        if self.env.world.planner.multi_action_mode:
+            self.action_space_pl = spaces.MultiDiscrete(
+                self.env.get_agent("p").action_spaces
+            )
+            self.action_space_pl.dtype = np.int64
+            self.action_space_pl.nvec = self.action_space_pl.nvec.astype(np.int64)
+
+        else:
+            self.action_space_pl = spaces.Discrete(
+                self.env.get_agent("p").action_spaces
+            )
+            self.action_space_pl.dtype = np.int64
+
+        self._seed = None
+        if self.verbose:
+            print("[EnvWrapper] Spaces")
+            print("[EnvWrapper] Obs (a)   ")
+            pretty_print(self.observation_space)
+            
