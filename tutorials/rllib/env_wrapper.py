@@ -49,3 +49,30 @@ def pretty_print(dictionary):
 
 class RLlibEnvWrapper(MultiAgentEnv):
     """
+    Environment wrapper for RLlib. It sub-classes MultiAgentEnv.
+    This wrapper adds the action and observation space to the environment,
+    and adapts the reset and step functions to run with RLlib.
+    """
+
+    def __init__(self, env_config, verbose=False):
+        self.env_config_dict = env_config["env_config_dict"]
+
+        # Adding env id in the case of multiple environments
+        if hasattr(env_config, "worker_index"):
+            self.env_id = (
+                env_config["num_envs_per_worker"] * (env_config.worker_index - 1)
+            ) + env_config.vector_index
+        else:
+            self.env_id = None
+
+        self.env = foundation.make_env_instance(**self.env_config_dict)
+        self.verbose = verbose
+        self.sample_agent_idx = str(self.env.all_agents[0].idx)
+
+        obs = self.env.reset()
+
+        self.observation_space = self._dict_to_spaces_dict(obs["0"])
+        self.observation_space_pl = self._dict_to_spaces_dict(obs["p"])
+
+        if self.env.world.agents[0].multi_action_mode:
+            self.action_space = spaces.MultiDiscrete
