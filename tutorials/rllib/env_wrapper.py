@@ -105,4 +105,31 @@ class RLlibEnvWrapper(MultiAgentEnv):
             print("[EnvWrapper] Spaces")
             print("[EnvWrapper] Obs (a)   ")
             pretty_print(self.observation_space)
-            
+            print("[EnvWrapper] Obs (p)   ")
+            pretty_print(self.observation_space_pl)
+            print("[EnvWrapper] Action (a)", self.action_space)
+            print("[EnvWrapper] Action (p)", self.action_space_pl)
+
+    def _dict_to_spaces_dict(self, obs):
+        dict_of_spaces = {}
+        for k, v in obs.items():
+
+            # list of lists are listified np arrays
+            _v = v
+            if isinstance(v, list):
+                _v = np.array(v)
+            elif isinstance(v, (int, float, np.floating, np.integer)):
+                _v = np.array([v])
+
+            # assign Space
+            if isinstance(_v, np.ndarray):
+                x = float(_BIG_NUMBER)
+                # Warnings for extreme values
+                if np.max(_v) > x:
+                    warnings.warn("Input is too large!")
+                if np.min(_v) < -x:
+                    warnings.warn("Input is too small!")
+                box = spaces.Box(low=-x, high=x, shape=_v.shape, dtype=_v.dtype)
+                low_high_valid = (box.low < 0).all() and (box.high > 0).all()
+
+                # This loop avoi
