@@ -165,4 +165,41 @@ class RLlibEnvWrapper(MultiAgentEnv):
             self.env = pickle.load(F)
 
     @property
-    def n_agents
+    def n_agents(self):
+        return self.env.n_agents
+
+    @property
+    def summary(self):
+        last_completion_metrics = self.env.previous_episode_metrics
+        if last_completion_metrics is None:
+            return {}
+        last_completion_metrics["completions"] = int(self.env._completions)
+        return last_completion_metrics
+
+    def get_seed(self):
+        return int(self._seed)
+
+    def seed(self, seed):
+        # Using the seeding utility from OpenAI Gym
+        # https://github.com/openai/gym/blob/master/gym/utils/seeding.py
+        _, seed1 = seeding.np_random(seed)
+        # Derive a random seed. This gets passed as an uint, but gets
+        # checked as an int elsewhere, so we need to keep it below
+        # 2**31.
+        seed2 = seeding.hash_seed(seed1 + 1) % 2 ** 31
+
+        if self.verbose:
+            print(
+                "[EnvWrapper] twisting seed {} -> {} -> {} (final)".format(
+                    seed, seed1, seed2
+                )
+            )
+
+        seed = int(seed2)
+        np.random.seed(seed2)
+        random.seed(seed2)
+        self._seed = seed2
+
+    def reset(self, *args, **kwargs):
+        obs = self.env.reset(*args, **kwargs)
+        return recursive_lis
