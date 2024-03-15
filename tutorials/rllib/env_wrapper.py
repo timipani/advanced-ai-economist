@@ -132,4 +132,37 @@ class RLlibEnvWrapper(MultiAgentEnv):
                 box = spaces.Box(low=-x, high=x, shape=_v.shape, dtype=_v.dtype)
                 low_high_valid = (box.low < 0).all() and (box.high > 0).all()
 
-                # This loop avoi
+                # This loop avoids issues with overflow to make sure low/high are good.
+                while not low_high_valid:
+                    x = x // 2
+                    box = spaces.Box(low=-x, high=x, shape=_v.shape, dtype=_v.dtype)
+                    low_high_valid = (box.low < 0).all() and (box.high > 0).all()
+
+                dict_of_spaces[k] = box
+
+            elif isinstance(_v, dict):
+                dict_of_spaces[k] = self._dict_to_spaces_dict(_v)
+            else:
+                raise TypeError
+        return spaces.Dict(dict_of_spaces)
+
+    @property
+    def pickle_file(self):
+        if self.env_id is None:
+            return "game_object.pkl"
+        return "game_object_{:03d}.pkl".format(self.env_id)
+
+    def save_game_object(self, save_dir):
+        assert os.path.isdir(save_dir)
+        path = os.path.join(save_dir, self.pickle_file)
+        with open(path, "wb") as F:
+            pickle.dump(self.env, F)
+
+    def load_game_object(self, save_dir):
+        assert os.path.isdir(save_dir)
+        path = os.path.join(save_dir, self.pickle_file)
+        with open(path, "rb") as F:
+            self.env = pickle.load(F)
+
+    @property
+    def n_agents
