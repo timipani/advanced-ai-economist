@@ -202,4 +202,10 @@ class RLlibEnvWrapper(MultiAgentEnv):
 
     def reset(self, *args, **kwargs):
         obs = self.env.reset(*args, **kwargs)
-        return recursive_lis
+        return recursive_list_to_np_array(obs)
+
+    def step(self, action_dict):
+        obs, rew, done, info = self.env.step(action_dict)
+        assert isinstance(obs[self.sample_agent_idx]["action_mask"], np.ndarray)
+
+        return recursive_list_to_np_array(obs), rew, done, info

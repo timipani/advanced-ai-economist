@@ -1,0 +1,32 @@
+# Copyright (c) 2021, salesforce.com, inc.
+# All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# For full license text, see the LICENSE file in the repo root
+# or https://opensource.org/licenses/BSD-3-Clause
+
+env:
+  components:
+  - Build:
+      build_labor: 10
+      payment: 10
+      payment_max_skill_multiplier: 3
+      skill_dist: pareto
+  - ContinuousDoubleAuction:
+      max_bid_ask: 10
+      max_num_orders: 5
+      order_duration: 50
+      order_labor: 0.25
+  - Gather:
+      collect_labor: 1
+      move_labor: 1
+      skill_dist: pareto
+  - PeriodicBracketTax:
+      bracket_spacing: us-federal
+      disable_taxes: false
+      period: 100
+      rate_disc: 0.05
+      tax_annealing_schedule:
+      - -100
+      - 0.001
+      tax_model: model_wrapper
+    
