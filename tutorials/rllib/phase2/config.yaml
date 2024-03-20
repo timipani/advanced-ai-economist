@@ -125,4 +125,19 @@ trainer:
   num_gpus_per_worker: 0
   num_sgd_iter: 1
   num_workers: 15
-  observation_filt
+  observation_filter: NoFilter
+  rollout_fragment_length: 200
+  seed: null
+  sgd_minibatch_size: 1500
+  shuffle_sequences: true
+  tf_session_args:
+    allow_soft_placement: true
+    device_count:
+      CPU: 15
+      GPU: 0
+    gpu_options:
+      allow_growth: true
+    inter_op_parallelism_threads: 2
+    intra_op_parallelism_threads: 24
+    log_device_placement: false
+  train_batch_size: 6000
