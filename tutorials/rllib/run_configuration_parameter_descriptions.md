@@ -25,4 +25,20 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
     arguments to the Component class with name "Component Name".
     Resetting, stepping, and observation generation will be carried out in
     the order in which components are listed. This should be considered,
-    as re-ordering the component
+    as re-ordering the components list may impact the dynamics of the
+    environment.
+- `dense_log_frequency` (int): [optional] How often (in completed episodes) to
+    create a dense log while playing an episode. By default, dense logging is
+    turned off (dense_log_frequency=None). If dense_log_frequency=20,
+    a dense log will be created when the total episode count is a multiple of
+    20.
+    Dense logs provide a log of agent states, actions, and rewards at each
+    timestep of an episode. They also log world states at a coarser timescale
+    (see below). Component classes optionally contribute additional
+    information to the dense log.
+    Note: dense logging is time consuming (especially with many agents).    
+- `episode_length` (int): Number of timesteps in a single episode.
+- `flatten_masks` (bool): Whether to flatten action masks into a single array or
+    to keep as a {"action_subspace_name": action_subspace_mask} dictionary.
+    For integration with deep RL, it is helpful to set this to True, for the
+    purpose of action masking: flattened masks have the same semantic
