@@ -41,4 +41,20 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
 - `flatten_masks` (bool): Whether to flatten action masks into a single array or
     to keep as a {"action_subspace_name": action_subspace_mask} dictionary.
     For integration with deep RL, it is helpful to set this to True, for the
-    purpose of action masking: flattened masks have the same semantic
+    purpose of action masking: flattened masks have the same semantics as
+    policy logits.
+- `flatten_observations` (bool): Whether to preprocess observations by
+    concatenating all scalar/vector observation subfields into a single
+    "flat" observation field. If not, return observations as minimally
+    processed dictionaries.
+- `multi_action_mode_agents` (bool): Whether mobile agents use multi_action_mode.
+- `multi_action_mode_planner` (bool): Whether the planner uses multi_action_mode.
+- `n_agents` (int): The number of mobile agents (does not include planner).
+    Number of agents must be > 1.
+- `world_dense_log_frequency` (int): When dense logging, how often (in timesteps) to log a snapshot of the world state. If world_dense_log_frequency=50 (the default), the world state will be included in the dense log for timesteps where t is a multiple of 50. Note: More frequent world snapshots increase the dense log memory footprint.
+- `world_size` (list): A length-2 list specifying the dimensions of the 2D world.
+    Interpreted as [height, width].
+
+### Build Component
+- `build_labor` (float): Labor cost associated with building a house.
+    Must be >= 0. Default i
