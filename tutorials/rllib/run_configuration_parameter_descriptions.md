@@ -57,4 +57,24 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
 
 ### Build Component
 - `build_labor` (float): Labor cost associated with building a house.
-    Must be >= 0. Default i
+    Must be >= 0. Default is 10.
+- `payment` (int): Default amount of coin agents earn from building.
+    Must be >= 0. Default is 10.
+- `payment_max_skill_multiplier` (int): Maximum skill multiplier that an agent
+    can sample. Must be >= 1. Default is 1.
+- `skill_dist` (str): Distribution type for sampling skills. Default ("none")
+    gives all agents identical skill equal to a multiplier of 1. "pareto" and
+    "lognormal" sample skills from the associated distributions.
+
+### ContinuousDoubleAuction Component
+- `max_bid_ask` (int): Maximum amount of coin that an agent can bid or ask for.
+    Must be >= 1. Default is 10 coin.
+- `max_num_orders` (int, optional): Maximum number of bids + asks that an agent can have open for a given resource. Must be >= 1. Default is no limit to number of orders.
+- `order_labor` (float): Amount of labor incurred when an agent creates an order.
+    Must be >= 0. Default is 0.25.
+- `order_duration` (int): Number of environment timesteps before an unfilled
+    bid/ask expires. Must be >= 1. Default is 50 timesteps.
+
+### Gather Component
+- `collect_labor` (float): Labor cost associated with collecting resources. This
+    c
