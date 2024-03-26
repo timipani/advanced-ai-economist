@@ -96,4 +96,21 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
     "log" is similar to "linear" but with logarithmic spacing.
 - `disable_taxes` (bool): Whether to disable any tax collection, effectively
     enforcing that tax rates are always 0. Useful for removing taxes without
-    changing the observation space. Default
+    changing the observation space. Default is False (taxes enabled).
+- `fixed_bracket_rates` (list): Required if tax_model=="fixed-bracket-rates". A
+    list of fixed marginal rates to use for each bracket. Length must be
+    equal to the number of brackets (7 for "us-federal" spacing, n_brackets
+    otherwise).
+- `n_brackets` (int): How many tax brackets to use. Must be >=2. Default is 5.
+- `pareto_weight_type` (str): Type of pareto weights to use when computing tax
+    rates using the Saez formula. "inverse_income" (default) uses 1/z;
+    "uniform" uses 1.
+- `period` (int): Length of a tax period in environment timesteps. Taxes are
+    updated at the start of each period and collected/redistributed at the
+    end of each period. Must be > 0. Default is 100 timesteps.
+- `rate_disc` (float): (Only applies for "model_wrapper") the interval separating
+    discrete tax rates that the planner can select. Default of 0.05 means,
+    for example, the planner can select among [0.0, 0.05, 0.10, ... 1.0].
+    Must be > 0 and < 1.
+- `rate_min` (float): Minimum tax rate within a bracket. Must be >= 0 (default).
+- `rate_max` (float): Maximum
