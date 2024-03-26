@@ -77,4 +77,23 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
 
 ### Gather Component
 - `collect_labor` (float): Labor cost associated with collecting resources. This
-    c
+    cost is added (in addition to any movement cost) when the agent lands on
+    a tile that is populated with resources (triggering collection).
+    Must be >= 0. Default is 1.0.
+- `move_labor` (float): Labor cost associated with movement. Must be >= 0.
+    Default is 1.0.
+- `skill_dist` (str): Distribution type for sampling skills. Default ("none")
+    gives all agents identical skill equal to a bonus prob of 0. "pareto" and
+    "lognormal" sample skills from the associated distributions.
+
+### PeriodicBracketTax Component
+- `bracket_spacing` (str): How bracket cutoffs should be spaced.
+    "us-federal" (default) uses scaled cutoffs from the 2018 US Federal
+        taxes, with scaling set by usd_scaling (ignores n_brackets and
+        top_bracket_cutoff);
+    "linear" linearly spaces the n_bracket cutoffs between 0 and
+        top_bracket_cutoff;
+    "log" is similar to "linear" but with logarithmic spacing.
+- `disable_taxes` (bool): Whether to disable any tax collection, effectively
+    enforcing that tax rates are always 0. Useful for removing taxes without
+    changing the observation space. Default
