@@ -129,4 +129,18 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
     "fixed-bracket-rates" uses the rates supplied in fixed_bracket_rates.
 - `top_bracket_cutoff` (float): The income at the left end of the last tax
     bracket. Must be >= 10. Default is 100 coin.
-- `usd_scaling` (float): Scale by whic
+- `usd_scaling` (float): Scale by which to divide the US Federal bracket cutoffs
+    when using bracket_spacing = "us-federal". Must be > 0. Default is 1000.
+
+### Gather-Trade-Build Scenario
+- `energy_cost` (float): Coefficient for converting labor to negative utility.
+- `energy_warmup_constant` (float): Decay constant that controls the rate at which the effective energy cost is annealed from 0 to energy_cost. Set to 0 (default) to disable annealing, meaning that the effective energy cost is always energy_cost. The units of the decay constant depend on the choice of energy_warmup_method.
+- `energy_warmup_method` (str): How to schedule energy annealing (warmup). If
+    "decay" (default), use the number of completed episodes. If "auto",
+    use the number of timesteps where the average agent reward was positive.
+- `env_layout_file` (str): Name of the layout file in ./map_txt/ to use.
+    Note: The world dimensions of that layout must match the world dimensions
+    argument used to construct the environment.
+- `fixed_four_skill_and_loc` (bool): Whether to use a fixed set of build skills and
+    starting locations with 4 agents. False, by default.
+    Note: Re
