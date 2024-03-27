@@ -143,4 +143,21 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
     argument used to construct the environment.
 - `fixed_four_skill_and_loc` (bool): Whether to use a fixed set of build skills and
     starting locations with 4 agents. False, by default.
-    Note: Re
+    Note: Requires that n_agents=4 and that the environment uses the "Build"
+    component with skill_dist="pareto".
+- `full_observability` (bool): Whether the mobile agents' spatial observation
+    includes the full world view or is instead an egocentric view.
+- `isoelastic_eta` (float): Parameter controlling the shape of agent utility
+    wrt coin endowment.
+- `mixing_weight_gini_vs_coin` (float): Degree to which equality is ignored w/
+    "coin_eq_times_productivity". Default is 0, which weights equality and
+    productivity equally. If set to 1, only productivity is rewarded.
+- `mobile_agent_observation_range` (int): If not using full_observability,
+    the spatial range (on each side of the agent) that is visible in the
+    spatial observations.
+- `planner_gets_spatial_obs` (bool): Whether the planner agent receives spatial
+    observations from the world.
+- `planner_reward_type` (str): The type of reward used for the planner. Options
+    are "coin_eq_times_productivity" (default),
+    "inv_income_weighted_coin_endowment", and "inv_income_weighted_utility".
+- `resource_regen_prob` (float): Probability that an empty sourc
