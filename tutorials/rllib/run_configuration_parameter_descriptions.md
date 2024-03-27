@@ -113,4 +113,20 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
     for example, the planner can select among [0.0, 0.05, 0.10, ... 1.0].
     Must be > 0 and < 1.
 - `rate_min` (float): Minimum tax rate within a bracket. Must be >= 0 (default).
-- `rate_max` (float): Maximum
+- `rate_max` (float): Maximum tax rate within a bracket. Must be <= 1 (default).
+- `saez_fixed_elas` (float, optional): If supplied, this value will be used as
+    the elasticity estimate when computing tax rates using the Saez formula.
+    If not given (default), elasticity will be estimated empirically.
+- `tax_annealing_schedule` (list, optional): A length-2 list of
+    [tax_annealing_warmup, tax_annealing_slope] describing the tax annealing
+    schedule. See annealed_tax_mask function for details. Default behavior is
+    no tax annealing.
+- `tax_model` (str): Which tax model to use for setting taxes.
+    "model_wrapper" (default) uses the actions of the planner agent;
+    "saez" uses an adaptation of the theoretical optimal taxation formula
+    derived in this [paper](https://www.nber.org/papers/w7628).
+    "us-federal-single-filer-2018-scaled" uses US federal tax rates from 2018;
+    "fixed-bracket-rates" uses the rates supplied in fixed_bracket_rates.
+- `top_bracket_cutoff` (float): The income at the left end of the last tax
+    bracket. Must be >= 10. Default is 100 coin.
+- `usd_scaling` (float): Scale by whic
