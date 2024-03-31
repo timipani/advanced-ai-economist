@@ -175,4 +175,17 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
 - `train_planner` (bool): Flag to specify whether to train only the agents (when False) or train both the agents and the planner (when True).
 
 ## Trainer
-- `batch_mode` (str):  Whether to rollout "complete_episodes" or "truncate_episodes" to  "rollout_fragment_length" length unrolls. Epis
+- `batch_mode` (str):  Whether to rollout "complete_episodes" or "truncate_episodes" to  "rollout_fragment_length" length unrolls. Episode truncation guarantees evenly sized batches, but increases variance as the reward-to-go will need to be estimated at truncation boundaries.
+- `env_config` (dict): Arguments to pass to the env creator. <br>
+Note: this is updated in the [training script](training_script.py).
+- `local_tf_session_args`: Configures TF for single-process operation by default. <br>
+Note: These are settings related to TF and are documented [here](https://github.com/tensorflow/tensorflow/blob/26b4dfa65d360f2793ad75083c797d57f8661b93/tensorflow/core/protobuf/config.proto#L165).
+    - `inter_op_parallelism_threads` (int)
+    - `intra_op_parallelism_threads` (int) <br>
+- `metrics_smoothing_episodes` (int): Smooth metrics over this many episodes. <br>
+Note: this is updated in the [training script](training_script.py).
+- `multiagent` (dict): Settings for Multi-Agent Environments. This is a dictionary containing <br>
+    a) Map from policy ids to tuples of (policy_cls, obs_space, act_space, 
+    config). <br>
+    b) Function mapping agent ids to policy ids. <br>
+    c) Optional whitelist of po
