@@ -160,4 +160,19 @@ It is helpful to first go through our [tutorial](../two_level_curriculum_learnin
 - `planner_reward_type` (str): The type of reward used for the planner. Options
     are "coin_eq_times_productivity" (default),
     "inv_income_weighted_coin_endowment", and "inv_income_weighted_utility".
-- `resource_regen_prob` (float): Probability that an empty sourc
+- `resource_regen_prob` (float): Probability that an empty source tile will
+    regenerate a new resource unit.
+- `starting_agent_coin` (int, float): Amount of coin agents have at t=0. Defaults
+    to zero coin.
+
+## General
+- `ckpt_frequency_steps` (int): Specify how frequently (in environment steps) to save the trained model checkpoints.
+- `cpus` (int): Number of  CPUs in the system.
+- `episodes` (int): Number of episodes to run the training for.
+- `gpus` (int): Number of GPUs in the system.
+- `restore_tf_weights_agents` (filepath): Path to agent model checkpoint (saved via TensorFlow (TF)). When specified, training resumes after restoring the agent (TF) weights, otherwise it starts with fresh agent weights.
+- `restore_tf_weights_planner` (filepath): Path to planner model checkpoint (saved via TensorFlow (TF)). When specified, training resumes after restoring the planner (TF) weights, otherwise it starts with fresh agent weights.
+- `train_planner` (bool): Flag to specify whether to train only the agents (when False) or train both the agents and the planner (when True).
+
+## Trainer
+- `batch_mode` (str):  Whether to rollout "complete_episodes" or "truncate_episodes" to  "rollout_fragment_length" length unrolls. Epis
