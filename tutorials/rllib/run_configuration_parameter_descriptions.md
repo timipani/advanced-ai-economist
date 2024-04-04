@@ -188,4 +188,11 @@ Note: this is updated in the [training script](training_script.py).
     a) Map from policy ids to tuples of (policy_cls, obs_space, act_space, 
     config). <br>
     b) Function mapping agent ids to policy ids. <br>
-    c) Optional whitelist of po
+    c) Optional whitelist of policies to train, or None for all policies. <br>
+    Note: this is updated in the [training script](training_script.py).
+- `no_done_at_end` (bool): Don't set 'done' at the end of the episode. Note that you still need to set this if "soft_horizon=True", unless your env is actually running forever without returning "done=True".
+- `num_envs_per_worker` (int): Number of environments to evaluate vectorwise per worker. This enables model inference batching, which can improve performance for inference bottlenecked workloads.
+- `num_gpus` (int):  Number of GPUs to allocate to the trainer process. Note that not all algorithms can take advantage of trainer GPUs. This can be fractional (e.g., 0.3 GPUs).
+- `num_gpus_per_worker` (int): Number of GPUs to allocate per worker. This can be fractional. This is usually needed only if your env itself requires a GPU (i.e., it is a GPU-intensive video game), or model inference is unusually expensive.
+- `num_sgd_iter` (int): Number of SGD iterations in each outer loop.
+ - `num_workers` (int): Number of rollout worker actors to create for parallel sampling. Setting this to 0 will force rollouts to be done in the
