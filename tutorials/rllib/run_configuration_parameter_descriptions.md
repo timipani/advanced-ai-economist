@@ -195,4 +195,16 @@ Note: this is updated in the [training script](training_script.py).
 - `num_gpus` (int):  Number of GPUs to allocate to the trainer process. Note that not all algorithms can take advantage of trainer GPUs. This can be fractional (e.g., 0.3 GPUs).
 - `num_gpus_per_worker` (int): Number of GPUs to allocate per worker. This can be fractional. This is usually needed only if your env itself requires a GPU (i.e., it is a GPU-intensive video game), or model inference is unusually expensive.
 - `num_sgd_iter` (int): Number of SGD iterations in each outer loop.
- - `num_workers` (int): Number of rollout worker actors to create for parallel sampling. Setting this to 0 will force rollouts to be done in the
+ - `num_workers` (int): Number of rollout worker actors to create for parallel sampling. Setting this to 0 will force rollouts to be done in the trainer actor.
+ - `observation_filter` (str): Element-wise observation filter, either "NoFilter" or "MeanStdFilter".
+ - `rollout_fragment_length` (int): Divide episodes into fragments of this many steps each during rollouts. Sample batches of this size are collected from rollout workers and  combined into a larger batch of "train_batch_size" for learning.
+    For example, given rollout_fragment_length=100 and train_batch_size=1000:
+      1. RLlib collects 10 fragments of 100 steps each from rollout workers.
+      2. These fragments are concatenated and we perform an epoch of SGD.
+    When using multiple envs per worker, the fragment size is multiplied by
+    "num_envs_per_worker". This is since we are collecting steps from
+    multiple envs in parallel. For example, if num_envs_per_worker=5, then
+    rollout workers will return experiences in chunks of 5*100 = 500 steps.
+    The dataflow here can vary per algorithm. For example, PPO further
+    divides the train batch into minibatches for multi-epoch SGD.
+- `seed` (int): This argument, in conjunction with worker_index, sets the random seed of  each worker, so that identically configured trials will 
