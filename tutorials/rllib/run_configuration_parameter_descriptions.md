@@ -243,4 +243,10 @@ Note: this is updated in the [training script](training_script.py).
       - `num_conv` (int): Number of convolutional layers.
       - `num_fc` (int): Number of fully-connected layers.
     - `max_seq_len` (int): Maximum seq len for training the LSTM.
-- `use_gae` (bool): If true, use the Generalized Advantage Estimator ([GAE](https://arxiv.org/abs/1506.02438)) with
+- `use_gae` (bool): If true, use the Generalized Advantage Estimator ([GAE](https://arxiv.org/abs/1506.02438)) with a value function.
+- `vf_clip_param` (float): Clip param for the value function. Note that this is sensitive to the scale of the rewards. If your expected value function is large, increase this.
+- `vf_loss_coeff` (float): Coefficient of the value function loss. Important: you must tune this if you set "vf_share_layers: True".
+- `vf_share_layers` (bool): Share layers for value function.
+
+## Additional Configurations
+(For additional configurations, see RLlib [common parameters](https://docs.ray.io/en/releases-0.8.4/rllib-training.html#common-parameters), [PPO-specific configs](https://docs.ray.io/en/releases-0.8.4/rllib-algorithms.html#ppo) and [model parameters](https://docs.ray.io/en/releases-0.8.4/rllib-models.html?highlight=custom%20models#built-in-model-parameters). 
