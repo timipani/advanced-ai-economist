@@ -207,4 +207,20 @@ Note: this is updated in the [training script](training_script.py).
     rollout workers will return experiences in chunks of 5*100 = 500 steps.
     The dataflow here can vary per algorithm. For example, PPO further
     divides the train batch into minibatches for multi-epoch SGD.
-- `seed` (int): This argument, in conjunction with worker_index, sets the random seed of  each worker, so that identically configured trials will 
+- `seed` (int): This argument, in conjunction with worker_index, sets the random seed of  each worker, so that identically configured trials will have identical  results. This makes experiments reproducible.
+- `sgd_minibatch_size` (int): Total SGD batch size across all devices for SGD.
+- `shuffle_sequences` (bool): Whether to shuffle sequences in the batch when training. It is recommended to set this to True.
+- `tf_session_args`: Configures TF for single-process operation by default. Note: This is overwritten by `local_tf_session_args`. These are settings related to TF and are documented [here](https://github.com/tensorflow/tensorflow/blob/26b4dfa65d360f2793ad75083c797d57f8661b93/tensorflow/core/protobuf/config.proto#L165).
+    - `allow_soft_placement` (bool)
+    - `device_count`:
+        - `CPU` (int)
+        - `GPU` (int)
+    - `gpu_options`:
+        - `allow_growth` (bool)
+    - `inter_op_parallelism_threads` (int)
+    - `intra_op_parallelism_threads` (int)
+    - `log_device_placement` (bool)
+- `train_batch_size` (int): Training batch size, if applicable. Should be >= rollout_fragment_length. Samples batches will be concatenated together to a batch of this size, which is then passed to SGD.
+
+## Agent and Planner Policy
+- `clip_param` (float): PPO 
