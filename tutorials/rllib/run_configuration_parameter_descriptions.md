@@ -223,4 +223,24 @@ Note: this is updated in the [training script](training_script.py).
 - `train_batch_size` (int): Training batch size, if applicable. Should be >= rollout_fragment_length. Samples batches will be concatenated together to a batch of this size, which is then passed to SGD.
 
 ## Agent and Planner Policy
-- `clip_param` (float): PPO 
+- `clip_param` (float): PPO clip parameter.
+- `entropy_coeff` (float): Coefficient of the entropy loss.
+- `entropy_coeff_schedule` (list of tuples): Entropy schedule.
+- `gamma` (float): Discount factor of the MDP.
+- `grad_clip` (float): Clip the global norm of gradients by this amount.
+- `kl_coeff` (float): Initial coefficient for KL divergence.
+- `kl_target` (float): Target value for KL divergence.
+- `lambda` (float): GAE(lambda) parameter.
+- `lr` (float): Stepsize of SGD.
+- `lr_schedule` (list of tuples): Learning rate schedule.
+- `model`:
+    - `custom_model` (str): Registered policy model name. Current options are "keras_conv_lstm" or "random".
+    - `custom_options`:
+      - `fc_dim` (int): Dimension of the fully-connected layer.
+      - `idx_emb_dim` (int): Output embedding dimension.
+      - `input_emb_vocab` (int): Input embedding dimension.
+      - `lstm_cell_size` (int): Size of the LSTM cell.
+      - `num_conv` (int): Number of convolutional layers.
+      - `num_fc` (int): Number of fully-connected layers.
+    - `max_seq_len` (int): Maximum seq len for training the LSTM.
+- `use_gae` (bool): If true, use the Generalized Advantage Estimator ([GAE](https://arxiv.org/abs/1506.02438)) with
