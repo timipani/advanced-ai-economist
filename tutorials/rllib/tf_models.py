@@ -358,3 +358,79 @@ class KerasLinear(TFModelV2):
                                        activation=tf.nn.relu,
                                        name="fc_layers_val-{}".format(i))
                 )
+            h_val = fc_layers_val(self.inputs[0])
+            values = tf.keras.layers.Dense(
+                1, activation=tf.keras.activations.linear, name="values"
+            )(h_val)
+        else:
+            # Value function is linear
+            values = tf.keras.layers.Dense(
+                1, activation=tf.keras.activations.linear, name="values"
+            )(self.inputs[0])
+
+        self.base_model = tf.keras.Model(self.inputs, [logits, values])
+        self.register_variables(self.base_model.variables)
+
+    def forward(self, input_dict, state, seq_lens):
+        model_out, self._value_out = self.base_model(
+            [input_dict["obs_flat"], input_dict["obs"][self.MASK_NAME]]
+        )
+        return model_out, state
+
+    def value_function(self):
+        return tf.reshape(self._value_out, [-1])
+
+
+ModelCatalog.register_custom_model(KerasLinear.custom_name, KerasLinear)
+
+
+class RandomAction(TFModelV2):
+    """
+    A "random" model to sample actions from an action space at random.
+    This is used when not training an agent.
+    """
+    custom_name = "random"
+
+    def __init__(self, obs_space, action_space, num_outputs, model_config, name):
+        super().__init__(obs_space, action_space, num_outputs, model_config, name)
+
+        if hasattr(obs_space, "original_space"):
+            original_space = obs_space.original_space
+        else:
+            assert isinstance(obs_space, Dict)
+            original_space = obs_space
+
+        mask = original_space.spaces[_MASK_NAME]
+        mask_input = keras.layers.Input(shape=mask.shape, name=_MASK_NAME)
+
+        self.inputs = [
+            keras.layers.Input(shape=(1,), name="observations"),
+            mask_input,
+        ]
+
+        logits_and_value = keras.layers.Dense(
+            num_outputs + 1, activation=None, name="dummy_layer"
+        )(self.inputs[0])
+
+        unmasked_logits = logits_and_value[:, :num_outputs] * 0.0
+        values = logits_and_value[:, -1]
+
+        masked_logits = apply_logit_mask(unmasked_logits, mask_input)
+
+        self.base_model = keras.Model(self.inputs, [masked_logits, values])
+        self.register_variables(self.base_model.variables)
+
+        # This will be set in the forward() call below
+        self.values = None
+
+    def forward(self, input_dict, state, seq_lens):
+        model_out, self.values = self.base_model(
+            [input_dict["obs_flat"][:, :1], input_dict["obs"][_MASK_NAME]]
+        )
+        return model_out, state
+
+    def value_function(self):
+        return tf.reshape(self.values, [-1])
+
+
+ModelCatalog.register_custom_model(RandomAction.custom_name, RandomAction)
