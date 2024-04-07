@@ -33,4 +33,38 @@ def plot_map(maps, locs, ax=None, cmap_order=None):
         if entity == "House":
             continue
         elif resources.has(entity):
-            if resou
+            if resources.get(entity).collectible:
+                map_ = (
+                    resources.get(entity).color[:, None, None]
+                    * np.array(maps.get(entity))[None]
+                )
+                map_ /= max_health[entity]
+                tmp += map_
+        elif landmarks.has(entity):
+            map_ = (
+                landmarks.get(entity).color[:, None, None]
+                * np.array(maps.get(entity))[None]
+            )
+            tmp += map_
+        else:
+            continue
+
+    if isinstance(maps, dict):
+        house_idx = np.array(maps.get("House")["owner"])
+        house_health = np.array(maps.get("House")["health"])
+    else:
+        house_idx = maps.get("House", owner=True)
+        house_health = maps.get("House")
+    for i in range(n_agents):
+        houses = house_health * (house_idx == cmap_order[i])
+        agent = np.zeros_like(houses)
+        agent += houses
+        col = np.array(cmap(i)[:3])
+        map_ = col[:, None, None] * agent[None]
+        tmp += map_
+
+    tmp *= 0.7
+    tmp += 0.3
+
+    tmp = np.transpose(tmp, [1, 2, 0])
+    tmp 
