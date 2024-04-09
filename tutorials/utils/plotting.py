@@ -67,4 +67,48 @@ def plot_map(maps, locs, ax=None, cmap_order=None):
     tmp += 0.3
 
     tmp = np.transpose(tmp, [1, 2, 0])
-    tmp 
+    tmp = np.minimum(tmp, 1.0)
+
+    ax.imshow(tmp, vmax=1.0, aspect="auto")
+
+    bbox = ax.get_window_extent()
+
+    for i in range(n_agents):
+        r, c = locs[cmap_order[i]]
+        col = np.array(cmap(i)[:3])
+        ax.plot(c, r, "o", markersize=bbox.height * 20 / 550, color="w")
+        ax.plot(c, r, "*", markersize=bbox.height * 15 / 550, color=col)
+
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+
+def plot_env_state(env, ax=None, remap_key=None):
+    maps = env.world.maps
+    locs = [agent.loc for agent in env.world.agents]
+
+    if remap_key is None:
+        cmap_order = None
+    else:
+        assert isinstance(remap_key, str)
+        cmap_order = np.argsort(
+            [agent.state[remap_key] for agent in env.world.agents]
+        ).tolist()
+
+    plot_map(maps, locs, ax, cmap_order)
+
+
+def plot_log_state(dense_log, t, ax=None, remap_key=None):
+    maps = dense_log["world"][t]
+    states = dense_log["states"][t]
+
+    n_agents = len(states) - 1
+    locs = []
+    for i in range(n_agents):
+        r, c = states[str(i)]["loc"]
+        locs.append([r, c])
+
+    if remap_key is None:
+        cmap_order = None
+    else:
+        ass
