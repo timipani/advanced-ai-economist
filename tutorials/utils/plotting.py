@@ -111,4 +111,45 @@ def plot_log_state(dense_log, t, ax=None, remap_key=None):
     if remap_key is None:
         cmap_order = None
     else:
-        ass
+        assert isinstance(remap_key, str)
+        key_val = np.array(
+            [dense_log["states"][0][str(i)][remap_key] for i in range(n_agents)]
+        )
+        cmap_order = np.argsort(key_val).tolist()
+
+    plot_map(maps, locs, ax, cmap_order)
+
+
+def _format_logs_and_eps(dense_logs, eps):
+    if isinstance(dense_logs, dict):
+        return [dense_logs], [0]
+    else:
+        assert isinstance(dense_logs, (list, tuple))
+
+    if isinstance(eps, (list, tuple)):
+        return dense_logs, list(eps)
+    elif isinstance(eps, (int, float)):
+        return dense_logs, [int(eps)]
+    elif eps is None:
+        return dense_logs, list(range(np.minimum(len(dense_logs), 16)))
+    else:
+        raise NotImplementedError
+
+
+def vis_world_array(dense_logs, ts, eps=None, axes=None, remap_key=None):
+    dense_logs, eps = _format_logs_and_eps(dense_logs, eps)
+    if isinstance(ts, (int, float)):
+        ts = [ts]
+
+    if axes is None:
+        fig, axes = plt.subplots(
+            len(eps),
+            len(ts),
+            figsize=(np.minimum(3.2 * len(ts), 16), 3 * len(eps)),
+            squeeze=False,
+        )
+
+    else:
+        fig = None
+
+        
