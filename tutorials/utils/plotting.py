@@ -152,4 +152,39 @@ def vis_world_array(dense_logs, ts, eps=None, axes=None, remap_key=None):
     else:
         fig = None
 
-        
+        if len(ts) == 1 and len(eps) == 1:
+            axes = np.array([[axes]]).reshape(1, 1)
+        else:
+            try:
+                axes = np.array(axes).reshape(len(eps), len(ts))
+            except ValueError:
+                print("Could not reshape provided axes array into the necessary shape!")
+                raise
+
+    for ti, t in enumerate(ts):
+        for ei, ep in enumerate(eps):
+            plot_log_state(dense_logs[ep], t, ax=axes[ei, ti], remap_key=remap_key)
+
+    for ax, t in zip(axes[0], ts):
+        ax.set_title("T = {}".format(t))
+    for ax, ep in zip(axes[:, 0], eps):
+        ax.set_ylabel("Episode {}".format(ep))
+
+    return fig
+
+
+def vis_world_range(
+    dense_logs, t0=0, tN=None, N=5, eps=None, axes=None, remap_key=None
+):
+    dense_logs, eps = _format_logs_and_eps(dense_logs, eps)
+
+    viable_ts = np.array([i for i, w in enumerate(dense_logs[0]["world"]) if w])
+    if tN is None:
+        tN = viable_ts[-1]
+    assert 0 <= t0 < tN
+    target_ts = np.linspace(t0, tN, N).astype(np.int)
+
+    ts = set()
+    for tt in target_ts:
+        closest = np.argmin(np.abs(tt - viable_ts))
+ 
