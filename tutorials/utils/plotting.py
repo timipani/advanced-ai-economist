@@ -258,4 +258,38 @@ def report(c_trades, all_builds, n_agents, a_indices=None):
     if a_indices is None:
         a_indices = list(range(n_agents))
     print(header_str(n_agents))
-    resources = ["Wood", "Ston
+    resources = ["Wood", "Stone"]
+    if c_trades is not None:
+        for resource in resources:
+            print(full_trade_str(c_trades, resource, a_indices, income=False))
+        print("")
+        for resource in resources:
+            print(full_trade_str(c_trades, resource, a_indices, income=True))
+    print(full_build_str(all_builds, a_indices))
+
+
+def breakdown(log, remap_key=None):
+    fig0 = vis_world_range(log, remap_key=remap_key)
+
+    n = len(list(log["states"][0].keys())) - 1
+    trading_active = "Trade" in log
+
+    if remap_key is None:
+        aidx = list(range(n))
+    else:
+        assert isinstance(remap_key, str)
+        key_vals = np.array([log["states"][0][str(i)][remap_key] for i in range(n)])
+        aidx = np.argsort(key_vals).tolist()
+
+    all_builds = []
+    for t, builds in enumerate(log["Build"]):
+        if isinstance(builds, dict):
+            builds_ = builds["builds"]
+        else:
+            builds_ = builds
+        for build in builds_:
+            this_build = {"t": t}
+            this_build.update(build)
+            all_builds.append(this_build)
+
+    if trading
