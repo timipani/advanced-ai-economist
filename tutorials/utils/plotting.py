@@ -224,4 +224,38 @@ def trade_str(c_trades, resource, agent, income=True):
         return tmp
 
 
-def full_trade_str(c_trades, resour
+def full_trade_str(c_trades, resource, a_indices, income=True):
+    s_head = "{} ({})".format("Income" if income else "Cost", resource)
+    ac_strings = [trade_str(c_trades, resource, buyer, income) for buyer in a_indices]
+    s_tail = " | ".join(ac_strings)
+    return "{:<15}: {}".format(s_head, s_tail)
+
+
+def build_str(all_builds, agent):
+    p = [x["income"] for x in all_builds if x["builder"] == agent]
+    if len(p) > 0:
+        return "{:6.2f} (n={:3d})".format(np.mean(p), len(p))
+    else:
+        tmp = "~" * 8
+        tmp = (" ") * 3 + tmp + (" ") * 3
+        return tmp
+
+
+def full_build_str(all_builds, a_indices):
+    s_head = "Income (Build)"
+    ac_strings = [build_str(all_builds, builder) for builder in a_indices]
+    s_tail = " | ".join(ac_strings)
+    return "{:<15}: {}".format(s_head, s_tail)
+
+
+def header_str(n_agents):
+    s_head = ("_" * 15) + ":_"
+    s_tail = "_|_".join([" Agent {:2d} ____".format(i) for i in range(n_agents)])
+    return s_head + s_tail
+
+
+def report(c_trades, all_builds, n_agents, a_indices=None):
+    if a_indices is None:
+        a_indices = list(range(n_agents))
+    print(header_str(n_agents))
+    resources = ["Wood", "Ston
