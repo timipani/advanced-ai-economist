@@ -292,4 +292,36 @@ def breakdown(log, remap_key=None):
             this_build.update(build)
             all_builds.append(this_build)
 
-    if trading
+    if trading_active:
+        c_trades = {"Stone": [], "Wood": []}
+        for t, trades in enumerate(log["Trade"]):
+            if isinstance(trades, dict):
+                trades_ = trades["trades"]
+            else:
+                trades_ = trades
+            for trade in trades_:
+                this_trade = {
+                    "t": t,
+                    "t_ask": t - trade["ask_lifetime"],
+                    "t_bid": t - trade["bid_lifetime"],
+                }
+                this_trade.update(trade)
+                c_trades[trade["commodity"]].append(this_trade)
+
+        incomes = {
+            "Sell Stone": [
+                sum([t["income"] for t in c_trades["Stone"] if t["seller"] == aidx[i]])
+                for i in range(n)
+            ],
+            "Buy Stone": [
+                sum([-t["price"] for t in c_trades["Stone"] if t["buyer"] == aidx[i]])
+                for i in range(n)
+            ],
+            "Sell Wood": [
+                sum([t["income"] for t in c_trades["Wood"] if t["seller"] == aidx[i]])
+                for i in range(n)
+            ],
+            "Buy Wood": [
+                sum([-t["price"] for t in c_trades["Wood"] if t["buyer"] == aidx[i]])
+                for i in range(n)
+     
