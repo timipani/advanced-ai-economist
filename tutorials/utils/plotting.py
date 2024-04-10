@@ -187,4 +187,41 @@ def vis_world_range(
     ts = set()
     for tt in target_ts:
         closest = np.argmin(np.abs(tt - viable_ts))
- 
+        ts.add(viable_ts[closest])
+    ts = sorted(list(ts))
+    if axes is not None:
+        axes = axes[: len(ts)]
+    return vis_world_array(dense_logs, ts, axes=axes, eps=eps, remap_key=remap_key)
+
+
+def vis_builds(dense_logs, eps=None, ax=None):
+    dense_logs, eps = _format_logs_and_eps(dense_logs, eps)
+
+    if ax is None:
+        _, ax = plt.subplots(1, 1, figsize=(16, 3))
+    cmap = plt.get_cmap("jet", len(eps))
+    for i, ep in enumerate(eps):
+        ax.plot(
+            np.cumsum([len(b["builds"]) for b in dense_logs[ep]["Build"]]),
+            color=cmap(i),
+            label="Ep {}".format(ep),
+        )
+    ax.legend()
+    ax.grid(b=True)
+    ax.set_ylim(bottom=0)
+
+
+def trade_str(c_trades, resource, agent, income=True):
+    if income:
+        p = [x["income"] for x in c_trades[resource] if x["seller"] == agent]
+    else:
+        p = [x["cost"] for x in c_trades[resource] if x["buyer"] == agent]
+    if len(p) > 0:
+        return "{:6.2f} (n={:3d})".format(np.mean(p), len(p))
+    else:
+        tmp = "~" * 8
+        tmp = (" ") * 3 + tmp + (" ") * 3
+        return tmp
+
+
+def full_trade_str(c_trades, resour
