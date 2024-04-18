@@ -364,4 +364,39 @@ def breakdown(log, remap_key=None):
                 [
                     x[str(aidx[i])]["inventory"][r] + x[str(aidx[i])]["escrow"][r]
                     for x in log["states"]
-                ]
+                ],
+                label=i,
+                color=cmap(i),
+            )
+        ax.set_title(r)
+        ax.legend()
+        ax.grid(b=True)
+
+    ax = axes[-1]
+    for i in range(n):
+        ax.plot(
+            [x[str(aidx[i])]["endogenous"]["Labor"] for x in log["states"]],
+            label=i,
+            color=cmap(i),
+        )
+    ax.set_title("Labor")
+    ax.legend()
+    ax.grid(b=True)
+
+    tmp = np.array(log["world"][0]["Stone"])
+    fig2, axes = plt.subplots(
+        2 if trading_active else 1,
+        n_small,
+        figsize=(16, 8 if trading_active else 4),
+        sharex="row",
+        sharey="row",
+        squeeze=False,
+    )
+    for i, ax in enumerate(axes[0]):
+        rows = np.array([x[str(aidx[i])]["loc"][0] for x in log["states"]]) * -1
+        cols = np.array([x[str(aidx[i])]["loc"][1] for x in log["states"]])
+        ax.plot(cols[::20], rows[::20])
+        ax.plot(cols[0], rows[0], "r*", markersize=15)
+        ax.plot(cols[-1], rows[-1], "g*", markersize=15)
+        ax.set_title("Agent {}".format(i))
+        ax.set_xlim([-1, 1 + tmp.s
