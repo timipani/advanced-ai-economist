@@ -399,4 +399,33 @@ def breakdown(log, remap_key=None):
         ax.plot(cols[0], rows[0], "r*", markersize=15)
         ax.plot(cols[-1], rows[-1], "g*", markersize=15)
         ax.set_title("Agent {}".format(i))
-        ax.set_xlim([-1, 1 + tmp.s
+        ax.set_xlim([-1, 1 + tmp.shape[1]])
+        ax.set_ylim([-(1 + tmp.shape[0]), 1])
+
+    if trading_active:
+        for i, ax in enumerate(axes[1]):
+            for r in ["Wood", "Stone"]:
+                tmp = [
+                    (s["t"], s["income"]) for s in c_trades[r] if s["seller"] == aidx[i]
+                ]
+                if tmp:
+                    ts, prices = [np.array(x) for x in zip(*tmp)]
+                    ax.plot(
+                        np.stack([ts, ts]),
+                        np.stack([np.zeros_like(prices), prices]),
+                        color=resources.get(r).color,
+                    )
+                    ax.plot(
+                        ts, prices, ".", color=resources.get(r).color, markersize=12
+                    )
+
+                tmp = [
+                    (s["t"], -s["cost"]) for s in c_trades[r] if s["buyer"] == aidx[i]
+                ]
+                if tmp:
+                    ts, prices = [np.array(x) for x in zip(*tmp)]
+                    ax.plot(
+                        np.stack([ts, ts]),
+                        np.stack([np.zeros_like(prices), prices]),
+                        color=resources.get(r).color,
+      
