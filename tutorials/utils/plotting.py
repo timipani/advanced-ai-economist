@@ -324,4 +324,44 @@ def breakdown(log, remap_key=None):
             "Buy Wood": [
                 sum([-t["price"] for t in c_trades["Wood"] if t["buyer"] == aidx[i]])
                 for i in range(n)
-     
+            ],
+            "Build": [
+                sum([b["income"] for b in all_builds if b["builder"] == aidx[i]])
+                for i in range(n)
+            ],
+        }
+
+    else:
+        c_trades = None
+        incomes = {
+            "Build": [
+                sum([b["income"] for b in all_builds if b["builder"] == aidx[i]])
+                for i in range(n)
+            ],
+        }
+
+    incomes["Total"] = np.stack([v for v in incomes.values()]).sum(axis=0)
+
+    endows = [
+        int(
+            log["states"][-1][str(aidx[i])]["inventory"]["Coin"]
+            + log["states"][-1][str(aidx[i])]["escrow"]["Coin"]
+        )
+        for i in range(n)
+    ]
+
+    n_small = np.minimum(4, n)
+
+    report(c_trades, all_builds, n, aidx)
+
+    cmap = plt.get_cmap("jet", n)
+    rs = ["Wood", "Stone", "Coin"]
+
+    fig1, axes = plt.subplots(1, len(rs) + 1, figsize=(16, 4), sharey=False)
+    for r, ax in zip(rs, axes):
+        for i in range(n):
+            ax.plot(
+                [
+                    x[str(aidx[i])]["inventory"][r] + x[str(aidx[i])]["escrow"][r]
+                    for x in log["states"]
+                ]
