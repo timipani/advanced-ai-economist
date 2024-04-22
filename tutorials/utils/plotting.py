@@ -428,4 +428,24 @@ def breakdown(log, remap_key=None):
                         np.stack([ts, ts]),
                         np.stack([np.zeros_like(prices), prices]),
                         color=resources.get(r).color,
-      
+                    )
+                    ax.plot(
+                        ts, prices, ".", color=resources.get(r).color, markersize=12
+                    )
+            ax.plot([-20, len(log["states"]) + 19], [0, 0], "w-")
+            # ax.set_ylim([-10.2, 10.2]);
+            ax.set_xlim([-20, len(log["states"]) + 19])
+            ax.grid(b=True)
+            ax.set_facecolor([0.3, 0.3, 0.3])
+
+    return (fig0, fig1, fig2), incomes, endows, c_trades, all_builds
+
+
+def plot_for_each_n(y_fun, n, ax=None):
+    if ax is None:
+        _, ax = plt.subplots(1, 1, figsize=(5, 5))
+    cmap = plt.get_cmap("jet", n)
+    for i in range(n):
+        ax.plot(y_fun(i), color=cmap(i), label=i)
+    ax.legend()
+    ax.grid(b=True)
